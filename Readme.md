@@ -4,7 +4,7 @@ Welcome to the TPED at Virginia Tech Controls repository for the 2024-2025 REC c
 This code base is split into several sections. The various components which need to have independent profiles or where different langauges are used outline the majority of these barriers. Please refer to the following headings for more information on each one.
 
 # Table of Contents
-1. [Main Control Loop](#control-loop)
+1. [Main Control Loop](#main-control-loop)
 2. [Motor Control](#motor-control)
 3. [Human Interface Devices](#human-interface-devices)
 4. [Dragon](#dragon)
