@@ -2,9 +2,22 @@
 #define APPLICATION_HPP
 #include "autoMode.hpp"
 #include <vector>
+#include <chrono>
+// TODO: Make the Motor type analogous to what it becomes from the motor class
+struct Motor{};
+
+////////////////////////////////////////////////////////////////
+// Masks for LEDs
+
+
+
+////////////////////////////////////////////////////////////////
+
+typedef long LED;   // Set each LED as 0 or 1 with a mask;
 typedef enum {
     INIT, AUTO, MAN, MAINT
 }Operation_State;
+
 
 typedef enum {
     NOMINAL,    // No errors; all is good
@@ -17,7 +30,11 @@ typedef struct Application{
     bool GO;        // 'Go' signal for the dragon head
     Operation_State state; // What state is the ride in?
     Sector sect;    // What sector is the ride in (If not in Auto mode, this is 'OFF')
-    std::vector<Errors> errorList;  // List of errors in the system (TODO: Hannah, please implement this with the GUI)
+    // TODO: Hannah, please implement this with the GUI
+    std::vector<Errors> errorList;  // List of errors in the system 
+    // Timer for ride time goes here
+    Motor motor;    // TODO: Make sure this is fixed with the Motor class
+    
 };
 
 /**
