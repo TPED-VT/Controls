@@ -10,6 +10,20 @@ int SwitchProjectMap(void) {
 int choice = 0; 
 string filename; 
 
+// if (checkStage1(ride)) {
+//     choice = 1; 
+// } else if (CheckStage2(ride)) {
+//     choice = 2; 
+// } else if (CheckStage3(ride)) {
+//     choice = 3; 
+// } else if (CheckStage4(ride)) {
+//     choice = 4; 
+// } else {
+//     break;
+// }
+
+// ASSUMING THAT THE CHECKSTAGE IS A BOOLEAN EXPRESSION AND RETURNS TRUE OR FALSE 
+
 switch(choice) {
     case 1 :  
     filename = "Smoke.mp4";
