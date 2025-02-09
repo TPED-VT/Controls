@@ -15,7 +15,7 @@ struct Motor{};
 
 typedef long LED;   // Set each LED as 0 or 1 with a mask (32 bits)
 typedef enum {
-    INIT, AUTO, MAN, MAINT
+    INIT, AUTO, OFF, MAN, MAINT
 }Operation_State;
 
 
