@@ -1,7 +1,10 @@
 # ROOT CMAKELISTS FILE
 # FOR MAIN USE ONLY
+#
+# CONTACT EMILY, EMMA, OR AARON IF YOU NEED TO MAKE 
+# ADJUSTMENTS TO THIS FILE
+##############################################################
 # TODO:
-# - Finish adding any missing libraries and file locations
 # - Add the libraries for the pi
 # 
 # AS OF 3/4/2025
@@ -15,6 +18,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Project name
 project(TPED_Controls)
 
+# Searching for necessary Libraries
+find_library(WiringPiLib wiringPi)
+
 # Include directories
 set(CL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Control_Loop/include)
 set(DR_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Dragon/include)
@@ -22,18 +28,57 @@ set(HID_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/HIDs/include)
 set(HMI_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/HMI/include)
 set(MC_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Motor_Control/include)
 
-###################################
+######################################################################
 # Use the following as a template #
 ###################################
+# The template should used below the ControlLoopLib but before the executable definitions
+# 
+# add_library({FolderHere}Lib /path/to/file.cpp)    # 'FolderHere' should be Pascal Case (FirstName, LastName, etc.)
+# target_include_directories({FolderHere}Lib PRIVATE ${INCLUDE_DIR})
+###################################
+
 # Create the library for Control Loop functionality
 add_library(ControlLoopLib Control_Loop/src/ControlLoop.cpp)
 target_include_directories(ControlLoopLib PRIVATE ${INCLUDE_DIR})
+
+# Create the library for HID functionality
+add_library(HIDLib HIDs/src/HID.cpp)
+target_include_directories(HIDLib PRIVATE ${INCLUDE_DIR})
+
+# Create the library for HMI functionality
+add_library(HMILib HMI/src/HMI.cpp)
+target_include_directories(HMILib PRIVATE ${INCLUDE_DIR})
+
+# Create the library for Motor Control functionality
+add_library(MotorControlLib Motor_Control/src/MotorControl.cpp)
+target_include_directories(MotorControlLib PRIVATE ${INCLUDE_DIR})
+
+######################################################################
+# Use the following as a template #
+###################################
+# The template should used below the executable definitions but before testing
+# 
+# add_executable({Executable_Name} path/to/executable.cpp)  # ExecutableName should be unique and Pascal_Case (with underscores)
+# target_link_libraries({Executable_Name} PRIVATE {LibraryNeeded}) # LibraryNeeded is the library used to build the executable
+# target_include_directories({Executable_Name} PRIVATE ${INCLUDE_DIR})
 ###################################
 
 # Create the main executable
-add_executable(TPED_Controls main.cpp)
-target_link_libraries(TPED_Controls PRIVATE ControlLoopLib)# The other libraries can be added on here
+add_executable(TPED_Controls main.cpp)  # This is where we will put the main file if needed
+target_link_libraries(TPED_Controls PRIVATE WiringPiLib ControlLoopLib)# The other libraries can be added on here
 target_include_directories(TPED_Controls PRIVATE ${INCLUDE_DIR})
+
+# Create the Control Loop executable
+add_executable(Control_Loop Control_Loop/src/ControlLoop.cpp)
+target_link_libraries(Control_Loop PRIVATE ControlLoopLib)
+target_include_directories(Control_Loop PRIVATE ${INCLUDE_DIR})
+
+# Create the Motor Control executable
+add_executable(Motor_Control Motor_Control/src/MotorControl.cpp)
+target_link_libraries(Motor_Control PRIVATE MotorControlLib)
+target_include_directories(Motor_Control PRIVATE ${INCLUDE_DIR})
+
+######################################################################
 
 # Enable testing
 enable_testing()
