@@ -1,6 +1,11 @@
 # ROOT CMAKELISTS FILE
 # FOR MAIN USE ONLY
-
+# TODO:
+# - Finish adding any missing libraries and file locations
+# - Add the libraries for the pi
+# 
+# AS OF 3/4/2025
+#############################################
 cmake_minimum_required(VERSION 3.10)
 
 # Set CMake Standard
