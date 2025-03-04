@@ -13,24 +13,31 @@ project(TPED_Controls)
 # Include directories
 set(CL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Control_Loop/include)
 set(DR_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Dragon/include)
+set(HID_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/HIDs/include)
+set(HMI_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/HMI/include)
+set(MC_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Motor_Control/include)
 
-# Create the library for Electric Car functionality
-add_library(CompuTronLib src/computron.cpp)
-target_include_directories(CompuTronLib PRIVATE ${INCLUDE_DIR})
+###################################
+# Use the following as a template #
+###################################
+# Create the library for Control Loop functionality
+add_library(ControlLoopLib Control_Loop/src/ControlLoop.cpp)
+target_include_directories(ControlLoopLib PRIVATE ${INCLUDE_DIR})
+###################################
 
 # Create the main executable
-add_executable(CompuTron src/main.cpp)
-target_link_libraries(CompuTron PRIVATE CompuTronLib)
-target_include_directories(CompuTron PRIVATE ${INCLUDE_DIR})
+add_executable(TPED_Controls main.cpp)
+target_link_libraries(TPED_Controls PRIVATE ControlLoopLib)# The other libraries can be added on here
+target_include_directories(TPED_Controls PRIVATE ${INCLUDE_DIR})
 
 # Enable testing
 enable_testing()
 
 # Create the test executable
-add_executable(studentTests test/test.cpp)
-target_link_libraries(studentTests PRIVATE CompuTronLib)
-target_include_directories(studentTests PRIVATE ${INCLUDE_DIR})
+add_executable(OverallTests test/test.cpp)
+target_link_libraries(OverallTests PRIVATE ControlLoopLib)
+target_include_directories(OverallTests PRIVATE ${INCLUDE_DIR})
 
 # Register the test
-add_test(NAME studentTests COMMAND studentTests)
+add_test(NAME OverallTests COMMAND OverallTests)
 
