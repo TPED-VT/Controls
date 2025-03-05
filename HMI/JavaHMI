@@ -1,0 +1,308 @@
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import java.util.Timer;
+import java.util.TimerTask;
+
+/*
+ * // -------------------------------------------------------------------------
+/**
+ *  HMI for Ride Engineering Competition Topspin
+ *  all visuals for the ride. Visuals update every 1.538 seconds, which is
+ *  1% of the ride cycle. 
+ * 
+ *  @author hjl44
+ *  @version Mar 4, 2025
+ */
+public class JavaHMI {
+    public static void main (String[]args) {
+        KeyAsButton a = new KeyAsButton();
+    }
+}
+
+class KeyAsButton extends JFrame implements KeyListener {
+    JButton1 classic;
+    JButton1 advanced;
+    JPanel panel;
+    JPanel upper;
+    JButton1 dispatch;
+    JButton1 cyclePercent;
+    JButton1 rideStatus;
+    JButton1 reset;
+    JPanel middle;
+    JButton1 status;
+    JButton1 degree;
+    JPanel rectangle;
+    JPanel rectangle2;
+    boolean isClassic;
+    JButton indicator;
+    JButton errorBox;
+    JButton init;
+    JButton auto;
+    JButton maint;
+    JButton off;
+    Timer timer;
+    
+    public KeyAsButton() {
+        
+        isClassic = true;
+        //Frame setup
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setBounds(0,0,screenSize.width, screenSize.height);
+        this.setVisible(true);
+        this.setPreferredSize(screenSize);
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+        addKeyListener(this); 
+        setFocusable(true);
+        requestFocusInWindow();
+        
+        panel = new JPanel(new BorderLayout());
+        upper = new JPanel(new GridLayout());
+        middle = new JPanel(null);
+        middle.setBackground(Color.WHITE);
+        panel.setBackground(Color.WHITE);
+        panel.add(middle, BorderLayout.CENTER);
+        this.add(panel);
+        
+      //Button setups
+        dispatch = new JButton1("DISPATCH");
+        cyclePercent = new JButton1("% status");
+        rideStatus = new JButton1("STATUS: Running");   
+        status = new JButton1("status: running");
+        degree = new JButton1("angle: 100 degrees");
+        status.setEnabled(false);
+        degree.setEnabled(false);
+        rectangle = new JPanel();
+        rectangle2 = new JPanel();
+        indicator = new JButton(" ");
+        
+        
+        //setup classic tab
+        classic = new JButton1("classic");
+        classic.setPreferredSize(new Dimension
+            (screenSize.width/2,screenSize.height/5));
+        classic.setBorderPainted(false);
+        classic.setBackground(Color.WHITE);   
+        
+        //setup advanced tab
+        advanced = new JButton1("advanced diagnostics (Maintenance)");
+        advanced.setPreferredSize(new Dimension
+            (screenSize.width / 2, screenSize.height / 5));
+        advanced.setBorderPainted(false);
+        advanced.setBackground(new Color(204,204,204));
+       
+        
+        panel.add(upper, BorderLayout.NORTH);
+        upper.add(classic);
+        upper.add(advanced);
+        
+        advanced.setBackground(new Color(204,204,204));
+        classic.setBackground(Color.WHITE);
+        
+        
+        
+        dispatch.setBounds(30, 50, 600, 200);
+        degree.setBounds(30, 50, 600, 200);
+        
+        cyclePercent.setBounds(650,165,600,85);
+        status.setBounds(650, 165, 600, 85);
+ 
+        
+        rideStatus.setBounds(650,50,600,85);
+
+        JLabel row2 = new JLabel("Row 2: Back");
+        row2.setBounds(30, 350, 780, 20);
+        rectangle.setBounds(110, 350, 650, 20);
+        rectangle.setBackground(Color.GREEN);
+        middle.add(rectangle);
+        middle.add(row2);
+        
+        JLabel row1 = new JLabel("Row 1: Front");
+        row1.setBounds(30, 400, 780, 20);
+        rectangle2.setBounds(110, 400, 650, 20);
+        rectangle2.setBackground(Color.GREEN);
+        middle.add(rectangle2);
+        middle.add(row1);
+        
+        
+        
+        //Timer to repaint and update various indicators
+        timer = new Timer();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                //TODO: fill in values for visual updates:
+                int percent = 0 /*TODO: get percent from backend*/;
+                cyclePercent.setText(percent + "% through cycle");
+                cyclePercent.repaint();
+                
+                //updating status
+                if(true/*TODO: status is running*/)
+                    rideStatus.setText("STATUS: RUNNING");
+                else if(true/*TODO:status is loading*/)
+                    rideStatus.setText("STATUS: LOADING");
+                else rideStatus.setText("STATUS: DOWN");
+                
+                //updating restraints
+                if(true/*TODO: row1 is locked*/)
+                    rectangle.setBackground(Color.GREEN);
+                else rectangle.setBackground(Color.RED);
+                
+                if(false/*TODO: row2 is locked*/)
+                    rectangle2.setBackground(Color.GREEN);
+                else rectangle2.setBackground(Color.RED);
+                
+                if(false/*TODO: rows locked && correct mode && ready*/)
+                    indicator.setBackground(Color.GREEN);
+                else indicator.setBackground(Color.RED);
+                
+                
+                //TODO: 
+                //Use if else statements after code below to account for all errors
+                if(true/* TODO: error condition 1*/)
+                    errorBox.setText("display error message 1");
+                else if(true/*TODO: error condition 2*/)
+                    errorBox.setText("display error message 2");
+                //...
+                
+            }
+        };
+        
+        //TODO: how often should visuals update? I have it set to 1% of the ride
+        //cycle, which is 1.538 seconds, but unsure if it should update more
+        timer.schedule(task, 1538);
+        
+        indicator.setBounds(800, 312, 150, 150);
+        middle.add(indicator);
+        indicator.setBackground(Color.RED);
+        
+        errorBox = new JButton("error messages");
+        init = new JButton("<html> 1<br />INIT</html>");
+        auto = new JButton("<html> 2<br />AUTO</html>");
+        maint = new JButton("<html> 3<br />MAINT</html>");
+        off = new JButton("<html> 4<br />OFF</html>");
+        
+        errorBox.setBounds(0, 480, 875, 100);
+        middle.add(errorBox);
+        init.setBounds(875, 480, 100, 100);
+        middle.add(init);
+        auto.setBounds(975, 480, 100, 100);
+        middle.add(auto);
+        maint.setBounds(1075, 480, 100, 100);
+        middle.add(maint);
+        off.setBounds(1175, 480, 100, 100);
+        middle.add(off);
+        
+        init.setBackground(new Color(192, 192, 192));
+        auto.setBackground(Color.WHITE);
+        maint.setBackground(Color.WHITE);
+        off.setBackground(Color.WHITE);
+        
+        paintClassic();
+    }
+    
+    public void paintClassic() {
+        
+        isClassic = true;
+        middle.add(rideStatus);
+        middle.add(dispatch);
+        middle.add(cyclePercent);
+        middle.remove(degree);
+        middle.remove(status);
+        middle.repaint();
+        advanced.setBackground(new Color(204,204,204));
+        classic.setBackground(Color.WHITE);
+        
+    }
+    
+    public void paintAdvanced() {
+        
+        isClassic = false;
+        middle.remove(rideStatus);
+        middle.remove(dispatch);
+        middle.remove(cyclePercent);
+        
+        middle.add(degree);
+        middle.add(status);
+
+        middle.repaint();
+        
+        classic.setBackground(new Color(204,204,204));
+        advanced.setBackground(Color.WHITE);
+    }
+    
+    @Override
+    public void keyPressed(KeyEvent e) {
+        
+        int key = e.getKeyCode();
+        
+        if (key == KeyEvent.VK_M) {
+            if(isClassic)
+                paintAdvanced();
+            else if(!isClassic)
+                paintClassic();
+        }
+        
+        if (key == KeyEvent.VK_D) {
+            System.out.println("hi1");
+            //TODO:
+            //insert code to dispatch ride
+            if(true/*check if ride has been dispatched on backend*/)
+                dispatch.setText("DISPATCHED");
+            
+        }
+
+        if (key == KeyEvent.VK_1) {       
+            init.setBackground(new Color(192, 192, 192));
+            auto.setBackground(Color.WHITE);
+            maint.setBackground(Color.WHITE);
+            off.setBackground(Color.WHITE);
+            //TODO:
+            //activate init
+            
+        }
+        if (key == KeyEvent.VK_2) {
+            init.setBackground(Color.WHITE);
+            auto.setBackground(new Color(192, 192, 192));
+            maint.setBackground(Color.WHITE);
+            off.setBackground(Color.WHITE);
+            
+            //TODO: 
+            //activate auto
+        }
+
+        if (key == KeyEvent.VK_3) {
+            init.setBackground(Color.WHITE);
+            auto.setBackground(Color.WHITE);
+            maint.setBackground(new Color(192, 192, 192));
+            off.setBackground(Color.WHITE);
+            
+            //TODO:
+            //activate maintenance
+        } 
+        if(key == KeyEvent.VK_4) { 
+            init.setBackground(Color.WHITE);
+            auto.setBackground(Color.WHITE);
+            maint.setBackground(Color.WHITE);
+            off.setBackground(new Color(192, 192, 192));
+            //TODO:
+            //turn off
+        }
+    }
+    
+    @Override
+    public void keyReleased(KeyEvent e) { /* ... */ }
+    
+    @Override
+    public void keyTyped(KeyEvent e) { /* ... */ }
+
+}
+
+class JButton1 extends JButton {
+    
+    public JButton1(String s) {
+        super(s);
+        //this.setEnabled(false);
+    }
+    
+}
