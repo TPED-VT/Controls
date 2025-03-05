@@ -14,7 +14,7 @@ import java.util.TimerTask;
  *  @author hjl44
  *  @version Mar 4, 2025
  */
-public class JavaHMI {
+public class HMI {
     public static void main (String[]args) {
         KeyAsButton a = new KeyAsButton();
     }
@@ -25,7 +25,7 @@ class KeyAsButton extends JFrame implements KeyListener {
     JButton1 advanced;
     JPanel panel;
     JPanel upper;
-    JButton1 dispatch;
+    JButton1 restraintStatus;
     JButton1 cyclePercent;
     JButton1 rideStatus;
     JButton1 reset;
@@ -35,12 +35,12 @@ class KeyAsButton extends JFrame implements KeyListener {
     JPanel rectangle;
     JPanel rectangle2;
     boolean isClassic;
-    JButton indicator;
-    JButton errorBox;
-    JButton init;
-    JButton auto;
-    JButton maint;
-    JButton off;
+    JButton1 indicator;
+    JButton1 errorBox;
+    JButton1 init;
+    JButton1 auto;
+    JButton1 maint;
+    JButton1 off;
     Timer timer;
     
     public KeyAsButton() {
@@ -65,7 +65,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         this.add(panel);
         
       //Button setups
-        dispatch = new JButton1("DISPATCH");
+        restraintStatus = new JButton1("<html> R:<br />RESTRAINTS UNLOCKED</html>");
         cyclePercent = new JButton1("% status");
         rideStatus = new JButton1("STATUS: Running");   
         status = new JButton1("status: running");
@@ -74,7 +74,8 @@ class KeyAsButton extends JFrame implements KeyListener {
         degree.setEnabled(false);
         rectangle = new JPanel();
         rectangle2 = new JPanel();
-        indicator = new JButton(" ");
+        indicator = new JButton1(" ");
+        reset = new JButton1("RESET");
         
         
         //setup classic tab
@@ -101,7 +102,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         
         
-        dispatch.setBounds(30, 50, 600, 200);
+        restraintStatus.setBounds(30, 50, 600, 200);
         degree.setBounds(30, 50, 600, 200);
         
         cyclePercent.setBounds(650,165,600,85);
@@ -139,8 +140,9 @@ class KeyAsButton extends JFrame implements KeyListener {
                 //updating status
                 if(true/*TODO: status is running*/)
                     rideStatus.setText("STATUS: RUNNING");
-                else if(true/*TODO:status is loading*/)
+                else if(true/*TODO:status is loading*/) {
                     rideStatus.setText("STATUS: LOADING");
+                }
                 else rideStatus.setText("STATUS: DOWN");
                 
                 //updating restraints
@@ -176,11 +178,11 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.add(indicator);
         indicator.setBackground(Color.RED);
         
-        errorBox = new JButton("error messages");
-        init = new JButton("<html> 1<br />INIT</html>");
-        auto = new JButton("<html> 2<br />AUTO</html>");
-        maint = new JButton("<html> 3<br />MAINT</html>");
-        off = new JButton("<html> 4<br />OFF</html>");
+        errorBox = new JButton1("error messages");
+        init = new JButton1("<html> 1<br />INIT</html>");
+        auto = new JButton1("<html> 2<br />AUTO</html>");
+        maint = new JButton1("<html> 3<br />MAINT</html>");
+        off = new JButton1("<html> 4<br />OFF</html>");
         
         errorBox.setBounds(0, 480, 875, 100);
         middle.add(errorBox);
@@ -205,7 +207,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         isClassic = true;
         middle.add(rideStatus);
-        middle.add(dispatch);
+        middle.add(restraintStatus);
         middle.add(cyclePercent);
         middle.remove(degree);
         middle.remove(status);
@@ -219,7 +221,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         isClassic = false;
         middle.remove(rideStatus);
-        middle.remove(dispatch);
+        middle.remove(restraintStatus);
         middle.remove(cyclePercent);
         
         middle.add(degree);
@@ -243,12 +245,17 @@ class KeyAsButton extends JFrame implements KeyListener {
                 paintClassic();
         }
         
-        if (key == KeyEvent.VK_D) {
+        if (key == KeyEvent.VK_R) {
             System.out.println("hi1");
             //TODO:
-            //insert code to dispatch ride
-            if(true/*check if ride has been dispatched on backend*/)
-                dispatch.setText("DISPATCHED");
+            //insert code to lock restraints
+            if(restraintStatus.getText().equals("<html> R:<br />RESTRAINTS UNLOCKED</html>") && 
+                true /*check if ride has been locked on backend*/)
+                restraintStatus.setText("<html> R:<br />RESTRAINTS LOCKED</html>");
+            else if(restraintStatus.getText().equals("<html> R:<br />RESTRAINTS LOCKED</html>") && 
+                true /*check if ride has been unlocked on backend*/)
+                restraintStatus.setText("<html> R:<br />RESTRAINTS UNLOCKED</html>");
+            
             
         }
 
@@ -298,11 +305,13 @@ class KeyAsButton extends JFrame implements KeyListener {
 
 }
 
-class JButton1 extends JButton {
+//Ignore this for now, may be used to change the infill of the panels
+class JButton1 extends JButton{
     
     public JButton1(String s) {
         super(s);
+        //setContentAreaFilled(false);
         //this.setEnabled(false);
     }
     
-}
+
