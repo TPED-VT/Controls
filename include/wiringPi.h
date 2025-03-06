@@ -1,5 +1,5 @@
-#ifndef WIRING_PI_WINDOWS_H
-#define WIRING_PI_WINDOWS_H
+#ifndef WIRING_PI_H
+#define WIRING_PI_H
 
 
 #ifdef PLATFORM_LINUX
@@ -98,11 +98,11 @@
     #define GPIO_LAYOUT_PI1_REV1 1   //Pi 1 A/B Revision 1, 1.1, CM
     #define GPIO_LAYOUT_DEFAULT  2
 
-    extern const char *piModelNames    [PI_MODELS_MAX] ;
-    extern const char *piProcessor     [ 5] ;
-    extern const char *piRevisionNames [16] ;
-    extern const char *piMakerNames    [16] ;
-    extern const int   piMemorySize    [ 8] ;
+    const char *piModelNames    [PI_MODELS_MAX] ;
+    const char *piProcessor     [ 5] ;
+    const char *piRevisionNames [16] ;
+    const char *piMakerNames    [16] ;
+    const int   piMemorySize    [ 8]{} ;
 
     //	Intended for the GPIO program Use at your own risk.
 
@@ -125,39 +125,39 @@
         unsigned int data2 ;	//  ditto
         unsigned int data3 ;	//  ditto
 
-        void   (*pinMode)          (struct wiringPiNodeStruct *node, int pin, int mode) ;
-        void   (*pullUpDnControl)  (struct wiringPiNodeStruct *node, int pin, int mode) ;
-        int    (*digitalRead)      (struct wiringPiNodeStruct *node, int pin) ;
-        //unsigned int    (*digitalRead8)     (struct wiringPiNodeStruct *node, int pin) ;
-        void   (*digitalWrite)     (struct wiringPiNodeStruct *node, int pin, int value) ;
-        //         void   (*digitalWrite8)    (struct wiringPiNodeStruct *node, int pin, int value) ;
-        void   (*pwmWrite)         (struct wiringPiNodeStruct *node, int pin, int value) ;
-        int    (*analogRead)       (struct wiringPiNodeStruct *node, int pin) ;
-        void   (*analogWrite)      (struct wiringPiNodeStruct *node, int pin, int value) ;
+        void   (*pinMode)          (struct wiringPiNodeStruct *node, int pin, int mode) {};
+        void   (*pullUpDnControl)  (struct wiringPiNodeStruct *node, int pin, int mode) {};
+        int    (*digitalRead)      (struct wiringPiNodeStruct *node, int pin) {};
+        //unsigned int    (*digitalRead8)     (struct wiringPiNodeStruct *node, int pin) {};
+        void   (*digitalWrite)     (struct wiringPiNodeStruct *node, int pin, int value) {};
+        //         void   (*digitalWrite8)    (struct wiringPiNodeStruct *node, int pin, int value) {};
+        void   (*pwmWrite)         (struct wiringPiNodeStruct *node, int pin, int value) {};
+        int    (*analogRead)       (struct wiringPiNodeStruct *node, int pin) {};
+        void   (*analogWrite)      (struct wiringPiNodeStruct *node, int pin, int value) {};
 
         struct wiringPiNodeStruct *next ;
     };
 
-    extern struct wiringPiNodeStruct *wiringPiNodes ;
+    struct wiringPiNodeStruct *wiringPiNodes ;
 
 
     // Export variables for the hardware pointers
 
-    extern volatile unsigned int *_wiringPiGpio ;
-    extern volatile unsigned int *_wiringPiPwm ;
-    extern volatile unsigned int *_wiringPiClk ;
-    extern volatile unsigned int *_wiringPiPads ;
-    extern volatile unsigned int *_wiringPiTimer ;
-    extern volatile unsigned int *_wiringPiTimerIrqRaw ;
+    volatile unsigned int *_wiringPiGpio ;
+    volatile unsigned int *_wiringPiPwm ;
+    volatile unsigned int *_wiringPiClk ;
+    volatile unsigned int *_wiringPiPads ;
+    volatile unsigned int *_wiringPiTimer ;
+    volatile unsigned int *_wiringPiTimerIrqRaw ;
 
     // Internal
-    extern void piGpioLayoutOops (const char *why);
-    extern int wiringPiFailure (int fatal, const char *message, ...) ;
+    void piGpioLayoutOops (const char *why);
+    int wiringPiFailure (int fatal, const char *message, ...) ;
 
     // Core wiringPi functions
 
-    extern struct wiringPiNodeStruct *wiringPiFindNode (int pin) ;
-    extern struct wiringPiNodeStruct *wiringPiNewNode  (int pinBase, int numPins) ;
+    struct wiringPiNodeStruct *wiringPiFindNode (int pin) ;
+    struct wiringPiNodeStruct *wiringPiNewNode  (int pinBase, int numPins) ;
 
     enum WPIPinType {
     WPI_PIN_BCM = 1,
@@ -165,15 +165,15 @@
     WPI_PIN_PHYS,
     };
 
-    extern void wiringPiVersion	(int *major, int *minor) ;
-    extern int  wiringPiGlobalMemoryAccess(void);                 //Interface V3.3
-    extern int  wiringPiUserLevelAccess (void) ;
-    extern int  wiringPiSetup       (void) ;
-    extern int  wiringPiSetupSys    (void) ;
-    extern int  wiringPiSetupGpio   (void) ;
-    extern int  wiringPiSetupPhys   (void) ;
-    extern int  wiringPiSetupPinType (enum WPIPinType pinType);   //Interface V3.3
-    extern int  wiringPiSetupGpioDevice(enum WPIPinType pinType); //Interface V3.3
+    void wiringPiVersion	(int *major, int *minor) {};
+    int  wiringPiGlobalMemoryAccess(void){return 0;};                 //Interface V3.3
+    int  wiringPiUserLevelAccess (void) {return 0;};
+    int  wiringPiSetup       (void) {return 0;};
+    int  wiringPiSetupSys    (void) {return 0;};
+    int  wiringPiSetupGpio   (void) {return 0;};
+    int  wiringPiSetupPhys   (void) {return 0;};
+    int  wiringPiSetupPinType (enum WPIPinType pinType){return 0;};   //Interface V3.3
+    int  wiringPiSetupGpioDevice(enum WPIPinType pinType){return 0;}; //Interface V3.3
 
 
     enum WPIPinAlt {
@@ -194,82 +194,73 @@
     };
 
 
-    extern          int  wiringPiGpioDeviceGetFd();               //Interface V3.3
-    extern          void pinModeAlt          (int pin, int mode) ;
-    extern          enum WPIPinAlt getPinModeAlt       (int pin) ;  // Interface V3.5, same as getAlt but wie enum
-    extern          void pinMode             (int pin, int mode) ;
-    extern          void pullUpDnControl     (int pin, int pud) ;
-    extern          int  digitalRead         (int pin) ;
-    extern          void digitalWrite        (int pin, int value) ;
-    extern unsigned int  digitalRead8        (int pin) ;
-    extern          void digitalWrite8       (int pin, int value) ;
-    extern          void pwmWrite            (int pin, int value) ;
-    extern          int  analogRead          (int pin) ;
-    extern          void analogWrite         (int pin, int value) ;
+    int  wiringPiGpioDeviceGetFd();               //Interface V3.3
+    void pinModeAlt          (int pin, int mode) {};
+    enum WPIPinAlt getPinModeAlt       (int pin) {return WPI_ALT0;};  // Interface V3.5, same as getAlt but wie enum
+    void pinMode             (int pin, int mode) {};
+    void pullUpDnControl     (int pin, int pud) {};
+    int  digitalRead         (int pin) {return 0;};
+    void digitalWrite        (int pin, int value) {};
+    unsigned int  digitalRead8        (int pin) {return 0;};
+    void digitalWrite8       (int pin, int value) {};
+    void pwmWrite            (int pin, int value) {};
+    int  analogRead          (int pin) {return 0;};
+    void analogWrite         (int pin, int value) {};
 
     // PiFace specifics
     //	(Deprecated)
 
-    extern int  wiringPiSetupPiFace (void) ;
-    extern int  wiringPiSetupPiFaceForGpioProg (void) ;	// Don't use this - for gpio program only
+    int  wiringPiSetupPiFace (void) {return 0;};
+    int  wiringPiSetupPiFaceForGpioProg (void) {return 0;};	// Don't use this - for gpio program only
 
     // On-Board Raspberry Pi hardware specific stuff
 
-    extern          int  piGpioLayout        (void) ;
-    extern          int  piBoardRev          (void) ;	// Deprecated, but does the same as piGpioLayout
-    extern          void piBoardId           (int *model, int *rev, int *mem, int *maker, int *overVolted) ;
-    extern          int  piBoard40Pin        (void) ;                   // Interface V3.7
-    extern          int  piRP1Model          (void) ;                   // Interface V3.14
-    extern          int  wpiPinToGpio        (int wpiPin) ;
-    extern          int  physPinToGpio       (int physPin) ;
-    extern          void setPadDrive         (int group, int value) ;
-    extern          void setPadDrivePin      (int pin, int value);     // Interface V3.0
-    extern          int  getAlt              (int pin) ;
-    extern          void pwmToneWrite        (int pin, int freq) ;
-    extern          void pwmSetMode          (int mode) ;
-    extern          void pwmSetRange         (unsigned int range) ;
-    extern          void pwmSetClock         (int divisor) ;
-    extern          void gpioClockSet        (int pin, int freq) ;
-    extern unsigned int  digitalReadByte     (void) ;
-    extern unsigned int  digitalReadByte2    (void) ;
-    extern          void digitalWriteByte    (int value) ;
-    extern          void digitalWriteByte2   (int value) ;
+    int  piGpioLayout        (void) {return 0;};
+    int  piBoardRev          (void) {return 0;};	// Deprecated, but does the same as piGpioLayout
+    void piBoardId           (int *model, int *rev, int *mem, int *maker, int *overVolted) {};
+    int  piBoard40Pin        (void) {return 0;};                   // Interface V3.7
+    int  piRP1Model          (void) {return 0;};                   // Interface V3.14
+    int  wpiPinToGpio        (int wpiPin) {return 0;};
+    int  physPinToGpio       (int physPin) {return 0;};
+    void setPadDrive         (int group, int value) {};
+    void setPadDrivePin      (int pin, int value){};     // Interface V3.0
+    int  getAlt              (int pin) {return 0;};
+    void pwmToneWrite        (int pin, int freq) {};
+    void pwmSetMode          (int mode) {};
+    void pwmSetRange         (unsigned int range) {};
+    void pwmSetClock         (int divisor) {};
+    void gpioClockSet        (int pin, int freq) {};
+    unsigned int  digitalReadByte     (void) {return 0;};
+    unsigned int  digitalReadByte2    (void) {return 0;};
+    void digitalWriteByte    (int value) {};
+    void digitalWriteByte2   (int value) {};
 
     // Interrupts
     //	(Also Pi hardware specific)
 
-    extern int  waitForInterrupt    (int pin, int mS) ;
-    extern int  wiringPiISR         (int pin, int mode, void (*function)(void)) ;
-    extern int  wiringPiISRStop     (int pin) ;  //V3.2
-    extern int  waitForInterruptClose(int pin) ; //V3.2
+    int  waitForInterrupt    (int pin, int mS) {return 0;};
+    int  wiringPiISR         (int pin, int mode, void (*function)(void)) {return 0;};
+    int  wiringPiISRStop     (int pin) {return 0;};  //V3.2
+    int  waitForInterruptClose(int pin) {return 0;}; //V3.2
 
     // Threads
 
-    extern int  piThreadCreate      (void *(*fn)(void *)) ;
-    extern void piLock              (int key) ;
-    extern void piUnlock            (int key) ;
+    int  piThreadCreate      (void *(*fn)(void *)) {return 0;};
+    void piLock              (int key) {};
+    void piUnlock            (int key) {};
 
     // Schedulling priority
 
-    extern int piHiPri (const int pri) ;
+    int piHiPri (const int pri) {return 0;};
 
     // Extras from arduino land
 
-    extern void         delay             (unsigned int howLong) ;
-    extern void         delayMicroseconds (unsigned int howLong) ;
-    extern unsigned int millis            (void) ;
-    extern unsigned int micros            (void) ;
+    void         delay             (unsigned int howLong) {};
+    void         delayMicroseconds (unsigned int howLong) {};
+    unsigned int millis            (void) {return 0;};
+    unsigned int micros            (void) {return 0;};
 
-    extern unsigned long long piMicros64(void);   // Interface V3.7
-
-
-    // Mock functions from wiringPi.h
-    // Add any necessary functions here with the proper look as the real function
-    // inline void pinMode(int pin, int mode) {}
-    // inline void digitalWrite(int pin, int value) {}
-    // inline int wiringPiSetup(void) {return 1;}
-    // inline int digitalRead(int pin) { return 0; }
-    // inline void delay(unsigned int howLong) {}
+    unsigned long long piMicros64(void){return 0;};   // Interface V3.7
 #endif
 
 #endif

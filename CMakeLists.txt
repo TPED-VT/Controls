@@ -78,9 +78,10 @@ add_executable(TPED_Controls main.cpp)  # This is where we will put the main fil
 target_link_libraries(TPED_Controls PRIVATE ControlLoopLib MotorControlLib)# The other libraries can be added on here
 target_include_directories(TPED_Controls PRIVATE ${INCLUDE_DIR})
 
-add_executable(Blink_Example blink.cpp)
-target_include_directories(TPED_Controls PRIVATE ${INCLUDE_DIR})
-
+if(PLATFORM_LINUX)
+    add_executable(Blink_Example blink.cpp)
+    target_include_directories(TPED_Controls PRIVATE ${INCLUDE_DIR})
+endif()
 
 # # Create the Control Loop executable
 # add_executable(Control_Loop Control_Loop/src/ControlLoop.cpp)
@@ -98,7 +99,7 @@ target_include_directories(TPED_Controls PRIVATE ${INCLUDE_DIR})
 enable_testing()
 
 # Create the test executable
-add_executable(OverallTests test/test.cpp)
+add_executable(OverallTests WIN32 test/test.cpp)
 target_link_libraries(OverallTests PRIVATE ControlLoopLib)
 target_include_directories(OverallTests PRIVATE ${CMAKE_SOURCE_DIR})
 
