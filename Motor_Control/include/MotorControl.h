@@ -1,6 +1,10 @@
 #ifndef MOTOR_CONTROL_H
 #define MOTOR_CONTROL_H
 
+// Header file includes
+#include "../../include/wiringPi.h"
+#include "../../include/EasyStepper.h"
+
 #define CLOCKWISE 1
 #define COUNTER_CLOCKWISE 2
 
