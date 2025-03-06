@@ -21,6 +21,8 @@ project(TPED_Controls)
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(STATUS "Using Linux")
     set(PLATFORM_LINUX TRUE)
+
+    # TODO: Fix this for linux. The following two lines don't build
     target_compile_definitions(TPED_Controls PRIVATE PLATFORM_LINUX)
     target_link_libraries(TPED_Controls wiringPi)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
