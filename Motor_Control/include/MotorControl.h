@@ -5,10 +5,16 @@
 #include "../../include/wiringPi.h"
 #include "../../include/EasyStepper.h"
 
+// Constants
 #define CLOCKWISE 1
 #define COUNTER_CLOCKWISE 2
 
-class MotorControl{
+/**
+ * @brief Wrapper class from the EasyStepper class. Works by simplifying the functions
+ * in the Motor Control class use case.
+ * @brief Derived from EasyStepper for use in the MotorControl functions
+ */
+class MotorControl : public EasyStepper{
 public:
 
     /**
