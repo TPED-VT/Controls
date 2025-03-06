@@ -19,7 +19,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 project(TPED_Controls)
 # Check OS
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    message(STATUS "Using Linux")
+    message(FATAL_ERROR "Emily, stop using Linux")
     set(PLATFORM_LINUX TRUE)
 
     # TODO: Fix this for linux. The following two lines don't build
