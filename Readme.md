@@ -3,6 +3,9 @@ Welcome to the TPED at Virginia Tech Controls repository for the 2024-2025 REC c
 
 This code base is split into several sections. The various components which need to have independent profiles or where different langauges are used outline the majority of these barriers. Please refer to the following headings for more information on each one.
 
+# Making Changes
+If you are an editor of this repository, *MAKE SURE YOU ONLY EDIT WHAT YOU HAVE BEEN GIVEN PERMISSION TO EDIT.* Certain files are outside the scope for this project and should only be edited if you know EXACTLY what you are doing. This means that if you would like to edit a portion of the CMakeLists.txt file, or the main files, please contact one of the team leads beforehand.
+
 # Table of Contents
 1. [Main Control Loop](#main-control-loop)
 2. [Motor Control](#motor-control)
@@ -20,3 +23,5 @@ Manual offers a more 'in control' feel, useful for debugging and testing, as wel
 ## Motor Control
 ## Human Interface Devices
 ## Dragon
+
+
