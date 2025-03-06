@@ -17,16 +17,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Project name
 project(TPED_Controls)
-message(STATUS "Running on platform: ${CMAKE_SYSTEM_NAME}")
 # Check OS
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(STATUS "Using Linux")
     set(PLATFORM_LINUX TRUE)
     target_compile_definitions(TPED_Controls PRIVATE PLATFORM_LINUX)
-    target_link_libraries(MyProject wiringPi)
+    target_link_libraries(TPED_Controls wiringPi)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     message(STATUS "Using Windows")
     set(PLATFORM_LINUX FALSE)
+
+    # set(WP_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
+    # add_library(wiringPiLib include/wiringPi.h)
+    # target_include_directories(wiringPiLib PRIVATE ${INCLUDE_DIR})
 else()
     message(FATAL_ERROR "OS Not supported")
 endif()
@@ -76,8 +79,12 @@ target_include_directories(MotorControlLib PRIVATE ${INCLUDE_DIR})
 
 # Create the main executable
 add_executable(TPED_Controls main.cpp)  # This is where we will put the main file if needed
-target_link_libraries(TPED_Controls PRIVATE WiringPiLib ControlLoopLib)# The other libraries can be added on here
+target_link_libraries(TPED_Controls PRIVATE ControlLoopLib)# The other libraries can be added on here
 target_include_directories(TPED_Controls PRIVATE ${INCLUDE_DIR})
+
+add_executable(Blink_Example blink.cpp)
+target_include_directories(TPED_Controls PRIVATE ${INCLUDE_DIR})
+
 
 # # Create the Control Loop executable
 # add_executable(Control_Loop Control_Loop/src/ControlLoop.cpp)
