@@ -17,9 +17,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Project name
 project(TPED_Controls)
+message(STATUS "Running on platform: ${CMAKE_SYSTEM_NAME}")
+# Check OS
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    message(STATUS "Using Linux")
+    set(PLATFORM_LINUX TRUE)
+    target_compile_definitions(TPED_Controls PRIVATE PLATFORM_LINUX)
+    target_link_libraries(MyProject wiringPi)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    message(STATUS "Using Windows")
+    set(PLATFORM_LINUX FALSE)
+else()
+    message(FATAL_ERROR "OS Not supported")
+endif()
 
-# Searching for necessary Libraries
-find_library(WiringPiLib wiringPi)
 
 # Include directories
 set(CL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Control_Loop/include)
@@ -68,15 +79,15 @@ add_executable(TPED_Controls main.cpp)  # This is where we will put the main fil
 target_link_libraries(TPED_Controls PRIVATE WiringPiLib ControlLoopLib)# The other libraries can be added on here
 target_include_directories(TPED_Controls PRIVATE ${INCLUDE_DIR})
 
-# Create the Control Loop executable
-add_executable(Control_Loop Control_Loop/src/ControlLoop.cpp)
-target_link_libraries(Control_Loop PRIVATE ControlLoopLib)
-target_include_directories(Control_Loop PRIVATE ${INCLUDE_DIR})
+# # Create the Control Loop executable
+# add_executable(Control_Loop Control_Loop/src/ControlLoop.cpp)
+# target_link_libraries(Control_Loop PRIVATE ControlLoopLib)
+# target_include_directories(Control_Loop PRIVATE ${INCLUDE_DIR})
 
-# Create the Motor Control executable
-add_executable(Motor_Control Motor_Control/src/MotorControl.cpp)
-target_link_libraries(Motor_Control PRIVATE MotorControlLib)
-target_include_directories(Motor_Control PRIVATE ${INCLUDE_DIR})
+# # Create the Motor Control executable
+# add_executable(Motor_Control Motor_Control/src/MotorControl.cpp)
+# target_link_libraries(Motor_Control PRIVATE MotorControlLib)
+# target_include_directories(Motor_Control PRIVATE ${INCLUDE_DIR})
 
 ######################################################################
 
@@ -86,7 +97,7 @@ enable_testing()
 # Create the test executable
 add_executable(OverallTests test/test.cpp)
 target_link_libraries(OverallTests PRIVATE ControlLoopLib)
-target_include_directories(OverallTests PRIVATE ${INCLUDE_DIR})
+target_include_directories(OverallTests PRIVATE ${CMAKE_SOURCE_DIR})
 
 # Register the test
 add_test(NAME OverallTests COMMAND OverallTests)
