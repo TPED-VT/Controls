@@ -2,12 +2,14 @@
 #define MOTOR_CONTROL_H
 
 // Header file includes
-#include "../../include/wiringPi.h"
-#include "../../include/EasyStepper.h"
+#include "../include/wiringPi.h"
+#include "../include/EasyStepper.h"
 
 // Constants
 #define CLOCKWISE 1
 #define COUNTER_CLOCKWISE 2
+#define STEPS_PER_REV 200    // From Datasheet
+#define STEPS_PER_DEGREE 1.8 // From Datasheet
 
 /**
  * @brief Wrapper class from the EasyStepper class. Works by simplifying the functions
@@ -18,10 +20,11 @@ class MotorControl : public EasyStepper{
 public:
 
     /**
-     * @brief Default constructor of the MotorControl class. This will be
+     * @brief Derived constructor of the MotorControl class from EasyStepper. This will be
      * used for each motor in the system.
      */
-    MotorControl(void);
+    MotorControl(int dir, int step, int ms1, int ms2, int sleep);
+    MotorControl(int dir, int step, int ms1, int ms2, int sleep, int endstop);
 
     /**
      * @brief Sets the target position for the motor to go to.
@@ -63,6 +66,16 @@ private:
      */
     void setDirection(bool dir);
 
+    /**
+     * @brief Creates an S-Curve profile to move in a smooth manor to 
+     * a given position
+     * 
+     * @param angle The angle to put the motor to
+     * @param duration How long the movement will take
+     * @return void
+     */
+    void moveWithSCurve(float angle, float duration);
+    
     bool dir = CLOCKWISE;   // Direction the motor is moving in (default is clockwise)
     float speed;    // Speed of the motor
     float curPos;   // Current position of the motors

@@ -14,6 +14,7 @@ cmake_minimum_required(VERSION 3.10)
 # Set CMake Standard
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE")
 
 # Project name
 project(TPED_Controls)
@@ -21,10 +22,11 @@ project(TPED_Controls)
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(FATAL_ERROR "Emily, stop using Linux")
     set(PLATFORM_LINUX TRUE)
-
+    #find_library(I2cLib i2c) # Should be using the wiring pi I2C
+    find_library(WiringPiLib wiringPi)
     # TODO: Fix this for linux. The following two lines don't build
     target_compile_definitions(TPED_Controls PRIVATE PLATFORM_LINUX)
-    target_link_libraries(TPED_Controls wiringPi)
+    target_link_libraries(TPED_Controls ${WiringPiLib} ${I2cLib})
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     message(STATUS "Using Windows")
     set(PLATFORM_LINUX FALSE)
@@ -34,11 +36,11 @@ endif()
 
 
 # Include directories
-set(CL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Control_Loop/include)
-set(DR_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Dragon/include)
-set(HID_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/HIDs/include)
-set(HMI_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/HMI/include)
-set(MC_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Motor_Control/include)
+set(CL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Control_Loop)
+set(DR_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Dragon)
+set(HID_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/HIDs)
+set(HMI_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/HMI)
+set(MC_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Motor_Control)
 
 ######################################################################
 # Use the following as a template #
@@ -50,19 +52,19 @@ set(MC_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Motor_Control/include)
 ###################################
 
 # Create the library for Control Loop functionality
-add_library(ControlLoopLib Control_Loop/src/ControlLoop.cpp)
+add_library(ControlLoopLib Control_Loop/ControlLoop.cpp)
 target_include_directories(ControlLoopLib PRIVATE ${INCLUDE_DIR})
 
 # Create the library for HID functionality
-add_library(HIDLib HIDs/src/HID.cpp)
+add_library(HIDLib HIDs/HID.cpp)
 target_include_directories(HIDLib PRIVATE ${INCLUDE_DIR})
 
 # Create the library for HMI functionality
-add_library(HMILib HMI/src/HMI.cpp)
+add_library(HMILib HMI/HMI.cpp)
 target_include_directories(HMILib PRIVATE ${INCLUDE_DIR})
 
 # Create the library for Motor Control functionality
-add_library(MotorControlLib Motor_Control/src/MotorControl.cpp)
+add_library(MotorControlLib Motor_Control/MotorControl.cpp)
 target_include_directories(MotorControlLib PRIVATE ${INCLUDE_DIR})
 
 ######################################################################
