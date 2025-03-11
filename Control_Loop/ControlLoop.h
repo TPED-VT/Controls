@@ -23,6 +23,13 @@ enum class ControlState{
     MAINT
 };
 
+enum class RideSequenceState{
+    OFF=0,
+    PHASE_1,
+    PHASE_2,
+    PHASE_3,
+};
+
 // Errors should be a number and then the HMI will handle with the actual error itself
 enum class RideError{
     NONE = 0, // No errors
@@ -42,7 +49,7 @@ enum class RideError{
 
 class ControlLoop{
 public:
-    ControlLoop();
+    ControlLoop(int dir, int step, int ms1, int ms2, int sleep, int endstop);
     ~ControlLoop();
     
     void handleOff();
@@ -50,15 +57,25 @@ public:
     // Init and auto will combine
     void handleInit();  // Move both motors to home here
     void handleAuto();
-
-    
     void handleMaint();
     
 private:
-    ControlState state; // Current state of the ride
+    // Functions used in the states
+    bool restraint1Locked();
+    bool restraint2Locked();
+    RideError beginHome(MotorControl *m);
+
+    size_t checkError();
+
+
+    // Member Variables
+    ControlState state = ControlState::OFF; // Current state of the ride
+    RideSequenceState rideSeq = RideSequenceState::OFF;
     MotorControl* arm;
     MotorControl* gondola;
-
+    size_t errorCode = 0;
+    bool motor1Home = false;
+    bool motor2Home = false;
 };
 
 

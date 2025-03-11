@@ -1,13 +1,9 @@
 #include "ControlLoop.h"
-int dir;
-int step;
-int ms1;
-int ms2;
-int sleep;
-int endstop;
-ControlLoop::ControlLoop(){
+
+ControlLoop::ControlLoop(int dir, int step, int ms1, int ms2, int sleep, int endstop){
     gondola = new MotorControl(dir, step, ms1, ms2, sleep);
     arm = new MotorControl(dir, step, ms1, ms2, sleep, endstop);
+    state = ControlState::OFF;
 }
 
 ControlLoop::~ControlLoop(){

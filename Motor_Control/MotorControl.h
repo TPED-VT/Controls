@@ -77,10 +77,11 @@ private:
     void moveWithSCurve(float angle, float duration);
     
     bool dir = CLOCKWISE;   // Direction the motor is moving in (default is clockwise)
-    float speed;    // Speed of the motor
-    float curPos;   // Current position of the motors
-    float targPos;  // Target position of the motors
-    float error;     // Acceptable range that the angle can be within to be valid
+    int speed;    // Speed of the motor
+    int curPos;   // Current position of the motors
+    int targPos;  // Target position of the motors
+    int error;     // Acceptable range that the angle can be within to be valid
+    int home;   // Home position of the motor
 };
 
 
