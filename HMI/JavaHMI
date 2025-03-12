@@ -11,10 +11,10 @@ import java.util.TimerTask;
  *  all visuals for the ride. Visuals update every 1.538 seconds, which is
  *  1% of the ride cycle. 
  * 
- *  @author hjl44
+ *  @author hjl44 
  *  @version Mar 4, 2025
  */
-public class HMI {
+public class JavaHMI {
     public static void main (String[]args) {
         KeyAsButton a = new KeyAsButton();
     }
@@ -42,6 +42,9 @@ class KeyAsButton extends JFrame implements KeyListener {
     JButton1 maint;
     JButton1 off;
     Timer timer;
+    JTextField password;
+    JPanel popupPanel;
+    JFrame popup;
     
     public KeyAsButton() {
         
@@ -125,7 +128,43 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.add(rectangle2);
         middle.add(row1);
         
+        popup = new JFrame();
+        popup.setBounds(500, 200, 300, 300);
+        popup.setPreferredSize(new Dimension(300,300));
+        popup.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);  
+        setFocusable(true);
+        popup.requestFocusInWindow();
         
+        popupPanel = new JPanel();
+        popup.add(popupPanel);
+        password = new JTextField("password");
+        popupPanel.add(password);
+        
+        indicator.setBounds(800, 312, 150, 150);
+        middle.add(indicator);
+        indicator.setBackground(Color.RED);
+        
+        errorBox = new JButton1("error messages");
+        init = new JButton1("<html> 1<br />INIT</html>");
+        auto = new JButton1("<html> 2<br />AUTO</html>");
+        maint = new JButton1("<html> 3<br />MAINT</html>");
+        off = new JButton1("<html> 4<br />OFF</html>");
+        
+        errorBox.setBounds(0, 480, 875, 100);
+        middle.add(errorBox);
+        init.setBounds(875, 480, 100, 100);
+        middle.add(init);
+        auto.setBounds(975, 480, 100, 100);
+        middle.add(auto);
+        maint.setBounds(1075, 480, 100, 100);
+        middle.add(maint);
+        off.setBounds(1175, 480, 100, 100);
+        middle.add(off);
+        
+        init.setBackground(new Color(192, 192, 192));
+        auto.setBackground(Color.WHITE);
+        maint.setBackground(Color.WHITE);
+        off.setBackground(Color.WHITE);
         
         //Timer to repaint and update various indicators
         timer = new Timer();
@@ -167,38 +206,25 @@ class KeyAsButton extends JFrame implements KeyListener {
                     errorBox.setText("display error message 2");
                 //...
                 
+                //If password is accepted:
+                //note: irl, password would be hashed
+                if(password.getText().equals("tpedhmi")) {
+                    popup.dispatchEvent(new WindowEvent(popup, WindowEvent.WINDOW_CLOSING));
+                    requestFocusInWindow();
+                    paintAdvanced();
+                    init.setBackground(Color.WHITE);
+                    auto.setBackground(Color.WHITE);
+                    maint.setBackground(new Color(192, 192, 192));
+                    off.setBackground(Color.WHITE);
+                    password.setText("password");
+                }
             }
         };
         
         //TODO: how often should visuals update? I have it set to 1% of the ride
         //cycle, which is 1.538 seconds, but unsure if it should update more
-        timer.schedule(task, 1538);
+        timer.schedule(task, 1, 1538);
         
-        indicator.setBounds(800, 312, 150, 150);
-        middle.add(indicator);
-        indicator.setBackground(Color.RED);
-        
-        errorBox = new JButton1("error messages");
-        init = new JButton1("<html> 1<br />INIT</html>");
-        auto = new JButton1("<html> 2<br />AUTO</html>");
-        maint = new JButton1("<html> 3<br />MAINT</html>");
-        off = new JButton1("<html> 4<br />OFF</html>");
-        
-        errorBox.setBounds(0, 480, 875, 100);
-        middle.add(errorBox);
-        init.setBounds(875, 480, 100, 100);
-        middle.add(init);
-        auto.setBounds(975, 480, 100, 100);
-        middle.add(auto);
-        maint.setBounds(1075, 480, 100, 100);
-        middle.add(maint);
-        off.setBounds(1175, 480, 100, 100);
-        middle.add(off);
-        
-        init.setBackground(new Color(192, 192, 192));
-        auto.setBackground(Color.WHITE);
-        maint.setBackground(Color.WHITE);
-        off.setBackground(Color.WHITE);
         
         paintClassic();
     }
@@ -231,6 +257,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         classic.setBackground(new Color(204,204,204));
         advanced.setBackground(Color.WHITE);
+        
     }
     
     @Override
@@ -238,6 +265,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         int key = e.getKeyCode();
         
+        //TODO: Get rid of this once maintenance mode is done, its a backdoor
         if (key == KeyEvent.VK_M) {
             if(isClassic)
                 paintAdvanced();
@@ -279,15 +307,17 @@ class KeyAsButton extends JFrame implements KeyListener {
         }
 
         if (key == KeyEvent.VK_3) {
-            init.setBackground(Color.WHITE);
-            auto.setBackground(Color.WHITE);
-            maint.setBackground(new Color(192, 192, 192));
-            off.setBackground(Color.WHITE);
+           
+            popup.setVisible(true);
+            
             
             //TODO:
             //activate maintenance
-        } 
+            
+        } //KeyEvent 3
+        
         if(key == KeyEvent.VK_4) { 
+            
             init.setBackground(Color.WHITE);
             auto.setBackground(Color.WHITE);
             maint.setBackground(Color.WHITE);
@@ -314,4 +344,4 @@ class JButton1 extends JButton{
         //this.setEnabled(false);
     }
     
-
+}
