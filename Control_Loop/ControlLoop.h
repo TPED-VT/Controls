@@ -3,17 +3,17 @@
 
 #include "../Motor_Control/MotorControl.h"
 
-#define MASK_NONE 0 // No errors
-#define MASK_SEAT_FAULT_1 1<<0
-#define MASK_SEAT_FAULT_2 1<<1
-#define MASK_HOMING_FAULT 1<<2
-#define MASK_MOTOR_1_NOT_RESPONDING_FAULT 1<<3
-#define MASK_MOTOR_2_NOT_RESPONDING_FAULT 1<<4
-#define MASK_MOTOR_1_POSITION_FAULT 1<<5
-#define MASK_MOTOR_2_POSITION_FAULT 1<<6
-#define MASK_DRAGON_FAULT 1<<7
-#define MASK_POWER_CONNECTION_FAULT 1<<8
-#define MASK_EMERGENCY_STOP 1<<9
+#define NONE_MASK 0 // No errors
+#define SEAT_FAULT_1_MASK 1<<0
+#define SEAT_FAULT_2_MASK 1<<1
+#define HOMING_FAULT_MASK 1<<2
+#define MOTOR_1_NOT_RESPONDING_FAULT_MASK 1<<3
+#define MOTOR_2_NOT_RESPONDING_FAULT_MASK 1<<4
+#define MOTOR_1_POSITION_FAULT_MASK 1<<5
+#define MOTOR_2_POSITION_FAULT_MASK 1<<6
+#define DRAGON_FAULT_MASK 1<<7
+#define POWER_CONNECTION_FAULT_MASK 1<<8
+#define EMERGENCY_STOP_MASK 1<<9
 
 // State Definitions
 enum class ControlState{

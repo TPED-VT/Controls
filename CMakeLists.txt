@@ -79,7 +79,7 @@ target_include_directories(MotorControlLib PRIVATE ${INCLUDE_DIR})
 
 # Create the main executable
 add_executable(TPED_Controls main.cpp)  # This is where we will put the main file if needed
-target_link_libraries(TPED_Controls PRIVATE ControlLoopLib MotorControlLib)# The other libraries can be added on here
+target_link_libraries(TPED_Controls PRIVATE MotorControlLib)# The other libraries can be added on here
 target_include_directories(TPED_Controls PRIVATE ${INCLUDE_DIR})
 
 if(PLATFORM_LINUX)

@@ -23,6 +23,10 @@
 #ifndef EasyStepper_h
 #define EasyStepper_h
 
+#ifdef PLATFORM_LINUX
+    #include <EasyStepper.h>
+#else
+
 /******************
 	Definitions
 *******************/
@@ -80,5 +84,7 @@ private:
 	int flippedDir;
 	int flippedMotor;
 };
+
+#endif
 
 #endif
