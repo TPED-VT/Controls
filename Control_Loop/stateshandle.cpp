@@ -56,6 +56,7 @@ void RideOpStateHandle(State *currentState, bool test1, bool test2, bool test3)
 }
 
 void InitStateHandle(State *currentState, bool test1, bool test2, bool test3) {
+
     *currentState = State::kAuto;
 }
 
@@ -63,6 +64,8 @@ void AutoStateHandle(State *currentState, bool test1, bool test2, bool test3)
 {
     *currentState = State::kRideOp;
 }
+
+
 
 // void MaintenanceStateHandle(State *currentState, StateTest *currentTest, string password, bool test1, bool test3, bool test4, bool test5)
 // {

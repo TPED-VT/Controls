@@ -21,6 +21,7 @@ enum class StateTest {
     kTest5 = 0 
 };
 
+
 // handling functions
 void RideShowStateHandle();
 void RideOpStateHandle(State *currentState, bool test1, bool test2, bool test3);

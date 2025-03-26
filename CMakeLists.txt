@@ -1,4 +1,3 @@
-
 # ROOT CMAKELISTS FILE
 # FOR MAIN USE ONLY
 #
@@ -19,6 +18,7 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE")
 
 # Project name
 project(TPED_Controls)
+
 # Check OS
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(FATAL_ERROR "Emily, stop using Linux")
@@ -34,7 +34,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
 else()
     message(FATAL_ERROR "OS Not supported")
 endif()
-
 
 # Include directories
 set(CL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Control_Loop)
@@ -65,7 +64,7 @@ add_library(HMILib HMI/HMI.cpp)
 target_include_directories(HMILib PRIVATE ${INCLUDE_DIR})
 
 # Create the library for Motor Control functionality
-add_library(MotorControlLib Motor_Control/MotorControl.cpp)
+add_library(MotorControlLib Motor_Control/Motor.cpp)
 target_include_directories(MotorControlLib PRIVATE ${INCLUDE_DIR})
 
 ######################################################################
@@ -79,8 +78,8 @@ target_include_directories(MotorControlLib PRIVATE ${INCLUDE_DIR})
 ###################################
 
 # Create the main executable
-add_executable(TPED_Controls main.cpp)  # This is where we will put the main file if needed
-target_link_libraries(TPED_Controls PRIVATE MotorControlLib)# The other libraries can be added on here
+add_executable(TPED_Controls main.cpp)
+target_link_libraries(TPED_Controls PRIVATE MotorControlLib)
 target_include_directories(TPED_Controls PRIVATE ${INCLUDE_DIR})
 
 if(PLATFORM_LINUX)
@@ -88,16 +87,8 @@ if(PLATFORM_LINUX)
     target_include_directories(TPED_Controls PRIVATE ${INCLUDE_DIR})
 endif()
 
-# # Create the Control Loop executable
-# add_executable(Control_Loop Control_Loop/src/ControlLoop.cpp)
-# target_link_libraries(Control_Loop PRIVATE ControlLoopLib)
-# target_include_directories(Control_Loop PRIVATE ${INCLUDE_DIR})
-
-# # Create the Motor Control executable
-# add_executable(Motor_Control Motor_Control/src/MotorControl.cpp)
-# target_link_libraries(Motor_Control PRIVATE MotorControlLib)
-# target_include_directories(Motor_Control PRIVATE ${INCLUDE_DIR})
-
+######################################################################
+# Testing
 ######################################################################
 
 # Enable testing
@@ -105,7 +96,11 @@ enable_testing()
 
 # Create the test executable
 add_executable(OverallTests WIN32 test/test.cpp)
-target_link_libraries(OverallTests PRIVATE ControlLoopLib)
+
+# Link test with necessary libraries
+target_link_libraries(OverallTests PRIVATE ControlLoopLib MotorControlLib)
+
+# Make sure test has include access
 target_include_directories(OverallTests PRIVATE ${CMAKE_SOURCE_DIR})
 
 # Register the test
