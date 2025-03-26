@@ -13,6 +13,14 @@ enum class State
     kMaintenance = 3
 };
 
+enum class Sector {
+    kSector0 = 0, 
+    kSector1 = 1, 
+    kSector2 = 2, 
+    kSector3 = 3, 
+    kSector4 = 4
+};
+
 enum class StateTest {
     kTest1 = 0, 
     kTest2 = 1,
@@ -24,7 +32,7 @@ enum class StateTest {
 
 // handling functions
 void RideShowStateHandle();
-void RideOpStateHandle(State *currentState, bool test1, bool test2, bool test3);
+void RideOpStateHandle(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3);
 void InitStateHandle(State *currentState, bool test1, bool test2, bool test3);
 void AutoStateHandle(State *currentState, bool test1, bool test2, bool test3);
 void MaintenanceStateHandle(State *currentState, bool test1, bool test2, bool test3);

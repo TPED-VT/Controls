@@ -1,9 +1,10 @@
 #pragma once
 
 #include "functions.h"
+#include "../Motor_Control/functions.h"
 
 // state transition function
-void getNextState(State *currentState, bool test1, bool test2, bool test3)
+void getNextState(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3)
 {
     switch (*currentState)
     {
@@ -16,7 +17,7 @@ void getNextState(State *currentState, bool test1, bool test2, bool test3)
         break;
 
     case State::kRideOp: // arm motor rotation and gondola motor rotation (apart of auto state for now)
-        RideOpStateHandle(currentState, test1, test2, test3);
+        RideOpStateHandle(currentState, currentSector, test1, test2, test3);
         break;
 
     // case State::kMaintenance: // 
@@ -25,35 +26,113 @@ void getNextState(State *currentState, bool test1, bool test2, bool test3)
     }
 }
 
+void getNextSector(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3) {
+    switch (*currentSector) {
+        case Sector::kSector1:
+            RideOpStateHandle(currentState, currentSector, test1, test2, test3);
+            break; 
+        case Sector::kSector2:
+            RideOpStateHandle(currentState, currentSector, test1, test2, test3);
+            break;
+        case Sector::kSector3:
+            RideOpStateHandle(currentState, currentSector, test1, test2, test3);
+            break;
+        case Sector::kSector4:
+            RideOpStateHandle(currentState, currentSector, test1, test2, test3);
+            break; 
+    }
+}
 
 //handling functions
-void RideShowStateHandle()
-{
-    cout << "Ride Show State" << endl;
+void RideShowStateHandle(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3) {
+
+    int dummy = 2; // we need a variable to check if the ride show state has ended
+ 
+  if (*currentState != State::kRideOp) {
+    cout << "unable to do rideop :(" << endl; 
+    } else {
+        switch(*currentSector) {
+            case Sector::kSector1:
+            RideOpStateHandle(currentState, currentSector, test1, test2, test3);
+            break; 
+
+            case Sector::kSector2:
+            RideOpStateHandle(currentState, currentSector, test1, test2, test3);
+            break; 
+
+            case Sector::kSector3:
+            RideOpStateHandle(currentState, currentSector, test1, test2, test3);
+            break; 
+
+            case Sector::kSector4:
+            RideOpStateHandle(currentState, currentSector, test1, test2, test3);
+            break; 
+        }
+  }
+  
+ if (*currentSector == Sector::kSector4) {
+    if (dummy == 2) {
+        *currentState = State::kAuto; 
+    }
+ } 
+
 }
 
-void RideOpStateHandle(State *currentState, bool test1, bool test2, bool test3)
+
+void RideOpStateHandle(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3)
 {
-    for (int motorRotation = 0; motorRotation < 10; motorRotation++) // temp values
-    {
-        string motorRotationDirection;
-        if (motorRotation % 2 == 0)
-        {
-            motorRotationDirection = "arm";
-        }
-        else
-        {
-            motorRotationDirection = "gondola";
-        }
 
-        cout << "Motor rotation: " << motorRotationDirection << endl;
+    /*
+    
+    Ride Operator State Handle
 
-        RideShowStateHandle(); // display ride show state
+    1. intialize the target arm and gondola motor frequencies
+    2. get the current arm and gondola motor frequencies 
+    3. make sure to ramp up the arm and gondola motor frequencies based on the sector
+
+
+    
+    */
+
+    int targetArmMotorFrequency = 200; 
+    int targetGondolaMotorFrequency = 100;
+
+    int currentArmMotorFrequency = 150; 
+
+
+
+    // switch (*currentState) {
+    //     case State::kRideOp: {
+    //         for (int i = 0; i < 50; i++) {
+    //            int  currentArmMotorFrequency == getCurrentArmFrequency();
+    //            int  currentGondolaMotorFrequency == getCurrentGondolaFrequency();
+    //         }
+
+    //         RampUp(currentArmMotorFrequency, currentGondolaMotorFrequency);
+    //         break;
+    //     }
+    // }
     }
 
-    cout << "All motor rotations completed successfully. Remaining in Auto state." << endl;
-    *currentState = State::kAuto;
-}
+
+//     switch (*currentState) {
+//         case State::kRideOp {
+//             if (getCurrentArmMotorFrequency() < targetArmMotorFrequency) {
+//                 currentArmMotorFrequency++;
+//             } else if (getCurrentArmMotorFrequency() > targetArmMotorFrequency) {
+//                 currentArmMotorFrequency--;
+//             }
+//         }
+//     }
+
+//         RideShowStateHandle(); // display ride show state
+    
+
+//     cout << "All motor rotations completed successfully. Remaining in Auto state." << endl;
+//     *currentState = State::kAuto;
+// 
+//
+
 
 void InitStateHandle(State *currentState, bool test1, bool test2, bool test3) {
 
@@ -65,52 +144,3 @@ void AutoStateHandle(State *currentState, bool test1, bool test2, bool test3)
     *currentState = State::kRideOp;
 }
 
-
-
-// void MaintenanceStateHandle(State *currentState, StateTest *currentTest, string password, bool test1, bool test3, bool test4, bool test5)
-// {
-//     cout << "Enter password: ";
-//     cin >> password;
-
-//     if (password != "hokie") {
-//         cout << "Invalid Password. Enter a valid password to access Maintenance State." << endl;
-//         *currentState = State::kAuto;
-//     } else {
-//         cout << "Password accepted. Accessing Maintenance State..." << endl;
-//         *currentState = State::kMaintenance;
-
-//         cout << "Select Advanced Tests" << endl
-//              << "1. Test 4" << endl
-//              << "2. Test 5" << endl;
-//         cin >> *currentTest;
-
-//         switch (*currentTest)
-//         {
-//             case StateTest::kTest4:
-//                 if (!test4) {
-//                     cout << "Test 4 has failed." << endl;
-//                     cout << "Try again?" << endl;
-//                     cin >> *currentTest;
-//                 }
-//                 break;
-
-//             case StateTest::kTest5:
-//                 if (!test5) {
-//                     cout << "Test 5 has failed." << endl;
-//                     cout << "Try again?" << endl;
-//                     cin >> *currentTest;
-//                 }
-//                 break;
-
-//             default:
-//                 cout << "Invalid test selection." << endl;
-//                 break;
-//         }
-//     }
-
-//     cout << "Press Enter to return to Auto state..." << endl;
-//     cin.ignore(numeric_limits<streamsize>::max(), '\n');
-//     *currentState = State::kAuto;
-// }
-
-// ignore the mat function needs to be added with HMI, PROOF OF CONCEPT NOT FINAL CODE!!!!!!!
