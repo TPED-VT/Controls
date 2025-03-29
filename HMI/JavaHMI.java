@@ -15,8 +15,9 @@ import javax.swing.*;
  *  @author hjl44 
  *  @version Mar 4, 2025
  */
+
 public class JavaHMI {
-    public static void main (String[]args) {
+    public static void main(String[] agrs) {
         KeyAsButton a = new KeyAsButton();
     }
 }
@@ -49,13 +50,16 @@ class KeyAsButton extends JFrame implements KeyListener {
     JPanel progressBar;
     JButton direction;
     JButton cyclesRun;
-    
-    
-    
+
+    public native int getCyclePercent();
+        HMI_BackE backEnd; 
+
+    static {
+        System.loadLibrary("HMI_BackE");
+    }
+
     public KeyAsButton() {
-        
-        isClassic = true;
-        //Frame setup
+        isClassic = true; 
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.setBounds(0,0,screenSize.width, screenSize.height);
         this.setVisible(true);
@@ -181,17 +185,17 @@ class KeyAsButton extends JFrame implements KeyListener {
         progressBarBase.setBounds(100, 270, screenSize.width-200 , 30);
         progressBar = new JPanel();
         progressBar.setBackground(Color.GRAY);
-        
-        
-        
-        
-        //Timer to repaint and update various indicators
+
+        backEnd = new HMI_BackE();
+        backEnd.startCyclePercent();
+
         timer = new Timer();
+        
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
                 //TODO: fill in values for visual updates:
-                int percent = 0 /*TODO: get percent from backend*/;
+                int percent = backEnd.getCyclePercent(); // added
                 cyclePercent.setText(percent + "% through cycle");
                 cyclePercent.repaint();
                 
@@ -403,3 +407,6 @@ class CirclePanel extends JPanel {
     }
     
 }
+
+    
+        

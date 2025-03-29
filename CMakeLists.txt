@@ -60,7 +60,7 @@ add_library(HIDLib HIDs/HID.cpp)
 target_include_directories(HIDLib PRIVATE ${INCLUDE_DIR})
 
 # Create the library for HMI functionality
-add_library(HMILib HMI/HMI.cpp HMI/HMI_Back.cpp)
+add_library(HMILib HMI/HMI_BackE.cpp)
 target_include_directories(HMILib PRIVATE ${INCLUDE_DIR})
 
 # Create the library for Motor Control functionality
