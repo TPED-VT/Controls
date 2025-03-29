@@ -1,6 +1,8 @@
-import java.awt.*;
+import java.awt.*;  
 import java.awt.event.*;
+import java.awt.geom.Line2D;
 import javax.swing.*;
+import java.awt.Graphics;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -30,7 +32,6 @@ class KeyAsButton extends JFrame implements KeyListener {
     JButton1 rideStatus;
     JButton1 reset;
     JPanel middle;
-    JButton1 status;
     JButton1 degree;
     JPanel rectangle;
     JPanel rectangle2;
@@ -45,6 +46,12 @@ class KeyAsButton extends JFrame implements KeyListener {
     JTextField password;
     JPanel popupPanel;
     JFrame popup;
+    JPanel progressBarBase;
+    JPanel progressBar;
+    JButton direction;
+    JButton cyclesRun;
+    
+    
     
     public KeyAsButton() {
         
@@ -71,14 +78,11 @@ class KeyAsButton extends JFrame implements KeyListener {
         restraintStatus = new JButton1("<html> R:<br />RESTRAINTS UNLOCKED</html>");
         cyclePercent = new JButton1("% status");
         rideStatus = new JButton1("STATUS: Running");   
-        status = new JButton1("status: running");
         degree = new JButton1("angle: 100 degrees");
-        status.setEnabled(false);
-        degree.setEnabled(false);
         rectangle = new JPanel();
         rectangle2 = new JPanel();
-        indicator = new JButton1(" ");
-        reset = new JButton1("RESET");
+        indicator = new JButton1("<html> NOT READY<br />For Ride Start</html>");
+        reset = new JButton1("RESET"); 
         
         
         //setup classic tab
@@ -94,6 +98,8 @@ class KeyAsButton extends JFrame implements KeyListener {
             (screenSize.width / 2, screenSize.height / 5));
         advanced.setBorderPainted(false);
         advanced.setBackground(new Color(204,204,204));
+        direction = new JButton("direction: ");
+        cyclesRun = new JButton("cycles run");
        
         
         panel.add(upper, BorderLayout.NORTH);
@@ -106,11 +112,9 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         
         restraintStatus.setBounds(30, 50, 600, 200);
-        degree.setBounds(30, 50, 600, 200);
+        degree.setBounds(30, 50, 600, 85);
         
-        cyclePercent.setBounds(650,165,600,85);
-        status.setBounds(650, 165, 600, 85);
- 
+        cyclePercent.setBounds(650,165,600,85); 
         
         rideStatus.setBounds(650,50,600,85);
 
@@ -166,6 +170,22 @@ class KeyAsButton extends JFrame implements KeyListener {
         maint.setBackground(Color.WHITE);
         off.setBackground(Color.WHITE);
         
+        //circle animation setup
+        CirclePanel circle = new CirclePanel();
+        circle.setBounds(1000, 312, 150, 150);
+        middle.add(circle);
+        
+        //progress bar setup
+        progressBarBase = new JPanel();
+        progressBarBase.setBackground(Color.WHITE);
+        progressBarBase.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        progressBarBase.setBounds(100, 270, screenSize.width-200 , 30);
+        progressBar = new JPanel();
+        progressBar.setBackground(Color.GRAY);
+        
+        
+        
+        
         //Timer to repaint and update various indicators
         timer = new Timer();
         TimerTask task = new TimerTask() {
@@ -193,8 +213,10 @@ class KeyAsButton extends JFrame implements KeyListener {
                     rectangle2.setBackground(Color.GREEN);
                 else rectangle2.setBackground(Color.RED);
                 
-                if(false/*TODO: rows locked && correct mode && ready*/)
+                if(false/*TODO: rows locked && correct mode && ready*/) {
                     indicator.setBackground(Color.GREEN);
+                    indicator.setText("<html> READY<br />For Ride Start</html>");
+                }
                 else indicator.setBackground(Color.RED);
                 
                 
@@ -218,6 +240,13 @@ class KeyAsButton extends JFrame implements KeyListener {
                     off.setBackground(Color.WHITE);
                     password.setText("password");
                 }
+                
+                //Animation
+                circle.paintLine(0/*TODO: insert function to get angle in radian*/);
+                
+                //ADVANCED DIAGNOSTICS FUNCTIONS
+                progressBar.setBounds(100, 270, 
+                    0/*TODO: get percent from backend*/*(screenSize.width-200), 30);
             }
         };
         
@@ -236,7 +265,8 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.add(restraintStatus);
         middle.add(cyclePercent);
         middle.remove(degree);
-        middle.remove(status);
+        middle.remove(progressBar);
+        middle.remove(progressBarBase);
         middle.repaint();
         advanced.setBackground(new Color(204,204,204));
         classic.setBackground(Color.WHITE);
@@ -246,17 +276,18 @@ class KeyAsButton extends JFrame implements KeyListener {
     public void paintAdvanced() {
         
         isClassic = false;
-        middle.remove(rideStatus);
         middle.remove(restraintStatus);
         middle.remove(cyclePercent);
         
         middle.add(degree);
-        middle.add(status);
+        middle.add(progressBarBase);
+        middle.add(progressBar);
 
         middle.repaint();
         
         classic.setBackground(new Color(204,204,204));
         advanced.setBackground(Color.WHITE);
+        
         
     }
     
@@ -292,6 +323,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             auto.setBackground(Color.WHITE);
             maint.setBackground(Color.WHITE);
             off.setBackground(Color.WHITE);
+            paintClassic();
             //TODO:
             //activate init
             
@@ -301,6 +333,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             auto.setBackground(new Color(192, 192, 192));
             maint.setBackground(Color.WHITE);
             off.setBackground(Color.WHITE);
+            paintClassic();
             
             //TODO: 
             //activate auto
@@ -322,6 +355,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             auto.setBackground(Color.WHITE);
             maint.setBackground(Color.WHITE);
             off.setBackground(new Color(192, 192, 192));
+            paintClassic();
             //TODO:
             //turn off
         }
@@ -345,3 +379,30 @@ class JButton1 extends JButton{
     }
     
 }
+
+class CirclePanel extends JPanel {
+    @Override
+    public void paintComponent(Graphics g) {
+        this.setBackground(Color.WHITE);
+        super.paintComponent(g);
+        int x = 0; // top left corner
+        int y = 0; // top left corner
+        int d = 150; // Diameter of the circle
+
+        g.setColor(Color.BLACK); // Set circle color
+        g.drawOval(x, y, d, d); // Draw the circle outline
+        // g.fillOval(x, y, diameter, diameter); // To draw a filled circle
+        
+        
+    }
+    
+    public void paintLine(double angle){
+        //this.setColor(Color.BLACK); // Set line color
+        Line2D.Double line1 = new Line2D.Double(75, 75, (75*Math.cos(angle))+75, (-75*Math.sin(angle))+75);
+        ((Graphics2D)this.getGraphics()).draw(line1);
+        
+    }
+    
+}
+
+
