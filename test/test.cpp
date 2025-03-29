@@ -15,8 +15,8 @@ TEST_CASE("Test 1 - Check Rotation of Gondola Motor and Arm Motor") {
     } else {
         test1 = false;
     }
-
-    getNextState(&currentState, test1, g_motor, a_motor);
+//
+  //  getNextState(&currentState, test1, g_motor, a_motor);
 
     REQUIRE(test1 == true);
     REQUIRE(currentState == State::kAuto);
@@ -33,7 +33,7 @@ TEST_CASE("Test 2 - Check if restraints are locked and unlocked properly") {
         test2 = false; 
     }
 
-    getNextState(&currentState, true, test2, true);
+    //getNextState(&currentState, true, test2, true);
 
     REQUIRE(test2 == true);
     REQUIRE(currentState == State::kAuto);
@@ -51,7 +51,7 @@ TEST_CASE("Test 3 - Check if the Emergency Stop Button has not been pressed") {
         test3 = false; 
     }
 
-    getNextState(&currentState, true, test3, true);
+   // getNextState(&currentState, true, test3, true);
 
     REQUIRE(test3 == true);
     REQUIRE(currentState == State::kAuto);

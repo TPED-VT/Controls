@@ -39,4 +39,4 @@ void MaintenanceStateHandle(State *currentState, bool test1, bool test2, bool te
 
 
 // state transition function
-void getNextState(State *currentState, bool test1, bool test2, bool test3);
+void getNextState(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3);

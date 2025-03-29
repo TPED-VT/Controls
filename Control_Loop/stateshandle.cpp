@@ -1,4 +1,3 @@
-#pragma once
 
 #include "functions.h"
 #include "../Motor_Control/functions.h"
@@ -51,23 +50,7 @@ void RideShowStateHandle(State *currentState, Sector *currentSector, bool test1,
   if (*currentState != State::kRideOp) {
     cout << "unable to do rideop :(" << endl; 
     } else {
-        switch(*currentSector) {
-            case Sector::kSector1:
-            RideOpStateHandle(currentState, currentSector, test1, test2, test3);
-            break; 
-
-            case Sector::kSector2:
-            RideOpStateHandle(currentState, currentSector, test1, test2, test3);
-            break; 
-
-            case Sector::kSector3:
-            RideOpStateHandle(currentState, currentSector, test1, test2, test3);
-            break; 
-
-            case Sector::kSector4:
-            RideOpStateHandle(currentState, currentSector, test1, test2, test3);
-            break; 
-        }
+       getNextSector(currentState, currentSector, test1, test2, test3);
   }
   
  if (*currentSector == Sector::kSector4) {
@@ -75,7 +58,7 @@ void RideShowStateHandle(State *currentState, Sector *currentSector, bool test1,
         *currentState = State::kAuto; 
     }
  } 
-
+ 
 }
 
 
@@ -90,8 +73,6 @@ void RideOpStateHandle(State *currentState, Sector *currentSector, bool test1, b
     2. get the current arm and gondola motor frequencies 
     3. make sure to ramp up the arm and gondola motor frequencies based on the sector
 
-
-    
     */
 
     int targetArmMotorFrequency = 200; 
@@ -112,26 +93,9 @@ void RideOpStateHandle(State *currentState, Sector *currentSector, bool test1, b
     //         break;
     //     }
     // }
+    //     cout << "All motor rotations completed successfully. Remaining in Auto state." << endl;
+    //     *currentState = State::kAuto;
     }
-
-
-//     switch (*currentState) {
-//         case State::kRideOp {
-//             if (getCurrentArmMotorFrequency() < targetArmMotorFrequency) {
-//                 currentArmMotorFrequency++;
-//             } else if (getCurrentArmMotorFrequency() > targetArmMotorFrequency) {
-//                 currentArmMotorFrequency--;
-//             }
-//         }
-//     }
-
-//         RideShowStateHandle(); // display ride show state
-    
-
-//     cout << "All motor rotations completed successfully. Remaining in Auto state." << endl;
-//     *currentState = State::kAuto;
-// 
-//
 
 
 void InitStateHandle(State *currentState, bool test1, bool test2, bool test3) {
@@ -143,4 +107,3 @@ void AutoStateHandle(State *currentState, bool test1, bool test2, bool test3)
 {
     *currentState = State::kRideOp;
 }
-
