@@ -1,4 +1,5 @@
-#pragma once
+#ifndef FUNCTIONS_H
+#define FUNCTIONS_H
 
 #include <iostream>
 #include <limits>
@@ -40,3 +41,7 @@ void MaintenanceStateHandle(State *currentState, bool test1, bool test2, bool te
 
 // state transition function
 void getNextState(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3);
+void getCurrentSector(State *currentState, Sector *currentSector);
+void getNextSector(State *currentState, Sector *currentSector);
+
+#endif

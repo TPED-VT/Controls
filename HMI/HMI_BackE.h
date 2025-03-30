@@ -10,9 +10,9 @@ extern "C" {
 /*
  * Class:     HMI_BackE
  * Method:    getCyclePercent
- * Signature: ()I
+ * Signature: ()D
  */
-JNIEXPORT jint JNICALL Java_HMI_1BackE_getCyclePercent
+JNIEXPORT jdouble JNICALL Java_HMI_1BackE_getCyclePercent
   (JNIEnv *, jobject);
 
 /*
@@ -30,6 +30,46 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_startCyclePercent
  */
 JNIEXPORT void JNICALL Java_HMI_1BackE_setCyclePercent
   (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    getPosition
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_HMI_1BackE_getPosition
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    setState
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_HMI_1BackE_setState
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    getCurrentState
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_HMI_1BackE_getCurrentState
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    getNextSector
+ * Signature: (JJZZZ)V
+ */
+JNIEXPORT void JNICALL Java_HMI_1BackE_getNextSector
+  (JNIEnv *, jobject, jlong, jlong, jboolean, jboolean, jboolean);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    getCurrentSector
+ * Signature: (JJ)V
+ */
+JNIEXPORT void JNICALL Java_HMI_1BackE_getCurrentSector
+  (JNIEnv *, jobject, jlong, jlong);
 
 /*
  * Class:     HMI_BackE

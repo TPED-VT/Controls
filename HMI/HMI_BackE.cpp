@@ -3,12 +3,20 @@
 #include <stdio.h>      // C Standard IO Header
 #include "HMI_BackE.h" // Generated header file from HMI_BackEnd.h
 #include <iostream>
+#include "C:/Users/ricar/Documents/TPED/Controls/Control_Loop/functions.h" // needs to change
 #include <ostream>
 #include <thread>
 #include <chrono>
 
 
 using namespace std; 
+
+State currentState = State::kInit;
+Sector currentSector = Sector::kSector1;
+bool test1 = false; 
+bool test2 = false; 
+bool test3 = false; 
+
 
 int cyclePercent = 0; // dummy value testing
 
@@ -20,7 +28,41 @@ void readCyclePercent() {
    this_thread::sleep_for(chrono::seconds(5));
 }
 
-// 
+
+JNIEXPORT jint JNICALL Java_HMI_Backe_getPosition(JNIEnv *env, jobject obj) {
+   return 1; 
+}
+
+// state and sectors machines
+
+JNIEXPORT void JNICALL Java_HMI_BackE_setState(JNIEnv *env, jobject obj, jint state) {
+   currentState = static_cast<State>(state);
+}
+
+JNIEXPORT jint JNICALL Java_HMI_BackE_getCurrentState(JNIEnv *env, jobject obj) { // should it be as KeyAsButton
+   return static_cast<jint>(currentState);
+} 
+
+
+// sector machines
+
+JNIEXPORT jint JNICALL Java_HMI_BackE_getNextState(JNIEnv *env, jobject obj) {
+   getNextState(&currentState, &currentSector, test1, test2, test3);
+   return static_cast<jlong>(currentSector);
+}
+
+JNIEXPORT jint JNICALL Java_HMI_BackE_getCurrentSector(JNIEnv *env, jobject obj) {
+   getCurrentSector(&currentState, &currentSector);
+   return static_cast<jlong>(currentSector);
+}
+
+JNIEXPORT jint JNICALL Java_HMI_BackE_setNextSector(JNIEnv *env, jobject obj, jint sector) {
+   currentSector = static_cast<Sector>(sector);
+   return static_cast<jlong>(currentSector);
+}
+
+
+// RIDE FUNCTIONS!!!
 
 JNIEXPORT void JNICALL Java_HMI_BackE_startCyclePercent(JNIEnv* env, jobject obj) {
    thread cycleThread(readCyclePercent);
@@ -86,4 +128,6 @@ JNIEXPORT jboolean JNICALL Java_HMI_BackE_isRotationArmCounterClockWise(JNIEnv *
    cout << "isRotationArmCounterClockwise " << ArmCheck2 << endl;  
    return JNI_TRUE; 
  }
+
+
 

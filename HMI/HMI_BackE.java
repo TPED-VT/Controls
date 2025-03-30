@@ -4,10 +4,25 @@ public class HMI_BackE {
         System.loadLibrary("HMI_BackE");
     }
 
-    public native int getCyclePercent(); // double needs to change
+    public static void main(String[] agrs) {
+        new HMI_BackE().getPosition();
+    }
+
+    public native double getCyclePercent(); // double needs to change
     public native void startCyclePercent();
     public native void setCyclePercent(int percent);
 
+    public native void getPosition();
+
+    // states
+
+    public native void setState(int state); // not sure
+    public native void getCurrentState();
+    public native void getNextSector(long currentState, long currentSector, boolean test1, boolean test2, boolean test3);
+    public native void getCurrentSector(long currentState, long currentSector);
+    
+    
+// others
 
     public native boolean isRideRunning();
 
@@ -26,4 +41,7 @@ public class HMI_BackE {
 
     public native boolean isRotationArmClockwise();
     public native boolean isRotationArmCounterClockwise();
+
+
+
 }
