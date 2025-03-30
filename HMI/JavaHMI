@@ -1,4 +1,4 @@
-import java.awt.*;  
+import java.awt.*;   
 import java.awt.event.*;
 import java.awt.geom.Line2D;
 import javax.swing.*;
@@ -50,11 +50,12 @@ class KeyAsButton extends JFrame implements KeyListener {
     JPanel progressBar;
     JButton direction;
     JButton cyclesRun;
-    
-    
+    static int runs;
+    HMI_Back backend;  
     
     public KeyAsButton() {
         
+        backend = new HMI_Back();
         isClassic = true;
         //Frame setup
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -73,6 +74,35 @@ class KeyAsButton extends JFrame implements KeyListener {
         panel.setBackground(Color.WHITE);
         panel.add(middle, BorderLayout.CENTER);
         this.add(panel);
+        
+        //Setups for both modes 
+        
+        errorBox = new JButton1("error messages");
+        init = new JButton1("<html> 1<br />INIT</html>");
+        auto = new JButton1("<html> 2<br />AUTO</html>");
+        maint = new JButton1("<html> 3<br />MAINT</html>");
+        off = new JButton1("<html> 4<br />OFF</html>");
+        
+        errorBox.setBounds(0, 480, 875, 100);
+        middle.add(errorBox);
+        init.setBounds(875, 480, 100, 100);
+        middle.add(init);
+        auto.setBounds(975, 480, 100, 100);
+        middle.add(auto);
+        maint.setBounds(1075, 480, 100, 100);
+        middle.add(maint);
+        off.setBounds(1175, 480, 100, 100);
+        middle.add(off);
+        
+        init.setBackground(new Color(192, 192, 192));
+        auto.setBackground(Color.WHITE);
+        maint.setBackground(Color.WHITE);
+        off.setBackground(Color.WHITE);
+        
+        //circle animation setup
+        CirclePanel circle = new CirclePanel();
+        circle.setBounds(1000, 312, 150, 150);
+        middle.add(circle);
         
       //Button setups
         restraintStatus = new JButton1("<html> R:<br />RESTRAINTS UNLOCKED</html>");
@@ -99,7 +129,10 @@ class KeyAsButton extends JFrame implements KeyListener {
         advanced.setBorderPainted(false);
         advanced.setBackground(new Color(204,204,204));
         direction = new JButton("direction: ");
+        direction.setBounds(30, 165, 600, 85);
+        
         cyclesRun = new JButton("cycles run");
+        cyclesRun.setBounds(650,165,600,85);
        
         
         panel.add(upper, BorderLayout.NORTH);
@@ -107,9 +140,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         upper.add(advanced);
         
         advanced.setBackground(new Color(204,204,204));
-        classic.setBackground(Color.WHITE);
-        
-        
+        classic.setBackground(Color.WHITE);                
         
         restraintStatus.setBounds(30, 50, 600, 200);
         degree.setBounds(30, 50, 600, 85);
@@ -141,50 +172,23 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         popupPanel = new JPanel();
         popup.add(popupPanel);
-        password = new JTextField("password");
+        password = new JTextField("");
+        password.setPreferredSize(new Dimension(200, 30));
         popupPanel.add(password);
         
         indicator.setBounds(800, 312, 150, 150);
         middle.add(indicator);
         indicator.setBackground(Color.RED);
         
-        errorBox = new JButton1("error messages");
-        init = new JButton1("<html> 1<br />INIT</html>");
-        auto = new JButton1("<html> 2<br />AUTO</html>");
-        maint = new JButton1("<html> 3<br />MAINT</html>");
-        off = new JButton1("<html> 4<br />OFF</html>");
-        
-        errorBox.setBounds(0, 480, 875, 100);
-        middle.add(errorBox);
-        init.setBounds(875, 480, 100, 100);
-        middle.add(init);
-        auto.setBounds(975, 480, 100, 100);
-        middle.add(auto);
-        maint.setBounds(1075, 480, 100, 100);
-        middle.add(maint);
-        off.setBounds(1175, 480, 100, 100);
-        middle.add(off);
-        
-        init.setBackground(new Color(192, 192, 192));
-        auto.setBackground(Color.WHITE);
-        maint.setBackground(Color.WHITE);
-        off.setBackground(Color.WHITE);
-        
-        //circle animation setup
-        CirclePanel circle = new CirclePanel();
-        circle.setBounds(1000, 312, 150, 150);
-        middle.add(circle);
         
         //progress bar setup
         progressBarBase = new JPanel();
-        progressBarBase.setBackground(Color.WHITE);
+        progressBarBase.setBackground(new Color(255, 255, 255, 100));
         progressBarBase.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         progressBarBase.setBounds(100, 270, screenSize.width-200 , 30);
         progressBar = new JPanel();
-        progressBar.setBackground(Color.GRAY);
-        
-        
-        
+        progressBar.setBackground(new Color(0,0,0));
+               
         
         //Timer to repaint and update various indicators
         timer = new Timer();
@@ -192,12 +196,12 @@ class KeyAsButton extends JFrame implements KeyListener {
             @Override
             public void run() {
                 //TODO: fill in values for visual updates:
-                int percent = 0 /*TODO: get percent from backend*/;
+                int percent = (int)(backend.getCyclePercent()*100); /*TODO: get percent from backend*/;
                 cyclePercent.setText(percent + "% through cycle");
                 cyclePercent.repaint();
                 
                 //updating status
-                if(true/*TODO: status is running*/)
+                if(backend.isRideRunning()/*TODO: status is running*/)
                     rideStatus.setText("STATUS: RUNNING");
                 else if(true/*TODO:status is loading*/) {
                     rideStatus.setText("STATUS: LOADING");
@@ -205,15 +209,19 @@ class KeyAsButton extends JFrame implements KeyListener {
                 else rideStatus.setText("STATUS: DOWN");
                 
                 //updating restraints
-                if(true/*TODO: row1 is locked*/)
-                    rectangle.setBackground(Color.GREEN);
-                else rectangle.setBackground(Color.RED);
-                
-                if(false/*TODO: row2 is locked*/)
+                if(backend.isRow1Locked()/*TODO: row1 is locked*/)
                     rectangle2.setBackground(Color.GREEN);
                 else rectangle2.setBackground(Color.RED);
                 
-                if(false/*TODO: rows locked && correct mode && ready*/) {
+                if(backend.isRow2Locked()/*TODO: row2 is locked*/)
+                    rectangle.setBackground(Color.GREEN);
+                else rectangle.setBackground(Color.RED);
+                
+                if(backend.isRideRunning()/*ride is running*/) {
+                    indicator.setBackground(Color.GRAY);
+                    indicator.setText("RUNNING");
+                }
+                else if(false/*TODO: rows locked && correct mode && ready*/) {
                     indicator.setBackground(Color.GREEN);
                     indicator.setText("<html> READY<br />For Ride Start</html>");
                 }
@@ -238,15 +246,30 @@ class KeyAsButton extends JFrame implements KeyListener {
                     auto.setBackground(Color.WHITE);
                     maint.setBackground(new Color(192, 192, 192));
                     off.setBackground(Color.WHITE);
-                    password.setText("password");
+                    password.setText("");
                 }
                 
                 //Animation
-                circle.paintLine(0/*TODO: insert function to get angle in radian*/);
+                circle.paintLine(backend.getPosition()/*TODO: insert function to get angle in radian*/);
                 
                 //ADVANCED DIAGNOSTICS FUNCTIONS
                 progressBar.setBounds(100, 270, 
-                    0/*TODO: get percent from backend*/*(screenSize.width-200), 30);
+                    (int)(backend.getCyclePercent()/*TODO: get percent from backend*/*(screenSize.width-200)), 30);
+                
+                if(false/*TODO: status is not running*/)
+                    direction.setText("Direction: N/A");
+                else {
+                    if(backend.isRotationArmClockwise()/*TODO: isClockwise()*/)
+                        direction.setText("Arm: Clockwise");
+                    else direction.setText("Arm: CounterClockwise");
+                    
+                    if(backend.isRotationGondolaClockwise())
+                        direction.setText(direction.getText()+", Gondola: Clockwise");
+                    else direction.setText(direction.getText()+", Gondola: Counterclockwise");
+                }
+   
+                
+                cyclesRun.setText("Cycle Count: " + runs);
             }
         };
         
@@ -267,6 +290,8 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.remove(degree);
         middle.remove(progressBar);
         middle.remove(progressBarBase);
+        middle.remove(direction);
+        middle.remove(cyclesRun);
         middle.repaint();
         advanced.setBackground(new Color(204,204,204));
         classic.setBackground(Color.WHITE);
@@ -282,6 +307,8 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.add(degree);
         middle.add(progressBarBase);
         middle.add(progressBar);
+        middle.add(direction);
+        middle.add(cyclesRun);
 
         middle.repaint();
         
@@ -309,12 +336,13 @@ class KeyAsButton extends JFrame implements KeyListener {
             //TODO:
             //insert code to lock restraints
             if(restraintStatus.getText().equals("<html> R:<br />RESTRAINTS UNLOCKED</html>") && 
-                true /*check if ride has been locked on backend*/)
+                backend.lockRestraints()) {
                 restraintStatus.setText("<html> R:<br />RESTRAINTS LOCKED</html>");
+            }
             else if(restraintStatus.getText().equals("<html> R:<br />RESTRAINTS LOCKED</html>") && 
-                true /*check if ride has been unlocked on backend*/)
-                restraintStatus.setText("<html> R:<br />RESTRAINTS UNLOCKED</html>");
-            
+                backend.unlockRestraints() /*check if ride has been unlocked on backend*/) {
+                restraintStatus.setText("<html> R:<br />RESTRAINTS UNLOCKED</html>");  
+            }
             
         }
 
@@ -381,13 +409,16 @@ class JButton1 extends JButton{
 }
 
 class CirclePanel extends JPanel {
+    int x;
+    int y;
+    int d = 150;
     @Override
     public void paintComponent(Graphics g) {
         this.setBackground(Color.WHITE);
         super.paintComponent(g);
-        int x = 0; // top left corner
-        int y = 0; // top left corner
-        int d = 150; // Diameter of the circle
+        x = 0; // top left corner
+        y = 0; // top left corner
+        d = 150; // Diameter of the circle
 
         g.setColor(Color.BLACK); // Set circle color
         g.drawOval(x, y, d, d); // Draw the circle outline
@@ -398,6 +429,9 @@ class CirclePanel extends JPanel {
     
     public void paintLine(double angle){
         //this.setColor(Color.BLACK); // Set line color
+        this.getGraphics().clearRect(150,150,150, 150);
+        super.paintComponent(this.getGraphics()); 
+        this.getGraphics().drawOval(x, y, d, d);
         Line2D.Double line1 = new Line2D.Double(75, 75, (75*Math.cos(angle))+75, (-75*Math.sin(angle))+75);
         ((Graphics2D)this.getGraphics()).draw(line1);
         
