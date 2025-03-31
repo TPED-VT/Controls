@@ -258,7 +258,7 @@ class KeyAsButton extends JFrame implements KeyListener {
                 }
                 
                 //Animation
-             //   circle.paintLine(backend.getPosition()/*TODO: insert function to get angle in radian*/);
+             //circle.paintLine(backend.getPosition()/*TODO: insert function to get angle in radian*/);
                 
                 //ADVANCED DIAGNOSTICS FUNCTIONS
                 progressBar.setBounds(100, 270, 

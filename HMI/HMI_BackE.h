@@ -10,9 +10,9 @@ extern "C" {
 /*
  * Class:     HMI_BackE
  * Method:    getCyclePercent
- * Signature: ()D
+ * Signature: ()I
  */
-JNIEXPORT jdouble JNICALL Java_HMI_1BackE_getCyclePercent
+JNIEXPORT jint JNICALL Java_HMI_1BackE_getCyclePercent
   (JNIEnv *, jobject);
 
 /*
@@ -50,9 +50,9 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_setState
 /*
  * Class:     HMI_BackE
  * Method:    getCurrentState
- * Signature: ()V
+ * Signature: ()I
  */
-JNIEXPORT void JNICALL Java_HMI_1BackE_getCurrentState
+JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentState
   (JNIEnv *, jobject);
 
 /*

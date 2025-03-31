@@ -1,4 +1,3 @@
-
 #include "functions.h"
 #include "../Motor_Control/functions.h"
 
@@ -6,66 +5,83 @@
 
 
 // state transition function
-void getNextState(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3)
+int getNextState(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3)
 {
     switch (*currentState)
     {
     case State::kInit:
         InitStateHandle(currentState, test1, test2, test3);
+        return static_cast<int>(*currentSector);        
         break;
 
     case State::kAuto: // checks tests 1,2,3 
         AutoStateHandle(currentState, test1, test2, test3);
+        return static_cast<int>(*currentSector);
         break;
 
     case State::kRideOp: // arm motor rotation and gondola motor rotation (apart of auto state for now)
         RideOpStateHandle(currentState, currentSector, test1, test2, test3);
+        return static_cast<int>(*currentSector);
         break;
 
     // case State::kMaintenance: // 
     //     MaintenanceStateHandle(currentState, currentTest, password, test1, test2, test3, test4, test5);
     //     break;
     }
+
+    return 0; 
 }
 
-void getNextSector(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3) {
+int getNextSector(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3) {
     switch (*currentSector) {
         case Sector::kSector1:
             RideOpStateHandle(currentState, currentSector, test1, test2, test3);
+            return static_cast<int>(*currentSector);
             break; 
         case Sector::kSector2:
             RideOpStateHandle(currentState, currentSector, test1, test2, test3);
+            return static_cast<int>(*currentSector);
             break;
         case Sector::kSector3:
             RideOpStateHandle(currentState, currentSector, test1, test2, test3);
+            return static_cast<int>(*currentSector);
             break;
         case Sector::kSector4:
             RideOpStateHandle(currentState, currentSector, test1, test2, test3);
+            return static_cast<int>(*currentSector);
             break; 
     }
+
+    return 0; 
 }
 
-void getCurrentSector(State *currentState, Sector *currentSector) {
+int getCurrentSector(State *currentState, Sector *currentSector) {
     if (*currentState == State::kRideOp) {
         switch (*currentSector) {
             case Sector::kSector1:
                 *currentSector = Sector::kSector2;
+                return static_cast<int>(*currentSector);
                 break;
             case Sector::kSector2:
                 *currentSector = Sector::kSector3;
+                return static_cast<int>(*currentSector);
                 break;
             case Sector::kSector3:
                 *currentSector = Sector::kSector4;
+                return static_cast<int>(*currentSector);
                 break;
             case Sector::kSector4:
                 *currentSector = Sector::kSector1; 
+                return static_cast<int>(*currentSector);
                 break;
         }
     } 
+
+    return 0; 
 }
 
 //handling functions
-void RideShowStateHandle(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3) {
+int RideShowStateHandle(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3) {
 
     int dummy = 2; // we need a variable to check if the ride show state has ended
  
@@ -73,13 +89,18 @@ void RideShowStateHandle(State *currentState, Sector *currentSector, bool test1,
     cout << "unable to do rideop :(" << endl; 
     } else {
        getNextSector(currentState, currentSector, test1, test2, test3);
+       return static_cast<int>(*currentState); // need something else
   }
   
  if (*currentSector == Sector::kSector4) {
     if (dummy == 2) {
-        *currentState = State::kAuto; 
+        *currentState = State::kAuto;
+        return static_cast<int>(*currentState);
+ 
     }
  } 
+ 
+ return 0; 
  
 }
 
