@@ -18,6 +18,7 @@ import javax.swing.*;
 public class JavaHMI {
     public static void main (String[]args) {
         KeyAsButton a = new KeyAsButton();
+        KeyAsButton r = new KeyAsButton();
     }
 }
 
@@ -53,7 +54,12 @@ class KeyAsButton extends JFrame implements KeyListener {
     HMI_BackE backend;
     
     static {
+        System.setProperty("java.library.path", "HMI_BackE.dll");  
         System.loadLibrary("HMI_BackE");
+
+        setFocusable(true);
+        requestFocusInWindow();
+        addKeyListener(this);
     }
     
     public KeyAsButton() {
@@ -325,12 +331,13 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         
     }
-    
+
+
     @Override
     public void keyPressed(KeyEvent e) {
         
         int key = e.getKeyCode();
-        
+
         //TODO: Get rid of this once maintenance mode is done, its a backdoor
         if (key == KeyEvent.VK_M) {
             if(isClassic)

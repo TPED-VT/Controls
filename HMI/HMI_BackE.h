@@ -34,9 +34,9 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_setCyclePercent
 /*
  * Class:     HMI_BackE
  * Method:    getPosition
- * Signature: ()V
+ * Signature: ()I
  */
-JNIEXPORT void JNICALL Java_HMI_1BackE_getPosition
+JNIEXPORT jint JNICALL Java_HMI_1BackE_getPosition
   (JNIEnv *, jobject);
 
 /*
@@ -50,25 +50,25 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_setState
 /*
  * Class:     HMI_BackE
  * Method:    getCurrentState
- * Signature: ()V
+ * Signature: ()I
  */
-JNIEXPORT void JNICALL Java_HMI_1BackE_getCurrentState
+JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentState
   (JNIEnv *, jobject);
 
 /*
  * Class:     HMI_BackE
  * Method:    getNextSector
- * Signature: (JJZZZ)V
+ * Signature: (JJZZZ)I
  */
-JNIEXPORT void JNICALL Java_HMI_1BackE_getNextSector
+JNIEXPORT jint JNICALL Java_HMI_1BackE_getNextSector
   (JNIEnv *, jobject, jlong, jlong, jboolean, jboolean, jboolean);
 
 /*
  * Class:     HMI_BackE
  * Method:    getCurrentSector
- * Signature: (JJ)V
+ * Signature: (JJ)I
  */
-JNIEXPORT void JNICALL Java_HMI_1BackE_getCurrentSector
+JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentSector
   (JNIEnv *, jobject, jlong, jlong);
 
 /*

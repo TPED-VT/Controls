@@ -12,14 +12,14 @@ public class HMI_BackE {
     public native void startCyclePercent();
     public native void setCyclePercent(int percent);
 
-    public native void getPosition();
+    public native int getPosition();
 
     // states
 
     public native void setState(int state); // not sure
-    public native void getCurrentState();
-    public native void getNextSector(long currentState, long currentSector, boolean test1, boolean test2, boolean test3);
-    public native void getCurrentSector(long currentState, long currentSector);
+    public native int getCurrentState();
+    public native int getNextSector(long currentState, long currentSector, boolean test1, boolean test2, boolean test3);
+    public native int getCurrentSector(long currentState, long currentSector);
     
     
 // others
