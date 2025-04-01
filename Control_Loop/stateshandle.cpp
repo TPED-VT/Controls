@@ -1,5 +1,7 @@
 #include "functions.h"
 #include "../Motor_Control/functions.h"
+#include <fstream>
+using namespace std; 
 
 // Function prototypes
 
@@ -58,7 +60,7 @@ int RideOpStateHandle(State *currentState, int RestraintCheck, int isHomed, int 
         }
         else
         {
-            ArmTest = -1;
+            ArmTest = ERROR_ARM;
             return ArmTest;
         }
     }
@@ -71,7 +73,7 @@ int RideOpStateHandle(State *currentState, int RestraintCheck, int isHomed, int 
     }
     else
     {
-        isHomed = -1;
+        isHomed = ERROR_HOME;
         return isHomed;
     }
 
@@ -96,7 +98,7 @@ int InitStateHandle(State *currentState, int RestraintCheck, int isHomed)
     }
     else
     {
-        RestraintCheck = -1;
+        RestraintCheck = ERROR_RESTRAINT;
         return RestraintCheck;
     }
 
@@ -109,7 +111,7 @@ int InitStateHandle(State *currentState, int RestraintCheck, int isHomed)
     }
     else
     {
-        isHomed = -1;
+        isHomed = ERROR_HOME;
         return isHomed;
     }
 
@@ -143,29 +145,43 @@ int AutoStateHandle(State *currentState, int RestraintCheck, int isHomed, int Ar
 
 string getErrorMessage(int RestraintCheck, int isHomed, int ArmTest)
 {
-    string test1_error = "TEST 1 HAS FAILED";
-    string test2_error = "TEST 2 HAS FAILED";
-    string test3_error = "TEST 3 HAS FAILED";
-    string no_errors = "NO ERRORS";
+    string message = "";
 
     if (RestraintCheck < 0)
     {
-        return test1_error;
+        message += "TEST 1 HAS FAILED (RESTRAINTS) ";
     }
-    else if (isHomed < 0)
+    if (isHomed < 0)
     {
-        return test2_error;
+        message += "TEST 2 HAS FAILED (HOMED POSITION) ";
     }
-    else if (ArmTest < 0)
+    if (ArmTest < 0)
     {
-        return test3_error;
+        message += "TEST 3 HAS FAILED (ARM TEST)";
     }
-    else
+    if (message.empty()) 
     {
-        return no_errors;
+        return "NO ERRORS";
     }
 
-    return no_errors;
+    return message;
+}
+
+void logErrorMessage(const string& message) {
+    ofstream file("error_log.text", ios::app);
+    if (!file.is_open()) {
+        return; 
+    }
+
+    // get time
+
+    time_t now = time(0);
+    tm* localtm = localtime(&now);
+    char timestamp[64];
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", localtm);
+
+    file << "[" << timestamp << "]" << message << endl;
+    file.close();
 }
 
 bool isReadyToRun(int RestraintCheck, int isHomed, int ArmTest)
@@ -190,7 +206,7 @@ string isReadyToRunMessage(int RestraintCheck, int isHomed, int ArmTest)
 
 int getPosition()
 {
-    return 12;
+    return 0;
 }
 
 int performRestraintCheck(bool restraint1, bool restraint2)
@@ -203,7 +219,7 @@ int performRestraintCheck(bool restraint1, bool restraint2)
     }
     else
     {
-        return -1;
+        return ERROR_RESTRAINT;
     }
 }
 
@@ -215,7 +231,7 @@ int isRow1Locked(bool restraint1)
     }
     else
     {
-        return -1;
+        return ERROR_RESTRAINT;
     }
 }
 
@@ -227,7 +243,7 @@ int isRow2Locked(bool restraint2)
     }
     else
     {
-        return -1;
+        return ERROR_RESTRAINT;
     }
 }
 

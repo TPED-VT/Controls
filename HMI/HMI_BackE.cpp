@@ -92,6 +92,15 @@ JNIEXPORT jstring JNICALL Java_HMI_1BackE_getErrorMessage(JNIEnv *env, jobject o
    return env->NewStringUTF(result.c_str());
 }
 
+JNIEXPORT void JNICALL Java_HMI_1BackE_logErrorMessage(JNIEnv *env, jobject obj, jstring message) {
+    cout << "logErrorMessage called" << endl; 
+
+    const char* newMessage = env-> GetStringUTFChars(message, nullptr);
+    logErrorMessage(string(newMessage));
+    env->ReleaseStringUTFChars(message, newMessage);
+
+}
+
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_lockRestraints(JNIEnv *env, jobject obj) {
    //  cout << "lockRestraints called" << endl; 
     return JNI_TRUE;

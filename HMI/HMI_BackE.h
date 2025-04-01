@@ -57,6 +57,14 @@ JNIEXPORT jstring JNICALL Java_HMI_1BackE_getErrorMessage
 
 /*
  * Class:     HMI_BackE
+ * Method:    logErrorMessage
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_HMI_1BackE_logErrorMessage
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     HMI_BackE
  * Method:    restraintCheck
  * Signature: (Z)Z
  */

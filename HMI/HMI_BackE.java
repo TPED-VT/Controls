@@ -21,7 +21,8 @@ public class HMI_BackE {
 // error handling 
 
     public native String getErrorMessage(int RestraintCheck, int isHomed);
-    
+    public native void logErrorMessage(String message);
+
 // restraint handling    
     public native boolean restraintCheck(boolean restraint);
     public native int isRow1Locked(boolean restraint1);

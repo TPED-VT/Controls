@@ -3,8 +3,13 @@
 
 #include <iostream>
 #include <limits>
+#include <ctime>
+#include <fstream>
 
 #define PASS 1
+#define ERROR_RESTRAINT -1
+#define ERROR_HOME -2
+#define ERROR_ARM -3
 
 using namespace std;
 
@@ -26,6 +31,8 @@ int MaintenanceStateHandle(State *currentState, int RestraintCheck, int isHomed,
 
 // other functions 
 string getErrorMessage(int RestraintCheck, int isHomed, int ArmTest);
+void logErrorMessage(const string& message);
+
 int getPosition();
 int performRestraintCheck(bool restraint1, bool restraint2);
 int isRow1Locked(bool restraint1);
