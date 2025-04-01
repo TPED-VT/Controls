@@ -16,39 +16,24 @@ enum class State
     kMaintenance = 3
 };
 
-// enum class Sector {
-//     kSector0 = 0, 
-//     kSector1 = 1, 
-//     kSector2 = 2, 
-//     kSector3 = 3, 
-//     kSector4 = 4
-// };
-
-enum class StateTest {
-    kTest1 = 0, 
-    kTest2 = 1,
-    kTest3 = 0,
-    kTest4 = 0,
-    kTest5 = 0 
-};
-
-// struct Result {
-//     PASS, 
-//     FAIL,
-//     string error
-// };
-
 
 // handling functions
-void RideOpStateHandle(State *currentState, bool test1, bool test2, bool test3);
-void InitStateHandle(State *currentState, bool test1, bool test2, bool test3);
-void AutoStateHandle(State *currentState, bool test1, bool test2, bool test3);
-void MaintenanceStateHandle(State *currentState, bool test1, bool test2, bool test3);
+void RideOpStateHandle(State *currentState, int test1, int test2, int test3);
+void InitStateHandle(State *currentState, int test1, int test2, int test3);
+void AutoStateHandle(State *currentState, int test1, int test2, int test3);
+void MaintenanceStateHandle(State *currentState, int test1, int test2, int test3, int test4, int test5);
+
+
+// other functions 
+string getErrorMessage(int test1, int test2);
+int getPosition();
+bool restraintCheck(bool restraint);
+
+bool isReadyToRun(int test1, int test2);
+string isReadyToRunMessage(int test1, int test2);
 
 
 // state transition function
-void getNextState(State *currentState, bool test1, bool test2, bool test3);
-// void getCurrentSector(State *currentState, Sector *currentSector);
-// void getNextSector(State *currentState, Sector *currentSector);
+void getNextState(State *currentState, int test1, int test2, int test3);
 
 #endif

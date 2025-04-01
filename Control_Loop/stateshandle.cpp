@@ -19,74 +19,118 @@ void getNextState(State *currentState, StateTest *currentTest, int test1, int te
         break;
 
     case State::kMaintenance:
-        MaintenanceStateHandle(currentState, currentTest, test1, test2, test3, test4, test5);
+        // MaintenanceStateHandle(currentState, currentTest, test1, test2, test3, test4, test5);
         break;
     }
 }
 
-// // handling functions
-// bool RideShowStateHandle(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3)
-// {
 
-//     int dummy = 2; // we need a variable to check if the ride show state has ended
-
-//     if (*currentState != State::kRideOp)
-//     {
-//         cout << "unable to do rideop :(" << endl;
-//     }
-
-//     if (*currentSector == Sector::kSector4)
-//     {
-//         if (dummy == 2)
-//         {
-//             *currentState = State::kAuto;
-//         }
-//     }
-// }
-
-bool RideOpStateHandle(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3)
+// handling functions
+int RideOpStateHandle(State *currentState, int test1, int test2, int test3)
 {
 
-    /*
-
-    Ride Operator State Handle
-
-    1. intialize the target arm and gondola motor frequencies
-    2. get the current arm and gondola motor frequencies
-    3. make sure to ramp up the arm and gondola motor frequencies based on the sector
-
-    */
-
+    // target values and current values
     int targetArmMotorFrequency = 200;
     int targetGondolaMotorFrequency = 100;
     int currentArmMotorFrequency = 150;
 
-    // switch (*currentState) {
-    //     case State::kRideOp: {
-    //         for (int i = 0; i < 50; i++) {
-    //            int  currentArmMotorFrequency == getCurrentArmFrequency();
-    //            int  currentGondolaMotorFrequency == getCurrentGondolaFrequency();
-    //         }
+    bool restraint = false;
 
-    //         RampUp(currentArmMotorFrequency, currentGondolaMotorFrequency);
-    //         break;
-    //     }
-    // }
-    //     cout << "All motor rotations completed successfully. Remaining in Auto state." << endl;
-    //     *currentState = State::kAuto;
+    for (int i = 0; i < 1000; i++)
+    { // during ride cycle
+
+        if (restraint)
+        {
+            test1 = PASS;
+        }
+        else
+        {
+            test1 = -1;
+            return test1;
+            break;
+        }
+
+        // check if gondola/arm is not "abnormal"
+
+        if (currentArmMotorFrequency <= targetArmMotorFrequency)
+        {
+            test3 = PASS;
+        }
+        else
+        {
+            test3 = -1;
+            return test3;
+        }
+    }
+
+    // AFTER RIDE CYCLE
+
+    if (getPosition() == 0)
+    {
+        *currentState = State::kAuto;
+    }
+    else
+    {
+        test2 = -1;
+        return test2;
+    }
+
+    return PASS;
 }
 
-bool restraintCheck(bool restraint)
+
+int InitStateHandle(State *currentState, int test1, int test2)
 {
+
+    // check restraints
     // method to get the bool value
 
-    if (restraint) {
-        return PASS;
-    } else {
-        return -1;
+    bool restraint = false;
+
+    if (restraint)
+    {
+        test1 = PASS;
+        // return test1;
     }
+    else
+    {
+        test1 = -1;
+        return test1;
+    }
+
+    // check if ride is home position
+    // get homed location
+
+    if (getPosition() = 0)
+    {
+        test2 = PASS;
+    }
+    else
+    {
+        test2 = -1;
+        return test2;
+    }
+
+    *currentState = State::kAuto;
+    return PASS;
 }
 
+int AutoStateHandle(State *currentState, bool status, int test1, int test2, int test3)
+{
+    if (getErrorMessage(test1, test2, test3) == "NO ERRORS")
+    {
+        status = true;
+    }
+    else
+    {
+        status = false;
+    }
+
+    *currentState = State::kRideOp;
+    return PASS;
+}
+
+// other functions
 
 
 string getErrorMessage(int test1, int test2, int test3)
@@ -116,84 +160,41 @@ string getErrorMessage(int test1, int test2, int test3)
     return no_errors;
 }
 
-bool isReadyToRun(bool status, int test1, int test2) {
-
-    string new_status = getErrorMessage(test1,test2);
-
-    if (new_status != "NO ERRORS") {
-        status = false; 
-        return false; 
-    } else {
-        status = PASS;
-        return PASS; 
-    }
+bool isReadyToRun(int test1, int test2)
+{
+    return (getErrorMessage(test1, test2) == "NO ERRORS");
 }
 
-string isReadyToRunMessage(bool status, int test1, int test2) {
+string isReadyToRunMessage(bool status, int test1, int test2)
+{
     string ready_to_run = "RIDE IS READY TO RUN";
     string cannot_run = "RIDE IS NOT READY TO RUN";
 
-    if (isReadyToRun(status) == PASS) {
-        return ready_to_run; 
-    } else {
+    if (isReadyToRun(status) == PASS)
+    {
+        return ready_to_run;
+    }
+    else
+    {
         return cannot_run;
     }
 }
-
 
 int getPosition()
 {
     return 12;
 }
 
-int InitStateHandle(State *currentState, int test1, int test2)
+bool restraintCheck(bool restraint)
 {
-
-    // check restraints
-    // method to get the bool value
-
-    bool restraint = false;
+    // method to get the bool value of restraint check
 
     if (restraint)
     {
-        test1 = PASS;
-        // return test1;
+        return PASS;
     }
     else
     {
-        test1 = -1;
-        return test1; 
+        return -1;
     }
-
-    // check if ride is home position
-    // get homed location
-
-    if (getPosition() = 0)
-    {
-        test2 = PASS;
-    }
-    else
-    {
-        test2 = -1;
-        return test2; 
-        
-    }
-
-    *currentState = State::kAuto;
-    return PASS;
-
-}
-
-
-string AutoStateHandle(State *currentState, bool status, int test1, int test2, int test3)
-{
-   if (getErrorMessage(test1, test2) == "NO ERRORS") {
-    status = true; 
-    isReadyToRun(status)
-   } else {
-    status = false; 
-    isReadyToRun(status);
-   }
-
-    *currentState = State::kRideOp;
 }

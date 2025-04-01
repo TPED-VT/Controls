@@ -33,3 +33,32 @@
 //         }
 //     }
 // }
+
+// int RideOpStateHandle(State *currentState, Sector *currentSector, int test1, int test2, int test3)
+// {
+
+    /*
+
+    Ride Operator State Handle
+
+    1. intialize the target arm and gondola motor frequencies
+    2. get the current arm and gondola motor frequencies
+    3. make sure to ramp up the arm and gondola motor frequencies based on the sector
+
+    */
+
+
+    // switch (*currentState) {
+    //     case State::kRideOp: {
+    //         for (int i = 0; i < 50; i++) {
+    //            int  currentArmMotorFrequency == getCurrentArmFrequency();
+    //            int  currentGondolaMotorFrequency == getCurrentGondolaFrequency();
+    //         }
+
+    //         RampUp(currentArmMotorFrequency, currentGondolaMotorFrequency);
+    //         break;
+    //     }
+    // }
+    //     cout << "All motor rotations completed successfully. Remaining in Auto state." << endl;
+    //     *currentState = State::kAuto;
+//}
