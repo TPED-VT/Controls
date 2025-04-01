@@ -4,8 +4,7 @@
 #include <iostream>
 #include <limits>
 
-#define PASS true
-#define FAIL false
+#define PASS 1
 
 using namespace std;
 
