@@ -1,32 +1,33 @@
 #include "functions.h"
 #include "../Motor_Control/functions.h"
 
+// Function prototypes
+
 // state transition function
-void getNextState(State *currentState, StateTest *currentTest, int test1, int test2, int test3, bool test4, bool test5)
+void getNextState(State *currentState, int RestraintCheck, int isHomed, int ArmTest)
 {
     switch (*currentState)
     {
     case State::kInit: // checks tests 1,2
-        InitStateHandle(currentState, test1, test2);
+        InitStateHandle(currentState, RestraintCheck, isHomed);
         break;
 
     case State::kAuto: // checks tests 1,2,3
-        AutoStateHandle(currentState, test1, test2, test3);
+        AutoStateHandle(currentState, RestraintCheck, isHomed, ArmTest);
         break;
 
     case State::kRideOp: // arm motor rotation and gondola motor rotation (apart of auto state for now)
-        RideOpStateHandle(currentState, test1, test2, test3);
+        RideOpStateHandle(currentState, RestraintCheck, isHomed, ArmTest);
         break;
 
     case State::kMaintenance:
-        // MaintenanceStateHandle(currentState, currentTest, test1, test2, test3, test4, test5);
+        // MaintenanceStateHandle(currentState, currentTest, RestraintCheck, isHomed, ArmTest, test4, test5);
         break;
     }
 }
 
-
 // handling functions
-int RideOpStateHandle(State *currentState, int test1, int test2, int test3)
+int RideOpStateHandle(State *currentState, int RestraintCheck, int isHomed, int ArmTest)
 {
 
     // target values and current values
@@ -41,25 +42,24 @@ int RideOpStateHandle(State *currentState, int test1, int test2, int test3)
 
         if (restraint)
         {
-            test1 = PASS;
+            RestraintCheck = PASS;
         }
         else
         {
-            test1 = -1;
-            return test1;
-            break;
+            RestraintCheck = -1;
+            return RestraintCheck;
         }
 
         // check if gondola/arm is not "abnormal"
 
         if (currentArmMotorFrequency <= targetArmMotorFrequency)
         {
-            test3 = PASS;
+            ArmTest = PASS;
         }
         else
         {
-            test3 = -1;
-            return test3;
+            ArmTest = -1;
+            return ArmTest;
         }
     }
 
@@ -71,84 +71,92 @@ int RideOpStateHandle(State *currentState, int test1, int test2, int test3)
     }
     else
     {
-        test2 = -1;
-        return test2;
+        isHomed = -1;
+        return isHomed;
     }
 
     return PASS;
 }
 
-
-int InitStateHandle(State *currentState, int test1, int test2)
+int InitStateHandle(State *currentState, int RestraintCheck, int isHomed)
 {
 
-    // check restraints
+    // check RestraintCheck
     // method to get the bool value
 
-    bool restraint = false;
+    bool restraint1 = false;
+    bool restraint2 = false; 
 
-    if (restraint)
+    int r = performRestraintCheck(restraint1, restraint2);
+
+    if (r > 0)
     {
-        test1 = PASS;
-        // return test1;
+        RestraintCheck = PASS;
+        // return RestraintCheck;
     }
     else
     {
-        test1 = -1;
-        return test1;
+        RestraintCheck = -1;
+        return RestraintCheck;
     }
 
     // check if ride is home position
     // get homed location
 
-    if (getPosition() = 0)
+    if (getPosition() == 0)
     {
-        test2 = PASS;
+        isHomed = PASS;
     }
     else
     {
-        test2 = -1;
-        return test2;
+        isHomed = -1;
+        return isHomed;
     }
 
     *currentState = State::kAuto;
     return PASS;
 }
 
-int AutoStateHandle(State *currentState, bool status, int test1, int test2, int test3)
+int AutoStateHandle(State *currentState, int RestraintCheck, int isHomed, int ArmTest)
 {
-    if (getErrorMessage(test1, test2, test3) == "NO ERRORS")
+    bool status = isReadyToRun(RestraintCheck, isHomed, ArmTest);
+    int status_num = 0;
+
+    if (status)
     {
-        status = true;
+        status_num = 1;
     }
     else
     {
-        status = false;
+        status_num = -1;
+        return status_num;
     }
 
     *currentState = State::kRideOp;
     return PASS;
 }
 
+
+
+
 // other functions
 
-
-string getErrorMessage(int test1, int test2, int test3)
+string getErrorMessage(int RestraintCheck, int isHomed, int ArmTest)
 {
     string test1_error = "TEST 1 HAS FAILED";
     string test2_error = "TEST 2 HAS FAILED";
     string test3_error = "TEST 3 HAS FAILED";
     string no_errors = "NO ERRORS";
 
-    if (test1 < 0)
+    if (RestraintCheck < 0)
     {
         return test1_error;
     }
-    else if (test2 < 0)
+    else if (isHomed < 0)
     {
         return test2_error;
     }
-    else if (test3 < 0)
+    else if (ArmTest < 0)
     {
         return test3_error;
     }
@@ -160,17 +168,17 @@ string getErrorMessage(int test1, int test2, int test3)
     return no_errors;
 }
 
-bool isReadyToRun(int test1, int test2)
+bool isReadyToRun(int RestraintCheck, int isHomed, int ArmTest)
 {
-    return (getErrorMessage(test1, test2) == "NO ERRORS");
+    return (getErrorMessage(RestraintCheck, isHomed, ArmTest) == "NO ERRORS");
 }
 
-string isReadyToRunMessage(bool status, int test1, int test2)
+string isReadyToRunMessage(int RestraintCheck, int isHomed, int ArmTest)
 {
     string ready_to_run = "RIDE IS READY TO RUN";
     string cannot_run = "RIDE IS NOT READY TO RUN";
 
-    if (isReadyToRun(status) == PASS)
+    if (isReadyToRun(RestraintCheck, isHomed, ArmTest) == PASS)
     {
         return ready_to_run;
     }
@@ -185,11 +193,11 @@ int getPosition()
     return 12;
 }
 
-bool restraintCheck(bool restraint)
+int performRestraintCheck(bool restraint1, bool restraint2)
 {
     // method to get the bool value of restraint check
 
-    if (restraint)
+    if (isRow1Locked(restraint1) == PASS && isRow2Locked(restraint2) == PASS)
     {
         return PASS;
     }
@@ -198,3 +206,41 @@ bool restraintCheck(bool restraint)
         return -1;
     }
 }
+
+int isRow1Locked(bool restraint1)
+{
+    if (restraint1)
+    {
+        return PASS;
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+int isRow2Locked(bool restraint2)
+{
+    if (restraint2)
+    {
+        return PASS;
+    }
+    else
+    {
+        return -1;
+    }
+}
+
+bool unlockRestraints()
+{
+    // some method to unlock the RestraintCheck???
+    return PASS; 
+}
+bool lockRestraints()
+{
+    // some method to lock the RestraintCheck???
+
+    return PASS; 
+}
+
+

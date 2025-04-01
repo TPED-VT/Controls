@@ -59,9 +59,9 @@ class KeyAsButton extends JFrame implements KeyListener {
         // // C:\Users\ricar\Documents\TPED\Controls\HMI\native\HMI_BackE.dll  
         // System.loadLibrary("HMI_BackE");
 
-        setFocusable(true);
-        requestFocusInWindow();
-        addKeyListener(this);
+        // setFocusable(true);
+        // requestFocusInWindow();
+        // addKeyListener(this);
     }
     
     public KeyAsButton() {
@@ -225,13 +225,13 @@ class KeyAsButton extends JFrame implements KeyListener {
                 else rideStatus.setText("STATUS: DOWN");
                 
                 //updating restraints
-                if(backend.isRow1Locked()/*TODO: row1 is locked*/)
-                    rectangle2.setBackground(Color.GREEN);
-                else rectangle2.setBackground(Color.RED);
+                // if(backend.isRow1Locked(true) /*TODO: row1 is locked*/)
+                //     rectangle2.setBackground(Color.GREEN);
+                // else rectangle2.setBackground(Color.RED);
                 
-                if(backend.isRow2Locked()/*TODO: row2 is locked*/)
-                    rectangle.setBackground(Color.GREEN);
-                else rectangle.setBackground(Color.RED);
+                // if(backend.isRow2Locked(1) == 1 /*TODO: row2 is locked*/)
+                //     rectangle.setBackground(Color.GREEN);
+                // else rectangle.setBackground(Color.RED);
                 
                 if(backend.isRideRunning()/*ride is running*/) {
                     indicator.setBackground(Color.GRAY);
@@ -274,15 +274,15 @@ class KeyAsButton extends JFrame implements KeyListener {
                 
                 if(false/*TODO: status is not running*/)
                     direction.setText("Direction: N/A");
-                else {
-                    if(backend.isRotationArmClockwise()/*TODO: isClockwise()*/)
-                        direction.setText("Arm: Clockwise");
-                    else direction.setText("Arm: CounterClockwise");
+                // else {
+                //     if(backend.isRotationArmClockwise()/*TODO: isClockwise()*/)
+                //         direction.setText("Arm: Clockwise");
+                //     else direction.setText("Arm: CounterClockwise");
                     
-                    if(backend.isRotationGondolaClockwise())
-                        direction.setText(direction.getText()+", Gondola: Clockwise");
-                    else direction.setText(direction.getText()+", Gondola: Counterclockwise");
-                }
+                //     if(backend.isRotationGondolaClockwise())
+                //         direction.setText(direction.getText()+", Gondola: Clockwise");
+                //     else direction.setText(direction.getText()+", Gondola: Counterclockwise");
+                // }
    
                 
                 cyclesRun.setText("Cycle Count: " + runs);

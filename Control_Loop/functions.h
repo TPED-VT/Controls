@@ -18,22 +18,28 @@ enum class State
 
 
 // handling functions
-void RideOpStateHandle(State *currentState, int test1, int test2, int test3);
-void InitStateHandle(State *currentState, int test1, int test2, int test3);
-void AutoStateHandle(State *currentState, int test1, int test2, int test3);
-void MaintenanceStateHandle(State *currentState, int test1, int test2, int test3, int test4, int test5);
+int RideOpStateHandle(State *currentState, int RestraintCheck, int isHomed, int ArmTest);
+int InitStateHandle(State *currentState, int RestraintCheck, int isHomed);
+int AutoStateHandle(State *currentState, int RestraintCheck, int isHomed, int ArmTest);
+int MaintenanceStateHandle(State *currentState, int RestraintCheck, int isHomed, int ArmTest, int test4, int test5);
 
 
 // other functions 
-string getErrorMessage(int test1, int test2);
+string getErrorMessage(int RestraintCheck, int isHomed, int ArmTest);
 int getPosition();
-bool restraintCheck(bool restraint);
+int performRestraintCheck(bool restraint1, bool restraint2);
+int isRow1Locked(bool restraint1);
+int isRow2Locked(bool restraint2);
 
-bool isReadyToRun(int test1, int test2);
-string isReadyToRunMessage(int test1, int test2);
+bool unlockRestraints();
+bool lockRestraints();
+
+
+bool isReadyToRun(int RestraintCheck, int isHomed, int ArmTest);
+string isReadyToRunMessage(int RestraintCheck, int isHomed, int ArmTest);
 
 
 // state transition function
-void getNextState(State *currentState, int test1, int test2, int test3);
+void getNextState(State *currentState, int RestraintCheck, int isHomed, int ArmTest);
 
 #endif
