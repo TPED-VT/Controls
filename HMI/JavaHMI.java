@@ -54,8 +54,10 @@ class KeyAsButton extends JFrame implements KeyListener {
     HMI_BackE backend;
     
     static {
-        System.setProperty("java.library.path", "HMI_BackE.dll");  
-        System.loadLibrary("HMI_BackE");
+        System.load("C:\\Users\\ricar\\Documents\\TPED\\Controls\\HMI\\native\\HMI_BackE.dll");
+        // System.setProperty("java.library.path", "HMI_BackE.dll");
+        // // C:\Users\ricar\Documents\TPED\Controls\HMI\native\HMI_BackE.dll  
+        // System.loadLibrary("HMI_BackE");
 
         setFocusable(true);
         requestFocusInWindow();

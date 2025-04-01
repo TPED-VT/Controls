@@ -4,6 +4,9 @@
 #include <iostream>
 #include <limits>
 
+#define PASS true
+#define FAIL false
+
 using namespace std;
 
 enum class State
@@ -14,13 +17,13 @@ enum class State
     kMaintenance = 3
 };
 
-enum class Sector {
-    kSector0 = 0, 
-    kSector1 = 1, 
-    kSector2 = 2, 
-    kSector3 = 3, 
-    kSector4 = 4
-};
+// enum class Sector {
+//     kSector0 = 0, 
+//     kSector1 = 1, 
+//     kSector2 = 2, 
+//     kSector3 = 3, 
+//     kSector4 = 4
+// };
 
 enum class StateTest {
     kTest1 = 0, 
@@ -30,18 +33,23 @@ enum class StateTest {
     kTest5 = 0 
 };
 
+// struct Result {
+//     PASS, 
+//     FAIL,
+//     string error
+// };
+
 
 // handling functions
-void RideShowStateHandle();
-void RideOpStateHandle(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3);
+void RideOpStateHandle(State *currentState, bool test1, bool test2, bool test3);
 void InitStateHandle(State *currentState, bool test1, bool test2, bool test3);
 void AutoStateHandle(State *currentState, bool test1, bool test2, bool test3);
 void MaintenanceStateHandle(State *currentState, bool test1, bool test2, bool test3);
 
 
 // state transition function
-void getNextState(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3);
-void getCurrentSector(State *currentState, Sector *currentSector);
-void getNextSector(State *currentState, Sector *currentSector);
+void getNextState(State *currentState, bool test1, bool test2, bool test3);
+// void getCurrentSector(State *currentState, Sector *currentSector);
+// void getNextSector(State *currentState, Sector *currentSector);
 
 #endif

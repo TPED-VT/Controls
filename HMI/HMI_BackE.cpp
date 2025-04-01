@@ -44,20 +44,20 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentState(JNIEnv *env, jobject obj)
 
 // Sector functions
 
-JNIEXPORT jint JNICALL Java_HMI_1BackE_getNextSector(JNIEnv *env, jobject obj) {
-    getNextState(&currentState, &currentSector, test1, test2, test3);
-    return static_cast<jint>(currentSector); // Corrected return type
-}
+// JNIEXPORT jint JNICALL Java_HMI_1BackE_getNextSector(JNIEnv *env, jobject obj) {
+//     getNextState(&currentState, &currentSector, test1, test2, test3);
+//     return static_cast<jint>(currentSector); // Corrected return type
+// }
 
-JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentSector(JNIEnv *env, jobject obj) {
-    getCurrentSector(&currentState, &currentSector);
-    return static_cast<jint>(currentSector); // Corrected return type
-}
+// JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentSector(JNIEnv *env, jobject obj) {
+//     getCurrentSector(&currentState, &currentSector);
+//     return static_cast<jint>(currentSector); // Corrected return type
+// }
 
-JNIEXPORT jint JNICALL Java_HMI_1BackE_setNextSector(JNIEnv *env, jobject obj, jint sector) {
-    currentSector = static_cast<Sector>(sector);
-    return static_cast<jint>(currentSector); // Corrected return type
-}
+// JNIEXPORT jint JNICALL Java_HMI_1BackE_setNextSector(JNIEnv *env, jobject obj, jint sector) {
+//     currentSector = static_cast<Sector>(sector);
+//     return static_cast<jint>(currentSector); // Corrected return type
+// }
 
 // Ride functions
 
