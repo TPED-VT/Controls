@@ -337,12 +337,18 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         int key = e.getKeyCode();
         
-        //TODO: Get rid of this once maintenance mode is done, its a backdoor
+        //TODO: Get rid of this once maintenance mode is done, it's a backdoor
         if (key == KeyEvent.VK_M) {
             if(isClassic)
                 paintAdvanced();
             else if(!isClassic)
                 paintClassic();
+        }
+        if (key == KeyEvent.VK_R) {
+            //TODO: reset
+        }
+        if (key == KeyEvent.VK_S) {
+            //TODO: stop
         }
         
         if (key == KeyEvent.VK_L) {
@@ -409,6 +415,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             restraintStatus.setText("OFF");
             rideStatus.setText("STATUS: OFF");
             cyclePercent.setText("0% through cycle");
+            errorBox.setText("OFF");
             //TODO:
             //turn off
         }
@@ -464,3 +471,5 @@ class CirclePanel extends JPanel {
     }
     
 }
+
+
