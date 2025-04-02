@@ -1,3 +1,5 @@
+
+
 public class HMI_BackE {
     static {
         System.loadLibrary("HMI_BackE");
@@ -7,7 +9,7 @@ public class HMI_BackE {
         new HMI_BackE().getPosition();
     }
 
-    public native double getCyclePercent(); // double needs to change
+    public native double getCyclePercent(); // double needs to change: implementation
     public native void startCyclePercent();
     public native void setCyclePercent(int percent);
 
@@ -18,34 +20,35 @@ public class HMI_BackE {
     public native void getNextState(int currentState, int RestraintCheck, int isHomed, int ArmTest);    
     
 // other functions 
+
+
 // error handling 
 
-    public native String getErrorMessage(int RestraintCheck, int isHomed);
+    public native String getErrorMessage(int RestraintCheck, int isHomed, int ArmTest);
     public native void logErrorMessage(String message);
+
+    // E-STOP function
+    
+    // for HMI
+    public native String getErrorMessage();
+    public native String isReadyToRunMessage();
+    public native boolean isReadyToRun();
+    public native int performRestraintCheck();
+    public native int isRow1Locked();
+    public native int isRow2Locked();
+    public native boolean unlockRestraints(); // implementation
+    public native boolean lockRestraints(); // implementation
+
 
 // restraint handling    
     public native boolean restraintCheck(boolean restraint);
     public native int isRow1Locked(boolean restraint1);
     public native int isRow2Locked(boolean restraint2);
     
-    public native boolean lockRestraints();
-    public native boolean unlockRestraints();
-
 // ride operation 
-
     public native boolean isReadyToRun(int RestraintCheck, int isHomed, int ArmTest);
     public native String isReadyToRunMessage(int RestraintCheck, int isHomed, int ArmTest);
     public native boolean isRideRunning();
-
-
-
-
-
-    // public native boolean isRotationGondolaClockwise();
-    // public native boolean isRotationGondolaCounterClockwise();
-
-    // public native boolean isRotationArmClockwise();
-    // public native boolean isRotationArmCounterClockwise();
 
 
 

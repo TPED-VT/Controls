@@ -1,9 +1,12 @@
 #include "functions.h"
 #include "../Motor_Control/functions.h"
 #include <fstream>
+#include <chrono>
 using namespace std; 
 
 // Function prototypes
+
+
 
 // state transition function
 void getNextState(State *currentState, int RestraintCheck, int isHomed, int ArmTest)
@@ -31,6 +34,8 @@ void getNextState(State *currentState, int RestraintCheck, int isHomed, int ArmT
 // handling functions
 int RideOpStateHandle(State *currentState, int RestraintCheck, int isHomed, int ArmTest)
 {
+    // start ride
+    //putChar(serialPort, 'D');
 
     // target values and current values
     int targetArmMotorFrequency = 200;
@@ -39,7 +44,10 @@ int RideOpStateHandle(State *currentState, int RestraintCheck, int isHomed, int 
 
     bool restraint = false;
 
-    for (int i = 0; i < 1000; i++)
+    // timer 
+
+    auto start = chrono::steady_clock::now();
+    while (chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start).count() < 65)
     { // during ride cycle
 
         if (restraint)
@@ -117,6 +125,7 @@ int InitStateHandle(State *currentState, int RestraintCheck, int isHomed)
 
     *currentState = State::kAuto;
     return PASS;
+
 }
 
 int AutoStateHandle(State *currentState, int RestraintCheck, int isHomed, int ArmTest)
@@ -139,8 +148,6 @@ int AutoStateHandle(State *currentState, int RestraintCheck, int isHomed, int Ar
 }
 
 
-
-
 // other functions
 
 string getErrorMessage(int RestraintCheck, int isHomed, int ArmTest)
@@ -149,21 +156,22 @@ string getErrorMessage(int RestraintCheck, int isHomed, int ArmTest)
 
     if (RestraintCheck < 0)
     {
-        message += "TEST 1 HAS FAILED (RESTRAINTS) ";
+        message += "ERROR 101 (RESTRAINTS)";
     }
     if (isHomed < 0)
     {
-        message += "TEST 2 HAS FAILED (HOMED POSITION) ";
+        message += "ERROR 102 (NOT HOMED)";
     }
     if (ArmTest < 0)
     {
-        message += "TEST 3 HAS FAILED (ARM TEST)";
+        message += "ERROR 103";
     }
     if (message.empty()) 
     {
-        return "NO ERRORS";
+        return "NO ERRORS/n";
     }
 
+    logErrorMessage(message);
     return message;
 }
 
@@ -183,6 +191,15 @@ void logErrorMessage(const string& message) {
     file << "[" << timestamp << "]" << message << endl;
     file.close();
 }
+
+// hmi functions
+
+// string getErrorMessage()
+// {
+//     return getErrorMessage(RestraintCheck, isHomed, ArmTest);
+// }
+
+
 
 bool isReadyToRun(int RestraintCheck, int isHomed, int ArmTest)
 {
