@@ -41,58 +41,42 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_getPosition
 
 /*
  * Class:     HMI_BackE
- * Method:    setState
- * Signature: (I)V
+ * Method:    getNextState
+ * Signature: (IIII)V
  */
-JNIEXPORT void JNICALL Java_HMI_1BackE_setState
-  (JNIEnv *, jobject, jint);
+JNIEXPORT void JNICALL Java_HMI_1BackE_getNextState
+  (JNIEnv *, jobject, jint, jint, jint, jint);
 
 /*
  * Class:     HMI_BackE
- * Method:    getCurrentState
- * Signature: ()I
+ * Method:    getErrorMessage
+ * Signature: (III)Ljava/lang/String;
  */
-JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentState
+JNIEXPORT jstring JNICALL Java_HMI_1BackE_getErrorMessage__III
+  (JNIEnv *, jobject, jint, jint, jint);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    logErrorMessage
+ * Signature: (Ljava/lang/String;)V
+ */
+JNIEXPORT void JNICALL Java_HMI_1BackE_logErrorMessage
+  (JNIEnv *, jobject, jstring);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    getErrorMessage
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_HMI_1BackE_getErrorMessage__
   (JNIEnv *, jobject);
 
 /*
  * Class:     HMI_BackE
- * Method:    getNextSector
- * Signature: (JJZZZ)I
+ * Method:    isReadyToRunMessage
+ * Signature: ()Ljava/lang/String;
  */
-JNIEXPORT jint JNICALL Java_HMI_1BackE_getNextSector
-  (JNIEnv *, jobject, jlong, jlong, jboolean, jboolean, jboolean);
-
-/*
- * Class:     HMI_BackE
- * Method:    getCurrentSector
- * Signature: (JJ)I
- */
-JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentSector
-  (JNIEnv *, jobject, jlong, jlong);
-
-/*
- * Class:     HMI_BackE
- * Method:    isRideRunning
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRideRunning
-  (JNIEnv *, jobject);
-
-/*
- * Class:     HMI_BackE
- * Method:    isRow1Locked
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRow1Locked
-  (JNIEnv *, jobject);
-
-/*
- * Class:     HMI_BackE
- * Method:    isRow2Locked
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRow2Locked
+JNIEXPORT jstring JNICALL Java_HMI_1BackE_isReadyToRunMessage__
   (JNIEnv *, jobject);
 
 /*
@@ -100,23 +84,31 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRow2Locked
  * Method:    isReadyToRun
  * Signature: ()Z
  */
-JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isReadyToRun
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isReadyToRun__
   (JNIEnv *, jobject);
 
 /*
  * Class:     HMI_BackE
- * Method:    getErrorMessage
- * Signature: ()Ljava/lang/String;
+ * Method:    performRestraintCheck
+ * Signature: ()I
  */
-JNIEXPORT jstring JNICALL Java_HMI_1BackE_getErrorMessage
+JNIEXPORT jint JNICALL Java_HMI_1BackE_performRestraintCheck
   (JNIEnv *, jobject);
 
 /*
  * Class:     HMI_BackE
- * Method:    lockRestraints
- * Signature: ()Z
+ * Method:    isRow1Locked
+ * Signature: ()I
  */
-JNIEXPORT jboolean JNICALL Java_HMI_1BackE_lockRestraints
+JNIEXPORT jint JNICALL Java_HMI_1BackE_isRow1Locked__
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    isRow2Locked
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_HMI_1BackE_isRow2Locked__
   (JNIEnv *, jobject);
 
 /*
@@ -129,34 +121,58 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_unlockRestraints
 
 /*
  * Class:     HMI_BackE
- * Method:    isRotationGondolaClockwise
+ * Method:    lockRestraints
  * Signature: ()Z
  */
-JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRotationGondolaClockwise
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_lockRestraints
   (JNIEnv *, jobject);
 
 /*
  * Class:     HMI_BackE
- * Method:    isRotationGondolaCounterClockwise
- * Signature: ()Z
+ * Method:    restraintCheck
+ * Signature: (Z)Z
  */
-JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRotationGondolaCounterClockwise
-  (JNIEnv *, jobject);
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_restraintCheck
+  (JNIEnv *, jobject, jboolean);
 
 /*
  * Class:     HMI_BackE
- * Method:    isRotationArmClockwise
- * Signature: ()Z
+ * Method:    isRow1Locked
+ * Signature: (Z)I
  */
-JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRotationArmClockwise
-  (JNIEnv *, jobject);
+JNIEXPORT jint JNICALL Java_HMI_1BackE_isRow1Locked__Z
+  (JNIEnv *, jobject, jboolean);
 
 /*
  * Class:     HMI_BackE
- * Method:    isRotationArmCounterClockwise
+ * Method:    isRow2Locked
+ * Signature: (Z)I
+ */
+JNIEXPORT jint JNICALL Java_HMI_1BackE_isRow2Locked__Z
+  (JNIEnv *, jobject, jboolean);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    isReadyToRun
+ * Signature: (III)Z
+ */
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isReadyToRun__III
+  (JNIEnv *, jobject, jint, jint, jint);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    isReadyToRunMessage
+ * Signature: (III)Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_HMI_1BackE_isReadyToRunMessage__III
+  (JNIEnv *, jobject, jint, jint, jint);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    isRideRunning
  * Signature: ()Z
  */
-JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRotationArmCounterClockwise
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRideRunning
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus

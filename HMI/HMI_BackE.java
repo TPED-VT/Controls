@@ -1,4 +1,5 @@
 
+
 public class HMI_BackE {
     static {
         System.loadLibrary("HMI_BackE");
@@ -8,39 +9,46 @@ public class HMI_BackE {
         new HMI_BackE().getPosition();
     }
 
-    public native double getCyclePercent(); // double needs to change
+    public native double getCyclePercent(); // double needs to change: implementation
     public native void startCyclePercent();
     public native void setCyclePercent(int percent);
 
     public native int getPosition();
 
-    // states
+// states
 
-    public native void setState(int state); // not sure
-    public native int getCurrentState();
-    public native int getNextSector(long currentState, long currentSector, boolean test1, boolean test2, boolean test3);
-    public native int getCurrentSector(long currentState, long currentSector);
+    public native void getNextState(int currentState, int RestraintCheck, int isHomed, int ArmTest);    
     
+// other functions 
+
+
+// error handling 
+
+    public native String getErrorMessage(int RestraintCheck, int isHomed, int ArmTest);
+    public native void logErrorMessage(String message);
+
+    // E-STOP function
     
-// others
-
-    public native boolean isRideRunning();
-
-    public native boolean isRow1Locked();
-    public native boolean isRow2Locked();
-
-    public native boolean isReadyToRun();
-
+    // for HMI
     public native String getErrorMessage();
+    public native String isReadyToRunMessage();
+    public native boolean isReadyToRun();
+    public native int performRestraintCheck();
+    public native int isRow1Locked();
+    public native int isRow2Locked();
+    public native boolean unlockRestraints(); // implementation
+    public native boolean lockRestraints(); // implementation
 
-    public native boolean lockRestraints();
-    public native boolean unlockRestraints();
 
-    public native boolean isRotationGondolaClockwise();
-    public native boolean isRotationGondolaCounterClockwise();
-
-    public native boolean isRotationArmClockwise();
-    public native boolean isRotationArmCounterClockwise();
+// restraint handling    
+    public native boolean restraintCheck(boolean restraint);
+    public native int isRow1Locked(boolean restraint1);
+    public native int isRow2Locked(boolean restraint2);
+    
+// ride operation 
+    public native boolean isReadyToRun(int RestraintCheck, int isHomed, int ArmTest);
+    public native String isReadyToRunMessage(int RestraintCheck, int isHomed, int ArmTest);
+    public native boolean isRideRunning();
 
 
 

@@ -10,10 +10,9 @@
 using namespace std; 
 
 State currentState = State::kInit;
-Sector currentSector = Sector::kSector1;
-bool test1 = false; 
-bool test2 = false; 
-bool test3 = false; 
+bool RestraintCheck = false; 
+bool isHomed = false; 
+bool ArmTest = false; 
 
 double cyclePercent = 0.5; // dummy value testing
 
@@ -31,33 +30,24 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_getPosition(JNIEnv *env, jobject obj) {
     return 1;
 }
 
-// State and sector machines
+// State machines
 
-JNIEXPORT void JNICALL Java_HMI_1BackE_setState(JNIEnv *env, jobject obj, jint state) {
-    currentState = static_cast<State>(state);
+JNIEXPORT void JNICALL Java_HMI_1BackE_getNextState(JNIEnv *env, jobject obj, jint currentState, jint RestraintCheck, jint isHomed, jint ArmTest) {
+    State state = (State) currentState;
+
+    getNextState(&state, (int) RestraintCheck, (int) isHomed, (int) ArmTest);
+
 }
 
-JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentState(JNIEnv *env, jobject obj) {
-    // Return type is jint as per the header
-    return static_cast<jint>(currentState);
-}
+// JNIEXPORT void JNICALL Java_HMI_1BackE_setState(JNIEnv *env, jobject obj, jint state) {
+//     currentState = static_cast<State>(state);
+// }
 
-// Sector functions
+// JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentState(JNIEnv *env, jobject obj) {
+//     // Return type is jint as per the header
+//     return static_cast<jint>(currentState);
+// }
 
-JNIEXPORT jint JNICALL Java_HMI_1BackE_getNextSector(JNIEnv *env, jobject obj) {
-    getNextState(&currentState, &currentSector, test1, test2, test3);
-    return static_cast<jint>(currentSector); // Corrected return type
-}
-
-JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentSector(JNIEnv *env, jobject obj) {
-    getCurrentSector(&currentState, &currentSector);
-    return static_cast<jint>(currentSector); // Corrected return type
-}
-
-JNIEXPORT jint JNICALL Java_HMI_1BackE_setNextSector(JNIEnv *env, jobject obj, jint sector) {
-    currentSector = static_cast<Sector>(sector);
-    return static_cast<jint>(currentSector); // Corrected return type
-}
 
 // Ride functions
 
@@ -95,8 +85,28 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isReadyToRun(JNIEnv *env, jobject obj
     return JNI_TRUE; 
 }
 
+JNIEXPORT jstring JNICALL Java_HMI_1BackE_getErrorMessage(JNIEnv *env, jobject obj, jint RestraintCheck, jint isHomed, jint ArmTest) {
+   cout << "getErrorMessage called" << endl; 
+
+   string result = getErrorMessage((int) RestraintCheck, (int) isHomed, (int) ArmTest);
+   return env->NewStringUTF(result.c_str());
+}
+
+// hmi use 
 JNIEXPORT jstring JNICALL Java_HMI_1BackE_getErrorMessage(JNIEnv *env, jobject obj) {
-    return env->NewStringUTF("Received and processed error message");
+    cout << "getErrorMessage called" << endl; 
+ 
+    string result = getErrorMessage((int) RestraintCheck, (int) isHomed, (int) ArmTest);
+    return env->NewStringUTF(result.c_str());
+ }
+
+JNIEXPORT void JNICALL Java_HMI_1BackE_logErrorMessage(JNIEnv *env, jobject obj, jstring message) {
+    cout << "logErrorMessage called" << endl; 
+
+    const char* newMessage = env-> GetStringUTFChars(message, nullptr);
+    logErrorMessage(string(newMessage));
+    env->ReleaseStringUTFChars(message, newMessage);
+
 }
 
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_lockRestraints(JNIEnv *env, jobject obj) {
@@ -109,22 +119,30 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_unlockRestraints(JNIEnv *env, jobject
     return JNI_TRUE;
 }
 
-JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRotationGondolaClockwise(JNIEnv *env, jobject obj) {
-    cout << "isRotationGondolaClockwise called" << endl;  
-    return JNI_TRUE; 
+JNIEXPORT jstring JNICALL Java_HMI_1BackE_isReadyToRunMessage(JNIEnv *env, jobject obj, jint RestraintCheck, jint isHomed, jint ArmTest) {
+   string result = isReadyToRunMessage((int) RestraintCheck, (int) isHomed, (int) ArmTest);
+   cout << result << endl; 
+
+   return env->NewStringUTF(result.c_str());
 }
 
-JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRotationGondolaCounterClockwise(JNIEnv *env, jobject obj) {
-    cout << "isRotationGondolaCounterClockwise called" << endl;  
-    return JNI_TRUE; 
-}
 
-JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRotationArmClockwise(JNIEnv *env, jobject obj) {
-    cout << "isRotationArmClockwise called" << endl;  
-    return JNI_TRUE; 
-}
+// JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRotationGondolaClockwise(JNIEnv *env, jobject obj) {
+//     cout << "isRotationGondolaClockwise called" << endl;  
+//     return JNI_TRUE; 
+// }
 
-JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRotationArmCounterClockwise(JNIEnv *env, jobject obj) {
-    cout << "isRotationArmCounterClockwise called" << endl;  
-    return JNI_TRUE; 
-}
+// JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRotationGondolaCounterClockwise(JNIEnv *env, jobject obj) {
+//     cout << "isRotationGondolaCounterClockwise called" << endl;  
+//     return JNI_TRUE; 
+// }
+
+// JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRotationArmClockwise(JNIEnv *env, jobject obj) {
+//     cout << "isRotationArmClockwise called" << endl;  
+//     return JNI_TRUE; 
+// }
+
+// JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRotationArmCounterClockwise(JNIEnv *env, jobject obj) {
+//     cout << "isRotationArmCounterClockwise called" << endl;  
+//     return JNI_TRUE; 
+// }

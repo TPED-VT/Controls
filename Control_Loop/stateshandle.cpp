@@ -1,131 +1,279 @@
-
 #include "functions.h"
 #include "../Motor_Control/functions.h"
+#include <fstream>
+#include <chrono>
+using namespace std; 
 
+// Function prototypes
 
 
 
 // state transition function
-void getNextState(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3)
+void getNextState(State *currentState, int RestraintCheck, int isHomed, int ArmTest)
 {
     switch (*currentState)
     {
-    case State::kInit:
-        InitStateHandle(currentState, test1, test2, test3);
+    case State::kInit: // checks tests 1,2
+        InitStateHandle(currentState, RestraintCheck, isHomed);
         break;
 
-    case State::kAuto: // checks tests 1,2,3 
-        AutoStateHandle(currentState, test1, test2, test3);
+    case State::kAuto: // checks tests 1,2,3
+        AutoStateHandle(currentState, RestraintCheck, isHomed, ArmTest);
         break;
 
     case State::kRideOp: // arm motor rotation and gondola motor rotation (apart of auto state for now)
-        RideOpStateHandle(currentState, currentSector, test1, test2, test3);
+        RideOpStateHandle(currentState, RestraintCheck, isHomed, ArmTest);
         break;
 
-    // case State::kMaintenance: // 
-    //     MaintenanceStateHandle(currentState, currentTest, password, test1, test2, test3, test4, test5);
-    //     break;
+    case State::kMaintenance:
+        // MaintenanceStateHandle(currentState, currentTest, RestraintCheck, isHomed, ArmTest, test4, test5);
+        break;
     }
 }
 
-void getNextSector(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3) {
-    switch (*currentSector) {
-        case Sector::kSector1:
-            RideOpStateHandle(currentState, currentSector, test1, test2, test3);
-            break; 
-        case Sector::kSector2:
-            RideOpStateHandle(currentState, currentSector, test1, test2, test3);
-            break;
-        case Sector::kSector3:
-            RideOpStateHandle(currentState, currentSector, test1, test2, test3);
-            break;
-        case Sector::kSector4:
-            RideOpStateHandle(currentState, currentSector, test1, test2, test3);
-            break; 
-    }
-}
+// handling functions
+int RideOpStateHandle(State *currentState, int RestraintCheck, int isHomed, int ArmTest)
+{
+    // start ride
+    //putChar(serialPort, 'D');
 
-void getCurrentSector(State *currentState, Sector *currentSector) {
-    if (*currentState == State::kRideOp) {
-        switch (*currentSector) {
-            case Sector::kSector1:
-                *currentSector = Sector::kSector2;
-                break;
-            case Sector::kSector2:
-                *currentSector = Sector::kSector3;
-                break;
-            case Sector::kSector3:
-                *currentSector = Sector::kSector4;
-                break;
-            case Sector::kSector4:
-                *currentSector = Sector::kSector1; 
-                break;
+    // target values and current values
+    int targetArmMotorFrequency = 200;
+    int targetGondolaMotorFrequency = 100;
+    int currentArmMotorFrequency = 150;
+
+    bool restraint = false;
+
+    // timer 
+
+    auto start = chrono::steady_clock::now();
+    while (chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start).count() < 65)
+    { // during ride cycle
+
+        if (restraint)
+        {
+            RestraintCheck = PASS;
         }
-    } 
-}
+        else
+        {
+            RestraintCheck = -1;
+            return RestraintCheck;
+        }
 
-//handling functions
-void RideShowStateHandle(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3) {
+        // check if gondola/arm is not "abnormal"
 
-    int dummy = 2; // we need a variable to check if the ride show state has ended
- 
-  if (*currentState != State::kRideOp) {
-    cout << "unable to do rideop :(" << endl; 
-    } else {
-       getNextSector(currentState, currentSector, test1, test2, test3);
-  }
-  
- if (*currentSector == Sector::kSector4) {
-    if (dummy == 2) {
-        *currentState = State::kAuto; 
+        if (currentArmMotorFrequency <= targetArmMotorFrequency)
+        {
+            ArmTest = PASS;
+        }
+        else
+        {
+            ArmTest = ERROR_ARM;
+            return ArmTest;
+        }
     }
- } 
- 
+
+    // AFTER RIDE CYCLE
+
+    if (getPosition() == 0)
+    {
+        *currentState = State::kAuto;
+    }
+    else
+    {
+        isHomed = ERROR_HOME;
+        return isHomed;
+    }
+
+    return PASS;
 }
 
-
-void RideOpStateHandle(State *currentState, Sector *currentSector, bool test1, bool test2, bool test3)
+int InitStateHandle(State *currentState, int RestraintCheck, int isHomed)
 {
 
-    /*
-    
-    Ride Operator State Handle
+    // check RestraintCheck
+    // method to get the bool value
 
-    1. intialize the target arm and gondola motor frequencies
-    2. get the current arm and gondola motor frequencies 
-    3. make sure to ramp up the arm and gondola motor frequencies based on the sector
+    bool restraint1 = false;
+    bool restraint2 = false; 
 
-    */
+    int r = performRestraintCheck(restraint1, restraint2);
 
-    int targetArmMotorFrequency = 200; 
-    int targetGondolaMotorFrequency = 100;
-
-    int currentArmMotorFrequency = 150; 
-
-
-
-    // switch (*currentState) {
-    //     case State::kRideOp: {
-    //         for (int i = 0; i < 50; i++) {
-    //            int  currentArmMotorFrequency == getCurrentArmFrequency();
-    //            int  currentGondolaMotorFrequency == getCurrentGondolaFrequency();
-    //         }
-
-    //         RampUp(currentArmMotorFrequency, currentGondolaMotorFrequency);
-    //         break;
-    //     }
-    // }
-    //     cout << "All motor rotations completed successfully. Remaining in Auto state." << endl;
-    //     *currentState = State::kAuto;
+    if (r > 0)
+    {
+        RestraintCheck = PASS;
+        // return RestraintCheck;
+    }
+    else
+    {
+        RestraintCheck = ERROR_RESTRAINT;
+        return RestraintCheck;
     }
 
+    // check if ride is home position
+    // get homed location
 
-void InitStateHandle(State *currentState, bool test1, bool test2, bool test3) {
+    if (getPosition() == 0)
+    {
+        isHomed = PASS;
+    }
+    else
+    {
+        isHomed = ERROR_HOME;
+        return isHomed;
+    }
 
     *currentState = State::kAuto;
+    return PASS;
+
 }
 
-void AutoStateHandle(State *currentState, bool test1, bool test2, bool test3)
+int AutoStateHandle(State *currentState, int RestraintCheck, int isHomed, int ArmTest)
 {
+    bool status = isReadyToRun(RestraintCheck, isHomed, ArmTest);
+    int status_num = 0;
+
+    if (status)
+    {
+        status_num = 1;
+    }
+    else
+    {
+        status_num = -1;
+        return status_num;
+    }
+
     *currentState = State::kRideOp;
+    return PASS;
 }
+
+
+// other functions
+
+string getErrorMessage(int RestraintCheck, int isHomed, int ArmTest)
+{
+    string message = "";
+
+    if (RestraintCheck < 0)
+    {
+        message += "ERROR 101 (RESTRAINTS)";
+    }
+    if (isHomed < 0)
+    {
+        message += "ERROR 102 (NOT HOMED)";
+    }
+    if (ArmTest < 0)
+    {
+        message += "ERROR 103";
+    }
+    if (message.empty()) 
+    {
+        return "NO ERRORS/n";
+    }
+
+    logErrorMessage(message);
+    return message;
+}
+
+void logErrorMessage(const string& message) {
+    ofstream file("error_log.text", ios::app);
+    if (!file.is_open()) {
+        return; 
+    }
+
+    // get time
+
+    time_t now = time(0);
+    tm* localtm = localtime(&now);
+    char timestamp[64];
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", localtm);
+
+    file << "[" << timestamp << "]" << message << endl;
+    file.close();
+}
+
+// hmi functions
+
+// string getErrorMessage()
+// {
+//     return getErrorMessage(RestraintCheck, isHomed, ArmTest);
+// }
+
+
+
+bool isReadyToRun(int RestraintCheck, int isHomed, int ArmTest)
+{
+    return (getErrorMessage(RestraintCheck, isHomed, ArmTest) == "NO ERRORS");
+}
+
+string isReadyToRunMessage(int RestraintCheck, int isHomed, int ArmTest)
+{
+    string ready_to_run = "RIDE IS READY TO RUN";
+    string cannot_run = "RIDE IS NOT READY TO RUN";
+
+    if (isReadyToRun(RestraintCheck, isHomed, ArmTest) == PASS)
+    {
+        return ready_to_run;
+    }
+    else
+    {
+        return cannot_run;
+    }
+}
+
+int getPosition()
+{
+    return 0;
+}
+
+int performRestraintCheck(bool restraint1, bool restraint2)
+{
+    // method to get the bool value of restraint check
+
+    if (isRow1Locked(restraint1) == PASS && isRow2Locked(restraint2) == PASS)
+    {
+        return PASS;
+    }
+    else
+    {
+        return ERROR_RESTRAINT;
+    }
+}
+
+int isRow1Locked(bool restraint1)
+{
+    if (restraint1)
+    {
+        return PASS;
+    }
+    else
+    {
+        return ERROR_RESTRAINT;
+    }
+}
+
+int isRow2Locked(bool restraint2)
+{
+    if (restraint2)
+    {
+        return PASS;
+    }
+    else
+    {
+        return ERROR_RESTRAINT;
+    }
+}
+
+bool unlockRestraints()
+{
+    // some method to unlock the RestraintCheck???
+    return PASS; 
+}
+bool lockRestraints()
+{
+    // some method to lock the RestraintCheck???
+
+    return PASS; 
+}
+
+
