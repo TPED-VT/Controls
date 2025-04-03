@@ -5,6 +5,8 @@
 #include <limits>
 #include <ctime>
 #include <fstream>
+#include <thread>
+#include <chrono>
 // #include <stdio.h>
 // #include <string.h>
 // #include <errno.h>
@@ -15,6 +17,10 @@
 #define ERROR_RESTRAINT -1
 #define ERROR_HOME -2
 #define ERROR_ARM -3
+
+#define ESTOP_IN 25
+#define ESTOP_SOURCE 27
+
 
 // int fd;
 // int serialPort = serialOpen("/dev/ttyACM", 9600);
@@ -36,44 +42,40 @@ enum class State
 };
 
 // handling functions
-int RideOpStateHandle(State *currentState, int RestraintCheck, int isHomed, int ArmTest);
-int InitStateHandle(State *currentState, int RestraintCheck, int isHomed);
-int AutoStateHandle(State *currentState, int RestraintCheck, int isHomed, int ArmTest);
-int MaintenanceStateHandle(State *currentState, int RestraintCheck, int isHomed, int ArmTest, int test4, int test5);
+int InitStateHandle();
+int AutoStateHandle();
+int RideOpStateHandle();
+//int MaintenanceStateHandle(State *currentState, int RestraintCheck, int isHomed, int ArmTest, int test4, int test5);
 
 // other functions 
-string getErrorMessage(int RestraintCheck, int isHomed, int ArmTest);
+string getErrorMessage();
 void logErrorMessage(const string& message);
 
 // E-STOP function
+int setUpGPIO();
+bool eStopPressed();
 
-// hmi functions (without parameters)
+// hmi functions
 string getErrorMessage();
 string isReadyToRunMessage();
 bool isReadyToRun();
+// bool isRideRunning();
 int performRestraintCheck();
-// int isRow1Locked();
-// int isRow2Locked();
-// bool unlockRestraints(); // implementation
-// bool lockRestraints(); // implementation
-//void getCurrentState(); // need to implementations
-// bool sendState(int state); // needs implementation
-// bool start(); 
-// bool stop(); 
+int isRow1Locked();
+int isRow2Locked();
+bool unlockRestraints(); // implementation
+bool lockRestraints(); // implementation
+bool start(); 
+bool stop(); 
 
 // Back(end)
 int getPosition();
-int performRestraintCheck(bool restraint1, bool restraint2);
-int isRow1Locked(bool restraint1);
-int isRow2Locked(bool restraint2);
-
-bool unlockRestraints();
-bool lockRestraints();
-
-bool isReadyToRun(int RestraintCheck, int isHomed, int ArmTest);
-string isReadyToRunMessage(int RestraintCheck, int isHomed, int ArmTest);
+int performRestraintCheck();
 
 // state transition function
-void getNextState(State *currentState, int RestraintCheck, int isHomed, int ArmTest);
+void getNextState();
+int getCurrentState(); 
+int setState(int state);
+
 
 #endif

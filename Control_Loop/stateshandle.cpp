@@ -4,65 +4,83 @@
 #include <chrono>
 using namespace std;
 
-// Function prototypes
+// GLOBAL VARIABLES //
 
-// State currentState = State::kInit;
+State currentState = State::kInit;
+int RestraintCheck = 0;
+int isHomed = 0;
+int ArmTest = 0;
+
+bool restraint1 = PASS;
+bool restraint2 = PASS;
 
 
-// java stuff 
-int RestraintCheck_java = 0;
-int isHomed_java = 0;
-int ArmTest_java = 0;
+// STATE HANDLE FUNCTIONS // 
 
-// state transition function
-void getNextState(State *currentState, int RestraintCheck, int isHomed, int ArmTest)
+int InitStateHandle()
 {
-    switch (*currentState)
+
+    int r = performRestraintCheck(restraint1, restraint2);
+
+    if (r > 0)
     {
-    case State::kInit: // checks tests 1,2
-        InitStateHandle(currentState, RestraintCheck, isHomed);
-        break;
+        RestraintCheck = PASS;
+    }
+    else
+    {
+        RestraintCheck = ERROR_RESTRAINT;
+        return RestraintCheck;
+    }
 
-    case State::kAuto: // checks tests 1,2,3
-        AutoStateHandle(currentState, RestraintCheck, isHomed, ArmTest);
-        break;
+    if (getPosition() == 0)
+    {
+        isHomed = PASS;
+    }
+    else
+    {
+        isHomed = ERROR_HOME;
+        return isHomed;
+    }
 
-    case State::kRideOp: // arm motor rotation and gondola motor rotation (apart of auto state for now)
-        RideOpStateHandle(currentState, RestraintCheck, isHomed, ArmTest);
-        break;
+    currentState = State::kAuto;
+    return PASS;
+}
 
-    case State::kMaintenance:
-        // MaintenanceStateHandle(currentState, currentTest, RestraintCheck, isHomed, ArmTest, test4, test5);
-        break;
+int AutoStateHandle()
+{
+
+    int status = isReadyToRun();
+
+    if (status > 0)
+    {
+        currentState = State::kRideOp; // might need the option for a ride op to say its good
+        return PASS;
+    }
+    else
+    {
+        return -1;
     }
 }
 
-// handling functions
-int RideOpStateHandle(State *currentState, int RestraintCheck, int isHomed, int ArmTest)
+int RideOpStateHandle()
 {
-    // start ride
-    // putChar(serialPort, 'D');
 
-    // target values and current values
-    int targetArmMotorFrequency = 200;
-    int targetGondolaMotorFrequency = 100;
-    int currentArmMotorFrequency = 150;
+    putchar('D');
 
-    bool restraint = false;
-
-    // timer
+    int targetArmMotorFrequency = 100;
+    int targetGondolaMotorFrequency = 999;
+    int currentArmMotorFrequency = 748;
 
     auto start = chrono::steady_clock::now();
     while (chrono::duration_cast<chrono::seconds>(chrono::steady_clock::now() - start).count() < 65)
-    { // during ride cycle
-
-        if (restraint)
+    {
+        if (RestraintCheck > 0)
         {
             RestraintCheck = PASS;
         }
         else
         {
-            RestraintCheck = -1;
+            RestraintCheck = ERROR_RESTRAINT;
             return RestraintCheck;
         }
 
@@ -79,45 +97,9 @@ int RideOpStateHandle(State *currentState, int RestraintCheck, int isHomed, int 
         }
     }
 
-    // AFTER RIDE CYCLE
+    // logic to see when the ride ends
 
-    if (getPosition() == 0)
-    {
-        *currentState = State::kAuto;
-    }
-    else
-    {
-        isHomed = ERROR_HOME;
-        return isHomed;
-    }
-
-    return PASS;
-}
-
-int InitStateHandle(State *currentState, int RestraintCheck, int isHomed)
-{
-
-    // check RestraintCheck
-    // method to get the bool value
-
-    bool restraint1 = false;
-    bool restraint2 = false;
-
-    int r = performRestraintCheck(restraint1, restraint2);
-
-    if (r > 0)
-    {
-        RestraintCheck = PASS;
-        // return RestraintCheck;
-    }
-    else
-    {
-        RestraintCheck = ERROR_RESTRAINT;
-        return RestraintCheck;
-    }
-
-    // check if ride is home position
-    // get homed location
+    this_thread::sleep_for(chrono::seconds(25));
 
     if (getPosition() == 0)
     {
@@ -129,38 +111,66 @@ int InitStateHandle(State *currentState, int RestraintCheck, int isHomed)
         return isHomed;
     }
 
-    *currentState = State::kAuto;
+    currentState = State::kAuto;
     return PASS;
 }
 
-int AutoStateHandle(State *currentState, int RestraintCheck, int isHomed, int ArmTest)
+// STATE FUNCTIONS //
+
+void getNextState()
 {
-    bool status = isReadyToRun(RestraintCheck, isHomed, ArmTest);
-    int status_num = 0;
-
-    if (status)
+    switch (currentState)
     {
-        status_num = 1;
-    }
-    else
-    {
-        status_num = -1;
-        return status_num;
-    }
+    case State::kInit:
+        InitStateHandle();
+        break;
 
-    *currentState = State::kRideOp;
-    return PASS;
+    case State::kAuto:
+        AutoStateHandle();
+        break;
+
+    case State::kRideOp:
+        RideOpStateHandle();
+        break;
+
+    case State::kMaintenance:
+        // MaintenanceStateHandle();
+        break;
+    }
 }
 
-// other functions
+int getCurrentState()
+{
+    return (int)currentState;
+}
 
-string getErrorMessage(int RestraintCheck, int isHomed, int ArmTest)
+int setState(int state)
+{
+
+   if (state == 0) {
+    currentState = State::kInit;
+   } else if (state == 1) {
+    currentState = State::kAuto;
+   } else if (state == 2) {
+    currentState = State::kRideOp;
+   } else if (state == 3) {
+    currentState = State::kMaintenance;
+   } else if (state == 4) {
+    currentState = State::kOff;
+   }
+
+   return (int)currentState;
+}
+
+// ERROR MESSAGES // 
+
+string getErrorMessage()
 {
     string message = "";
 
     if (RestraintCheck < 0)
     {
-        message += "ERROR 101 (RESTRAINTS)";
+        message += "ERROR 101 (RESTRAINT)";
     }
     if (isHomed < 0)
     {
@@ -168,16 +178,16 @@ string getErrorMessage(int RestraintCheck, int isHomed, int ArmTest)
     }
     if (ArmTest < 0)
     {
-        message += "ERROR 103";
+        message += "ERROR 103 (ARMS)";
     }
     if (message.empty())
     {
-        return "NO ERRORS/n";
+        message += "NO ERRORS";
     }
-
     logErrorMessage(message);
     return message;
 }
+
 
 void logErrorMessage(const string &message)
 {
@@ -190,195 +200,100 @@ void logErrorMessage(const string &message)
     // get time
 
     time_t now = time(0);
-    tm *localtm = localtime(&now);
+    tm localtm;
+    localtime_s(&localtm, &now);
     char timestamp[64];
-    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", localtm);
+    strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", &localtm);
 
     file << "[" << timestamp << "]" << message << endl;
     file.close();
 }
 
-// hmi functions
-
-string getErrorMessage()
+int performRestraintCheck()
 {
-    string message = "";
 
-    if (RestraintCheck_java < 0) {
-        message += "ERROR 101 (RESTRAINT)";
-    } 
-    if (isHomed_java < 0) {
-        message += "ERROR 102 (NOT HOMED)";
+    int check1 = isRow1Locked(restraint1);
+    int check2 = isRow2Locked(restraint2);
+
+    if (check1 == PASS && check2 == PASS)
+    {
+        RestraintCheck = PASS;
     }
-    if (ArmTest_java < 0) {
-        message += "ERROR 103 (ARMS)"
+    else
+    {
+        RestraintCheck = ERROR_RESTRAINT;
     }
-    if (message.empty()) {
-        message += "NO ERRORS";
-    }
-    logErrorMessage(message);
-    return message; 
+
+    return RestraintCheck;
 }
+
+bool isReadyToRun()
+{
+    string message = getErrorMessage();
+
+    if (message == "NO ERRORS")
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+// HMI FUNCTIONS  //
 
 bool start()
 {
     int r = performRestraintCheck();
     if (r == PASS)
     {
-        RestraintCheck_java = PASS;
+        RestraintCheck = PASS;
     }
     else
     {
-        RestraintCheck_java = ERROR_RESTRAINT;
+        RestraintCheck = ERROR_RESTRAINT;
     }
     if (getPosition() == 0)
     {
-        isHomed_java = PASS;
+        isHomed = PASS;
     }
     else
     {
-        isHomed_java = ERROR_HOME;
+        isHomed = ERROR_HOME;
     }
-    if (ArmTest_java == PASS)
+    if (ArmTest == PASS)
     {
-        ArmTest_java = PASS;
+        ArmTest = PASS;
     }
     else
     {
-        ArmTest_java = ERROR_HOME;
+        ArmTest = ERROR_HOME;
     }
 
-    getNextState(&currentState, RestraintCheck_java, isHomed_java, ArmTest_java);
+    getNextState();
     return true;
 }
 
 bool stop()
 {
-    currentState = State::kOff;
-    RestraintCheck_java = 0;
-    isHomed_java = 0;
-    ArmTest_java = 0;
+    State currentState = State::kOff;
+    RestraintCheck = 0;
+    isHomed = 0;
+    ArmTest = 0;
 
     return true;
 }
 
-int performRestraintCheck() {
-    bool restraint1 = true; 
-    bool restraint2 = false; 
 
-    int check1 = isRow1Locked(restraint1);
-    int check2 = isRow2Locked(restraint2);
-
-    if (check1 = PASS && check2 = PASS) {
-        RestraintCheck_java = PASS; 
-    } else {
-        RestraintCheck_java = ERROR_RESTRAINT;
-    }
-
-    return RestraintCheck_java;
-}
-
-
-bool isReadyToRun() {
-    string message = getErrorMessage();
-
-    if (message == "NO ERRORS") {
-        return true; 
-    } else {
-        return false; 
-    }
-
-}
-
-string isReadyToRunMessage() {
-    string ready_to_run = "RIDE IS READY TO RUN";
-    string cannot_run = "RIDE IS NOT READY TO RUN";
-
-    if (isReadyToRun()) {
-        return ready_to_run;
-    } else {
-        return cannot_run;
-    }
-}
-
-// State getCurrentState() {
-//     return currentState;
-// }
-
-// // need to verify with AARON!!!
-
-// void getNextState() {
-//     switch (currentState) {
-//     case State::kInit: // checks tests 1,2
-//         InitStateHandle(&currentState, RestraintCheck_java, isHomed_java);
-//         break;
-
-//     case State::kAuto: // checks tests 1,2,3
-//         AutoStateHandle(&currentState, RestraintCheck_java, isHomed_java, ArmTest_java);
-//         break;
-
-//     case State::kRideOp: // arm motor rotation and gondola motor rotation (apart of auto state for now)
-//         RideOpStateHandle(&currentState, RestraintCheck_java, isHomed_java, ArmTest_java);
-//         break;
-
-//     case State::kMaintenance:
-//         // MaintenanceStateHandle(&currentState, currentTest, RestraintCheck_java, isHomed_java, ArmTest_java, test4, test5);
-//         break;
-//     }
-// }
-
-int sendState(int state) {
-
-    if (getCurrentState() == (int) State::kInit || getCurrentState() == (int) State::kAuto || getCurrentState() == (int) State::kRideOp || getCurrentState() == (int) State::kMaintenance) {
-        currentState = (State) state;
-        return state; 
-    }
-    return -1;
-}
-
-
-
-bool isReadyToRun(int RestraintCheck, int isHomed, int ArmTest)
-{
-    return (getErrorMessage(RestraintCheck, isHomed, ArmTest) == "NO ERRORS");
-}
-
-string isReadyToRunMessage(int RestraintCheck, int isHomed, int ArmTest)
-{
-    string ready_to_run = "RIDE IS READY TO RUN";
-    string cannot_run = "RIDE IS NOT READY TO RUN";
-
-    if (isReadyToRun(RestraintCheck, isHomed, ArmTest) == PASS)
-    {
-        return ready_to_run;
-    }
-    else
-    {
-        return cannot_run;
-    }
-}
+// BACKEND FUNCTIONS // 
 
 int getPosition()
 {
     return 0;
 }
 
-
-int performRestraintCheck(bool restraint1, bool restraint2)
-{
-    // method to get the bool value of restraint check
-
-    if (isRow1Locked(restraint1) == PASS && isRow2Locked(restraint2) == PASS)
-    {
-        return PASS;
-    }
-    else
-    {
-        return ERROR_RESTRAINT;
-    }
-}
-
-int isRow1Locked(bool restraint1)
+int isRow1Locked()
 {
     if (restraint1)
     {
@@ -390,7 +305,7 @@ int isRow1Locked(bool restraint1)
     }
 }
 
-int isRow2Locked(bool restraint2)
+int isRow2Locked()
 {
     if (restraint2)
     {
@@ -404,12 +319,33 @@ int isRow2Locked(bool restraint2)
 
 bool unlockRestraints()
 {
-    // some method to unlock the RestraintCheck???
+    // some method to unlock the restraint???
     return PASS;
 }
 bool lockRestraints()
 {
-    // some method to lock the RestraintCheck???
+    // some method to lock the restraint???
 
     return PASS;
 }
+
+// RASPI FUNCTIONS 
+
+// UNCOMMENT!!!!!!! WHEN PULLING TO PI!!!!!!!
+
+// int setUpGPIO(){
+//     if(wiringPiSetupGpio() == -1){
+//         std:cerr << "Wring Pi Fail" << std::endl;
+//         return -1;
+//     }
+
+//     pinMode(ESTOP_IN, INPUT);
+//     pinMode(ESTOP_SOURCE, OUTPUT);
+//     digitalWrite(ESTOP_SOURCE, HIGH);
+//     return 1;
+// }
+
+// bool eStopPressed(){
+
+//     return digitalRead(ESTOP_IN);
+// }
