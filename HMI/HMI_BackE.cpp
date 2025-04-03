@@ -67,7 +67,7 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_setCyclePercent(JNIEnv* env, jobject obj,
 
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRideRunning(JNIEnv *env, jobject obj) {
     cout << "isRideRunning called" << endl;  
-    return JNI_TRUE;
+    return JNIis_TRUE;
 }
 
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRow1Locked(JNIEnv *env, jobject obj) {

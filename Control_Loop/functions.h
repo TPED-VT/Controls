@@ -49,14 +49,14 @@ void logErrorMessage(const string& message);
 
 // hmi functions (without parameters)
 string getErrorMessage();
-// string isReadyToRunMessage();
-// bool isReadyToRun();
-// int performRestraintCheck();
+string isReadyToRunMessage();
+bool isReadyToRun();
+int performRestraintCheck();
 // int isRow1Locked();
 // int isRow2Locked();
 // bool unlockRestraints(); // implementation
 // bool lockRestraints(); // implementation
-// void getCurrentState(); // need to implementations
+//void getCurrentState(); // need to implementations
 // bool sendState(int state); // needs implementation
 // bool start(); 
 // bool stop(); 
