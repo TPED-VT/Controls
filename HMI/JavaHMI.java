@@ -17,6 +17,7 @@ import javax.swing.*;
  */
 public class JavaHMI {
     public static void main (String[]args) {
+        System.out.print(System.getProperty("user.dir"));
         KeyAsButton a = new KeyAsButton();
         KeyAsButton r = new KeyAsButton();
     }
@@ -54,12 +55,12 @@ class KeyAsButton extends JFrame implements KeyListener {
     HMI_BackE backend;
     
     static {
-        System.setProperty("java.library.path", "HMI_BackE.dll");  
+        
+        System.setProperty("java.library.path", "HMI_BackE.so");  
         System.loadLibrary("HMI_BackE");
-
-        setFocusable(true);
-        requestFocusInWindow();
-        addKeyListener(this);
+        //setFocusable(true);
+        //requestFocusInWindow();
+        //addKeyListener(this);
     }
     
     public KeyAsButton() {
