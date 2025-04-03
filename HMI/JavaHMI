@@ -1,3 +1,4 @@
+package javaHMI;
 import java.awt.*;   
 import java.awt.event.*;
 import java.awt.geom.Line2D;
@@ -227,6 +228,7 @@ class KeyAsButton extends JFrame implements KeyListener {
                     cyclePercent.repaint();
                 
                     //updating status
+                    rideStatus.setBackground(null);
                     if(backend.isRideRunning()/*TODO: status is running*/)
                         rideStatus.setText("STATUS: RUNNING");
                     else if(true/*TODO:status is loading*/) {
@@ -316,6 +318,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             public void run() {
                 if(backend.eStopPressed()) {
                     isEStopped = true;
+                    
                     errorBox.setText("EMERGENCY STOP ACTIVATED");
                     
                     //Gray out all other buttons
@@ -325,8 +328,9 @@ class KeyAsButton extends JFrame implements KeyListener {
                     indicator.setText("E-STOP");
                     restraintStatus.setText("E-STOP");
                     rideStatus.setText("STATUS: E-STOP");
+                    rideStatus.setBackground(Color.RED);
                     cyclePercent.setText("E-STOP");
-                    eStop.setVisible(true);
+                    //eStop.setVisible(true);
                 }
                 else {
                     isEStopped = false;
@@ -413,7 +417,6 @@ class KeyAsButton extends JFrame implements KeyListener {
         }
         
         if (key == KeyEvent.VK_L) {
-            System.out.println("hi1");
             //TODO:
             //insert code to lock restraints
             if(restraintStatus.getText().equals("<html> L:<br />RESTRAINTS UNLOCKED</html>") && 
@@ -541,5 +544,3 @@ class CirclePanel extends JPanel {
     }
     
 }
-
-
