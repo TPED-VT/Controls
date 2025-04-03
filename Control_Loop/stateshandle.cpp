@@ -96,6 +96,13 @@ int InitStateHandle(State *currentState, int RestraintCheck, int isHomed)
 
     bool restraint1 = false;
     bool restraint2 = false; 
+    // serialPort = serialOpen("/dev/ttyACM", 9600);
+    // if (serialPort < 0) {
+    //     fprintf(stderr,"Unable to open serial device: %s\n",strerror(errno));
+    //     return -1; 
+    // }
+
+    
 
     int r = performRestraintCheck(restraint1, restraint2);
 
@@ -192,6 +199,22 @@ void logErrorMessage(const string& message) {
     file.close();
 }
 
+int setUpGPIO(){
+    if(wiringPiSetupGpio() == -1){
+        std:cerr << "Wring Pi Fail" << std::endl;
+        return -1;
+    }
+
+    pinMode(ESTOP_IN, INPUT);
+    pinMode(ESTOP_SOURCE, OUTPUT);
+    digitalWrite(ESTOP_SOURCE, HIGH);
+    return 1;
+}
+
+bool eStopPressed(){
+
+    return digitalRead(ESTOP_IN);
+}
 // hmi functions
 
 // string getErrorMessage()

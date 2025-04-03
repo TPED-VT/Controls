@@ -5,24 +5,25 @@
 #include <limits>
 #include <ctime>
 #include <fstream>
-// #include <stdio.h>
-// #include <string.h>
-// #include <errno.h>
-// #include <wiringPi.h>
-// #include <wiringSerial.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <wiringPi.h>
+#include <wiringSerial.h>
 
 #define PASS 1
 #define ERROR_RESTRAINT -1
 #define ERROR_HOME -2
 #define ERROR_ARM -3
 
-// int fd;
-// int serialPort = serialOpen("/dev/ttyACM", 9600);
+#define ESTOP_IN 25
+#define ESTOP_SOURCE 27
 
-// if (serialPort < 0) {
-//     fprintf(stderr,"Unable to open serial device: %s\n",strerror(errno));
-//     return -1; 
-// }
+
+// int fd;
+// int serialPort; 
+
+
 
 using namespace std;
 
@@ -44,6 +45,8 @@ int MaintenanceStateHandle(State *currentState, int RestraintCheck, int isHomed,
 // other functions 
 string getErrorMessage(int RestraintCheck, int isHomed, int ArmTest);
 void logErrorMessage(const string& message);
+int setUpGPIO();
+bool eStopPressed();
 
 // E-STOP function
 

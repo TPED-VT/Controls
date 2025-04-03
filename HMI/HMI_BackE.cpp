@@ -3,6 +3,7 @@
 #include "HMI_BackE.h"  // Generated header file from HMI_1BackEnd.h
 #include <iostream>
 #include "../Control_Loop/functions.h" // needs to change
+#include <wiringPi.h>
 #include <ostream>
 #include <thread>
 #include <chrono>
@@ -69,6 +70,24 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRideRunning(JNIEnv *env, jobject ob
     cout << "isRideRunning called" << endl;  
     return JNI_TRUE;
 }
+
+JNIEXPORT jint JNICALL Java_HMI_1BackE_setUpGPIO(JNIEnv *env, jobject obj) {
+    if(wiringPiSetup() == -1){
+        std:cerr << "Wring Pi Fail" << std::endl;
+        return -1;
+    }
+
+    pinMode(ESTOP_IN, INPUT);
+    pinMode(ESTOP_SOURCE, OUTPUT);
+    digitalWrite(ESTOP_SOURCE, HIGH);
+    return 1;
+}
+
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_eStopPressed(JNIEnv *env, jobject obj) {
+    cout << "eStopPressed called: " << !digitalRead(ESTOP_IN) << endl;  
+    return !digitalRead(ESTOP_IN);
+}
+
 
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRow1Locked(JNIEnv *env, jobject obj) {
     cout << "isRow1Locked called" << endl;  

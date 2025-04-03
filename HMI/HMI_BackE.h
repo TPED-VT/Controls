@@ -65,6 +65,22 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_logErrorMessage
 
 /*
  * Class:     HMI_BackE
+ * Method:    setUpGPIO
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_HMI_1BackE_setUpGPIO
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    eStopPressed
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_eStopPressed
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
  * Method:    getErrorMessage
  * Signature: ()Ljava/lang/String;
  */

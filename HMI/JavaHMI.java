@@ -1,9 +1,10 @@
 import java.awt.*;   
 import java.awt.event.*;
 import java.awt.geom.Line2D;
+import javax.swing.*;
+import java.awt.Graphics;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.swing.*;
 
 /*
  * // -------------------------------------------------------------------------
@@ -17,9 +18,7 @@ import javax.swing.*;
  */
 public class JavaHMI {
     public static void main (String[]args) {
-        System.out.print(System.getProperty("user.dir"));
         KeyAsButton a = new KeyAsButton();
-        KeyAsButton r = new KeyAsButton();
     }
 }
 
@@ -44,6 +43,7 @@ class KeyAsButton extends JFrame implements KeyListener {
     JButton1 maint;
     JButton1 off;
     Timer timer;
+    TimerTask task;
     JTextField password;
     JPanel popupPanel;
     JFrame popup;
@@ -52,25 +52,18 @@ class KeyAsButton extends JFrame implements KeyListener {
     JButton direction;
     JButton cyclesRun;
     static int runs;
-    HMI_BackE backend;
-    
-    static {
-        
-        System.setProperty("java.library.path", "HMI_BackE.so");  
-        System.loadLibrary("HMI_BackE");
-        //setFocusable(true);
-        //requestFocusInWindow();
-        //addKeyListener(this);
-    }
+    HMI_BackE backend;  
+    boolean isOff;
+    Frame eStop;
+    JPanel eStopPanel;
+    JLabel eStopLabel;
+    boolean isEStopped;
     
     public KeyAsButton() {
-
-    
-        System.out.println(System.getProperty("java.library.path"));
-
+        
+        isEStopped = false;
         backend = new HMI_BackE();
-
-
+        backend.setUpGPIO();
         isClassic = true;
         //Frame setup
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -98,7 +91,8 @@ class KeyAsButton extends JFrame implements KeyListener {
         maint = new JButton1("<html> 3<br />MAINT</html>");
         off = new JButton1("<html> 4<br />OFF</html>");
         
-        errorBox.setBounds(0, 480, 875, 100);
+        errorBox.setBounds(0, (int)(screenSize.height * (480.0 / 800)), 
+            875, 100);
         middle.add(errorBox);
         init.setBounds(875, 480, 100, 100);
         middle.add(init);
@@ -108,6 +102,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.add(maint);
         off.setBounds(1175, 480, 100, 100);
         middle.add(off);
+        isOff = false;
         
         init.setBackground(new Color(192, 192, 192));
         auto.setBackground(Color.WHITE);
@@ -120,7 +115,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.add(circle);
         
       //Button setups
-        restraintStatus = new JButton1("<html> R:<br />RESTRAINTS UNLOCKED</html>");
+        restraintStatus = new JButton1("<html> L:<br />RESTRAINTS UNLOCKED</html>");
         cyclePercent = new JButton1("% status");
         rideStatus = new JButton1("STATUS: Running");   
         degree = new JButton1("angle: 100 degrees");
@@ -191,6 +186,20 @@ class KeyAsButton extends JFrame implements KeyListener {
         password.setPreferredSize(new Dimension(200, 30));
         popupPanel.add(password);
         
+        /*Frame eStop;
+        JPanel eStopPanel;
+        JLabel eStopLabel;*/
+        eStop = new JFrame();
+        eStop.setBounds(0, 0, screenSize.width, screenSize.height);
+        eStopPanel = new JPanel();
+        eStop.add(eStopPanel);
+        eStopLabel = new JLabel("EMERGENCY STOP ACTIVATED");
+        eStopPanel.setBackground(Color.RED);
+        eStopPanel.add(eStopLabel);
+        Font font = new Font("Arial", Font.PLAIN, 80);
+        eStopLabel.setFont(font);
+        eStopLabel.setBounds(this.getWidth()/2-100,this.getHeight()/2-150,1000,100);
+        
         indicator.setBounds(800, 312, 150, 150);
         middle.add(indicator);
         indicator.setBackground(Color.RED);
@@ -207,90 +216,128 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         //Timer to repaint and update various indicators
         timer = new Timer();
-        TimerTask task = new TimerTask() {
+        task = new TimerTask() {
             @Override
             public void run() {
-                //TODO: fill in values for visual updates:
-                int percent = (int)(backend.getCyclePercent()*100); /*TODO: get percent from backend*/;
-                cyclePercent.setText(percent + "% through cycle");
-                cyclePercent.repaint();
                 
-                //updating status
-                if(backend.isRideRunning()/*TODO: status is running*/)
-                    rideStatus.setText("STATUS: RUNNING");
-                else if(true/*TODO:status is loading*/) {
-                    rideStatus.setText("STATUS: LOADING");
-                }
-                else rideStatus.setText("STATUS: DOWN");
-                
-                //updating restraints
-                // if(backend.isRow1Locked(true) /*TODO: row1 is locked*/)
-                //     rectangle2.setBackground(Color.GREEN);
-                // else rectangle2.setBackground(Color.RED);
-                
-                // if(backend.isRow2Locked(1) == 1 /*TODO: row2 is locked*/)
-                //     rectangle.setBackground(Color.GREEN);
-                // else rectangle.setBackground(Color.RED);
-                
-                if(backend.isRideRunning()/*ride is running*/) {
-                    indicator.setBackground(Color.GRAY);
-                    indicator.setText("RUNNING");
-                }
-                else if(false/*TODO: rows locked && correct mode && ready*/) {
-                    indicator.setBackground(Color.GREEN);
-                    indicator.setText("<html> READY<br />For Ride Start</html>");
-                }
-                else indicator.setBackground(Color.RED);
-                
-                
-                //TODO: 
-                //Use if else statements after code below to account for all errors
-                if(true/* TODO: error condition 1*/)
-                    errorBox.setText("display error message 1");
-                else if(true/*TODO: error condition 2*/)
-                    errorBox.setText("display error message 2");
-                //...
-                
-                //If password is accepted:
-                //note: irl, password would be hashed
-                if(password.getText().equals("tpedhmi")) {
-                    popup.dispatchEvent(new WindowEvent(popup, WindowEvent.WINDOW_CLOSING));
-                    requestFocusInWindow();
-                    paintAdvanced();
-                    init.setBackground(Color.WHITE);
-                    auto.setBackground(Color.WHITE);
-                    maint.setBackground(new Color(192, 192, 192));
-                    off.setBackground(Color.WHITE);
-                    password.setText("");
-                }
-                
-                //Animation
-             //   circle.paintLine(backend.getPosition()/*TODO: insert function to get angle in radian*/);
-                
-                //ADVANCED DIAGNOSTICS FUNCTIONS
-                progressBar.setBounds(100, 270, 
-                    (int)(backend.getCyclePercent()/*TODO: get percent from backend*/*(screenSize.width-200)), 30);
-                
-                if(false/*TODO: status is not running*/)
-                    direction.setText("Direction: N/A");
-                // else {
-                //     if(backend.isRotationArmClockwise()/*TODO: isClockwise()*/)
-                //         direction.setText("Arm: Clockwise");
-                //     else direction.setText("Arm: CounterClockwise");
+                if(!isOff&&!isEStopped) {
                     
-                //     if(backend.isRotationGondolaClockwise())
-                //         direction.setText(direction.getText()+", Gondola: Clockwise");
-                //     else direction.setText(direction.getText()+", Gondola: Counterclockwise");
-                // }
+                    //TODO: fill in values for visual updates:
+                    int percent = (int)(backend.getCyclePercent()*100); /*TODO: get percent from backend*/;
+                    cyclePercent.setText(percent + "% through cycle");
+                    cyclePercent.repaint();
+                
+                    //updating status
+                    if(backend.isRideRunning()/*TODO: status is running*/)
+                        rideStatus.setText("STATUS: RUNNING");
+                    else if(true/*TODO:status is loading*/) {
+                        rideStatus.setText("STATUS: LOADING");
+                    }
+                    else rideStatus.setText("STATUS: DOWN");
+                
+                    //updating restraints
+                    // if(backend.isRow1Locked()/*TODO: row1 is locked*/)
+                    //     rectangle2.setBackground(Color.GREEN);
+                    rectangle2.setBackground(Color.RED);
+                
+                    // if(backend.isRow2Locked()/*TODO: row2 is locked*/)
+                    //     rectangle.setBackground(Color.GREEN);
+                    rectangle.setBackground(Color.RED);
+                
+                    if(backend.isRideRunning()/*ride is running*/) {
+                        indicator.setBackground(Color.GRAY);
+                        indicator.setText("RUNNING");
+                    }
+                    else if(backend.isReadyToRun()/*TODO: rows locked && correct mode && ready*/) {
+                        indicator.setBackground(Color.GREEN);
+                        indicator.setText("<html> READY<br />For Ride Start</html>");
+                    }
+                    else {
+                        indicator.setBackground(Color.RED);
+                        indicator.setText("<html> NOT READY<br />For Ride Start</html>");
+                    }
+                
+                    //From restraint check mode to locked
+                    // if(restraintStatus.getText().equals("<html> L:<br />RESTRAINT CHECK MODE</html>") &&
+                    //     backend.isRow1Locked() && backend.isRow2Locked())
+                    //     restraintStatus.setText("<html> L:<br />RESTRAINTS LOCKED</html>");
+                
+                    //TODO: 
+                    //Use if else statements after code below to account for all errors
+                    errorBox.setText(splitLines(backend.getErrorMessage()));
+                    
+                
+                    //If password is accepted:
+                    //note: irl, password would be hashed
+                    if(password.getText().equals("tpedhmi")) {
+                        popup.dispatchEvent(new WindowEvent(popup, WindowEvent.WINDOW_CLOSING));
+                        requestFocusInWindow();
+                        paintAdvanced();
+                        init.setBackground(Color.WHITE);
+                        auto.setBackground(Color.WHITE);
+                        maint.setBackground(new Color(192, 192, 192));
+                        off.setBackground(Color.WHITE);
+                        password.setText("");
+                    }
+                
+                    //Animation
+                    circle.paintLine(backend.getPosition()/*TODO: insert function to get angle in radian*/);
+                
+                    //ADVANCED DIAGNOSTICS FUNCTIONS
+                    progressBar.setBounds(100, 270, 
+                        (int)(backend.getCyclePercent()/*TODO: get percent from backend*/*(screenSize.width-200)), 30);
+                
+                    if(!backend.isRideRunning()/*TODO: status is not running*/)
+                        direction.setText("Direction: N/A");
+                    else {
+                        // if(backend.isRotationArmClockwise()/*TODO: isClockwise()*/)
+                        //     direction.setText("Arm: Clockwise");
+                        // else direction.setText("Arm: CounterClockwise");
+                    
+                        // if(backend.isRotationGondolaClockwise())
+                        //     direction.setText(direction.getText()+", Gondola: Clockwise");
+                        // else direction.setText(direction.getText()+", Gondola: Counterclockwise");
+                    }
    
                 
-                cyclesRun.setText("Cycle Count: " + runs);
+                    cyclesRun.setText("Cycle Count: " + runs);
+                }//if !isOff
             }
         };
+       
         
         //TODO: how often should visuals update? I have it set to 1% of the ride
         //cycle, which is 1.538 seconds, but unsure if it should update more
         timer.schedule(task, 1, 1538);
+        
+      //stops all functions if eStop
+        Timer eStopTimer = new Timer();
+        TimerTask eStopCheck = new TimerTask(){
+            @Override
+            public void run() {
+                if(backend.eStopPressed()) {
+                    isEStopped = true;
+                    errorBox.setText("EMERGENCY STOP ACTIVATED");
+                    
+                    //Gray out all other buttons
+                    rectangle.setBackground(Color.GRAY);
+                    rectangle2.setBackground(Color.GRAY);
+                    indicator.setBackground(Color.GRAY);
+                    indicator.setText("E-STOP");
+                    restraintStatus.setText("E-STOP");
+                    rideStatus.setText("STATUS: E-STOP");
+                    cyclePercent.setText("E-STOP");
+                    eStop.setVisible(true);
+                }
+                else {
+                    isEStopped = false;
+                    eStop.setVisible(false);
+                    
+                }
+                
+            }
+        };
+        eStopTimer.schedule(eStopCheck, 1, 100);
         
         
         paintClassic();
@@ -310,6 +357,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.repaint();
         advanced.setBackground(new Color(204,204,204));
         classic.setBackground(Color.WHITE);
+        restraintStatus.setText("<html> L:<br />RESTRAINTS UNLOCKED</html>");
         
     }
     
@@ -332,61 +380,89 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         
     }
-
-
+    
+    public String splitLines(String a) {
+        a = "<html>" + a;
+        for (int x = 6; x < a.length(); x++) {
+            if(a.substring(x, x+1).equals(")")) {
+                a = a.substring(0, x+1) + "<br />" + a.substring(x+1);
+            }
+        }
+        a = a + "</html>";
+        return a;
+        
+        
+    }
+    
     @Override
     public void keyPressed(KeyEvent e) {
         
         int key = e.getKeyCode();
-
-        //TODO: Get rid of this once maintenance mode is done, its a backdoor
+        
+        //TODO: Get rid of this once maintenance mode is done, it's a backdoor
         if (key == KeyEvent.VK_M) {
             if(isClassic)
                 paintAdvanced();
             else if(!isClassic)
                 paintClassic();
         }
-        
         if (key == KeyEvent.VK_R) {
+            //TODO: reset
+        }
+        if (key == KeyEvent.VK_S) {
+            //TODO: stop
+        }
+        
+        if (key == KeyEvent.VK_L) {
             System.out.println("hi1");
             //TODO:
             //insert code to lock restraints
-            if(restraintStatus.getText().equals("<html> R:<br />RESTRAINTS UNLOCKED</html>") && 
+            if(restraintStatus.getText().equals("<html> L:<br />RESTRAINTS UNLOCKED</html>") && 
                 backend.lockRestraints()) {
-                restraintStatus.setText("<html> R:<br />RESTRAINTS LOCKED</html>");
+                restraintStatus.setText("<html> L:<br />RESTRAINT CHECK MODE</html>");
             }
-            else if(restraintStatus.getText().equals("<html> R:<br />RESTRAINTS LOCKED</html>") && 
-                backend.unlockRestraints() /*check if ride has been unlocked on backend*/) {
-                restraintStatus.setText("<html> R:<br />RESTRAINTS UNLOCKED</html>");  
+            else if(restraintStatus.getText().equals("<html> L:<br />RESTRAINTS LOCKED</html>")|| 
+                restraintStatus.getText().equals("<html> L:<br />RESTRAINT CHECK MODE</html>") 
+                && backend.unlockRestraints() /*check if ride has been unlocked on backend*/) {
+                restraintStatus.setText("<html> L:<br />RESTRAINTS UNLOCKED</html>");  
             }
             
         }
 
-        if (key == KeyEvent.VK_1) {       
-            init.setBackground(new Color(192, 192, 192));
-            auto.setBackground(Color.WHITE);
-            maint.setBackground(Color.WHITE);
-            off.setBackground(Color.WHITE);
-            paintClassic();
+        if (key == KeyEvent.VK_1) {   
+            
+            // if (backend.sendState(0)) {
+            //     isOff = false;
+            //     init.setBackground(new Color(192, 192, 192));
+            //     auto.setBackground(Color.WHITE);
+            //     maint.setBackground(Color.WHITE);
+            //     off.setBackground(Color.WHITE);
+            //     paintClassic();
+            // }
             //TODO:
             //activate init
             
         }
         if (key == KeyEvent.VK_2) {
-            init.setBackground(Color.WHITE);
-            auto.setBackground(new Color(192, 192, 192));
-            maint.setBackground(Color.WHITE);
-            off.setBackground(Color.WHITE);
-            paintClassic();
             
+            // if(backend.sendState(1)) {
+            //     isOff = false;
+            //     init.setBackground(Color.WHITE);
+            //     auto.setBackground(new Color(192, 192, 192));
+            //     maint.setBackground(Color.WHITE);
+            //     off.setBackground(Color.WHITE);
+            //     paintClassic();
+            // }
             //TODO: 
             //activate auto
         }
 
         if (key == KeyEvent.VK_3) {
-           
-            popup.setVisible(true);
             
+            // if(backend.sendState(3)) {
+            //     isOff = false;
+            //     popup.setVisible(true);
+            // }
             
             //TODO:
             //activate maintenance
@@ -395,14 +471,25 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         if(key == KeyEvent.VK_4) { 
             
-            init.setBackground(Color.WHITE);
-            auto.setBackground(Color.WHITE);
-            maint.setBackground(Color.WHITE);
-            off.setBackground(new Color(192, 192, 192));
-            paintClassic();
-            //TODO:
-            //turn off
-        }
+            // if(backend.sendState(4)) {
+            //     isOff = true;
+            //     init.setBackground(Color.WHITE);
+            //     auto.setBackground(Color.WHITE);
+            //     maint.setBackground(Color.WHITE);
+            //     off.setBackground(new Color(192, 192, 192));
+            //     paintClassic();
+            //     rectangle.setBackground(Color.GRAY);
+            //     rectangle2.setBackground(Color.GRAY);
+            //     indicator.setBackground(Color.GRAY);
+            //     indicator.setText("OFF");
+            //     restraintStatus.setText("OFF");
+            //     rideStatus.setText("STATUS: OFF");
+            //     cyclePercent.setText("0% through cycle");
+            //     errorBox.setText("OFF");
+            //     //TODO:
+            //     //turn off
+            // } //if statement
+        } //keyEvent vk4
     }
     
     @Override
@@ -434,16 +521,17 @@ class CirclePanel extends JPanel {
         super.paintComponent(g);
         x = 0; // top left corner
         y = 0; // top left corner
-        d = 150; // Diameter of the circle
+        d = 150; //diameter
 
         g.setColor(Color.BLACK); // Set circle color
-        g.drawOval(x, y, d, d); // Draw the circle outline
+        g.drawOval(x, y, d, d); 
         // g.fillOval(x, y, diameter, diameter); // To draw a filled circle
         
         
     }
     
     public void paintLine(double angle){
+        angle = angle - (Math.PI/2);
         //this.setColor(Color.BLACK); // Set line color
         this.getGraphics().clearRect(150,150,150, 150);
         super.paintComponent(this.getGraphics()); 
@@ -454,3 +542,4 @@ class CirclePanel extends JPanel {
     }
     
 }
+

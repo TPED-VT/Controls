@@ -6,6 +6,7 @@ public class HMI_BackE {
     }
 
     public static void main(String[] agrs) {
+        new HMI_BackE().setUpGPIO();
         new HMI_BackE().getPosition();
     }
 
@@ -28,7 +29,8 @@ public class HMI_BackE {
     public native void logErrorMessage(String message);
 
     // E-STOP function
-    
+    public native int setUpGPIO();
+    public native boolean eStopPressed();
     // for HMI
     public native String getErrorMessage();
     public native String isReadyToRunMessage();
