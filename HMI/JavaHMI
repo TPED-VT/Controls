@@ -57,9 +57,11 @@ class KeyAsButton extends JFrame implements KeyListener {
     Frame eStop;
     JPanel eStopPanel;
     JLabel eStopLabel;
+    boolean isEStopped;
     
     public KeyAsButton() {
-                
+        
+        isEStopped = false;
         backend = new HMI_BackE();
         isClassic = true;
         //Frame setup
@@ -217,7 +219,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             @Override
             public void run() {
                 
-                if(!isOff) {
+                if(!isOff&&!isEStopped) {
                     
                     //TODO: fill in values for visual updates:
                     int percent = (int)(backend.getCyclePercent()*100); /*TODO: get percent from backend*/;
@@ -313,7 +315,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             @Override
             public void run() {
                 if(backend.eStopPressed()) {
-                    isOff = true;
+                    isEStopped = true;
                     errorBox.setText("EMERGENCY STOP ACTIVATED");
                     
                     //Gray out all other buttons
@@ -327,7 +329,7 @@ class KeyAsButton extends JFrame implements KeyListener {
                     eStop.setVisible(true);
                 }
                 else {
-                    isOff = false;
+                    isEStopped = false;
                     eStop.setVisible(false);
                     
                 }
