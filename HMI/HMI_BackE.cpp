@@ -33,9 +33,15 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_setUpGPIO(JNIEnv *env, jobject obj) {
         return -1;
     }
 
-    // SPI
-    if (wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) == -1) {
-        std::cerr << "SPI Setup Failed" << std::endl;
+    // Initialize SPI0
+    if (wiringPiSPISetup(SPI0_CHANNEL, 500000) < 0) {
+        std::cerr << "Error setting up SPI for Gondola" << std::endl;
+        return -1;
+    }
+
+    // Initialize SPI1
+    if (wiringPiSPISetup(SPI1_CHANNEL, 500000) < 0) {
+        std::cerr << "Error setting up SPI for Arm" << std::endl;
         return -1;
     }
 
@@ -53,8 +59,7 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_setUpGPIO(JNIEnv *env, jobject obj) {
     pinMode(CS2_PIN, OUTPUT);
     digitalWrite(CS1_PIN, HIGH);
     digitalWrite(CS2_PIN, HIGH);
-
-
+    
     return 1;
 }
 

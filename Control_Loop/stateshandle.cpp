@@ -276,21 +276,34 @@ bool stop()
 
 // BACKEND FUNCTIONS // 
 
-uint16_t getPosition()
+uint16_t getPosition(int encoder)
 {
     uint8_t txBuf[1] = {READ_POSITION};
     uint8_t rxBuf[2];
 
     // Select the encoder
-    digitalWrite(csPin, LOW);
-    delayMicroseconds(3);
-    
-    
-    wiringPiSPIDataRW(SPI_CHANNEL, txBuffer, 1); // Send command
-    wiringPiSPIDataRW(SPI_CHANNEL, rxBuffer, 2); // Read 2 bytes
+    if(encoder == 1){
+        digitalWrite(CS1_PIN, LOW);
+        delayMicroseconds(3);
+        
+        
+        wiringPiSPIDataRW(SPI0_CHANNEL, txBuffer, 1); // Send command
+        wiringPiSPIDataRW(SPI0_CHANNEL, rxBuffer, 2); // Read 2 bytes
 
-    // Deselect the encoder
-    digitalWrite(csPin, HIGH);
+        // Deselect the encoder
+        digitalWrite(CS1_PIN, HIGH);
+    }
+    else if(encoder == 2){
+        digitalWrite(CS2_PIN, LOW);
+        delayMicroseconds(3);
+        
+        
+        wiringPiSPIDataRW(SPI1_CHANNEL, txBuffer, 1); // Send command
+        wiringPiSPIDataRW(SPI1_CHANNEL, rxBuffer, 2); // Read 2 bytes
+
+        // Deselect the encoder
+        digitalWrite(CS2_PIN, HIGH);
+    }
 
     uint16_t position = ((rxBuffer[0] << 8) | rxBuffer[1]) & 0x3FFF;  // This is the current position
     return position;
