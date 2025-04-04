@@ -34,9 +34,9 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_setCyclePercent
 /*
  * Class:     HMI_BackE
  * Method:    getPosition
- * Signature: ()I
+ * Signature: ()[F
  */
-JNIEXPORT jint JNICALL Java_HMI_1BackE_getPosition
+JNIEXPORT jfloatArray JNICALL Java_HMI_1BackE_getPosition
   (JNIEnv *, jobject);
 
 /*

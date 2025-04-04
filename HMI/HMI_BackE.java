@@ -5,14 +5,14 @@ public class HMI_BackE {
 
     public static void main(String[] agrs) {
         new HMI_BackE().setUpGPIO();
-        new HMI_BackE().getPosition();
+        // new HMI_BackE().getPosition(); // Does this remove two screens?
     }
 
     public native double getCyclePercent(); // double needs to change: implementation
     public native void startCyclePercent();
     public native void setCyclePercent(int percent);
 
-    public native int getPosition();
+    public native float[] getPosition();
 
 // states
 

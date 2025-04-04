@@ -22,6 +22,14 @@
 #define ESTOP_IN 25
 #define ESTOP_SOURCE 27
 
+#define CS1_PIN 10  // Encoder 1 Chip Select (GPIO pin 10)
+#define CS2_PIN 9   // Encoder 2 Chip Select (GPIO pin 9)
+#define READ_POSITION 0x3F  // Command to read position
+
+// SPI settings
+#define SPI_CHANNEL 0  // SPI channel (0 or 1)
+#define SPI_SPEED 500000  // SPI speed in Hz (500 kHz is typically enough)
+
 
 // int fd;
 // int serialPort = serialOpen("/dev/ttyACM", 9600);
@@ -70,7 +78,7 @@ bool start();
 bool stop(); 
 
 // Back(end)
-int getPosition();
+uint16_t getPosition();
 int performRestraintCheck();
 
 // state transition function

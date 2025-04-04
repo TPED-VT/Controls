@@ -26,14 +26,35 @@ void readCyclePercent() {
 // UNCOMMENT!!! IF YOU ARE PULLING TO RASPI 
 
 JNIEXPORT jint JNICALL Java_HMI_1BackE_setUpGPIO(JNIEnv *env, jobject obj) {
+    
+    // Serial
     if(wiringPiSetup() == -1){
         std:cerr << "Wring Pi Fail" << std::endl;
         return -1;
     }
+
+    // SPI
+    if (wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED) == -1) {
+        std::cerr << "SPI Setup Failed" << std::endl;
+        return -1;
+    }
+
+
+    // Open serial port
     fd = serialOpen("/dev/ttyACM0", 9600);
+
+    // Set E-Stop paramaters
     pinMode(ESTOP_IN, INPUT);
     pinMode(ESTOP_SOURCE, OUTPUT);
     digitalWrite(ESTOP_SOURCE, HIGH);
+
+    // Set Encoder paramaters
+    pinMode(CS1_PIN, OUTPUT);
+    pinMode(CS2_PIN, OUTPUT);
+    digitalWrite(CS1_PIN, HIGH);
+    digitalWrite(CS2_PIN, HIGH);
+
+
     return 1;
 }
 
@@ -119,9 +140,23 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_performRestraintCheck(JNIEnv *env, jobjec
 
 // BACK END 
 
-JNIEXPORT jint JNICALL Java_HMI_1BackE_getPosition(JNIEnv *env, jobject obj) {
-    cout << "Position: 0" << endl;
-    return 0;
+JNIEXPORT jfloatArray JNICALL Java_HMI_1BackE_getPosition(JNIEnv *env, jobject obj) {
+    // Read encoder positions
+    uint16_t pos1 = getPosition(CS1_PIN);
+    uint16_t pos2 = getPosition(CS2_PIN);
+
+    // Convert the positions to degrees
+    float degrees1 = (pos1 * 360.0) / 16384.0;
+    float degrees2 = (pos2 * 360.0) / 16384.0;
+
+    // Return an array directly from the JNI function (instead of creating a new array)
+    jfloat result[2] = {degrees1, degrees2};
+    
+    // Create a local reference to the result array and return it
+    jfloatArray jResult = env->NewFloatArray(2);
+    env->SetFloatArrayRegion(jResult, 0, 2, result);
+    
+    return jResult;  // Return the result as a JNI float array
 }
 
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isReadyToRun(JNIEnv *env, jobject obj) {
@@ -177,6 +212,13 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_setCyclePercent(JNIEnv* env, jobject obj,
 JNIEXPORT void JNICALL Java_HMI_1BackE_disbatch(JNIEnv* env, jobject obj){
     for(int i = 0; i < 40; i++)
         serialPutchar(fd, 'd');
+}
+
+JNIEXPORT void JNICALL Java_HMI_1BackE_reset(JNIEnv* env, jobject obj){
+    
+    for(int i = 0; i < 40; i++)
+        serialPutchar(fd, 'r');
+    setState(0)
 }
 
 // JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRotationGondolaClockwise(JNIEnv *env, jobject obj) {

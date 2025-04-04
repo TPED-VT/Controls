@@ -146,20 +146,8 @@ int getCurrentState()
 
 int setState(int state)
 {
-
-   if (state == 0) {
-    currentState = State::kInit;
-   } else if (state == 1) {
-    currentState = State::kAuto;
-   } else if (state == 2) {
-    currentState = State::kRideOp;
-   } else if (state == 3) {
-    currentState = State::kMaintenance;
-   } else if (state == 4) {
-    currentState = State::kOff;
-   }
-
-   return (int)currentState;
+   currentState = state;
+   return currentState;
 }
 
 // ERROR MESSAGES // 
@@ -288,9 +276,24 @@ bool stop()
 
 // BACKEND FUNCTIONS // 
 
-int getPosition()
+uint16_t getPosition()
 {
-    return 0;
+    uint8_t txBuf[1] = {READ_POSITION};
+    uint8_t rxBuf[2];
+
+    // Select the encoder
+    digitalWrite(csPin, LOW);
+    delayMicroseconds(3);
+    
+    
+    wiringPiSPIDataRW(SPI_CHANNEL, txBuffer, 1); // Send command
+    wiringPiSPIDataRW(SPI_CHANNEL, rxBuffer, 2); // Read 2 bytes
+
+    // Deselect the encoder
+    digitalWrite(csPin, HIGH);
+
+    uint16_t position = ((rxBuffer[0] << 8) | rxBuffer[1]) & 0x3FFF;  // This is the current position
+    return position;
 }
 
 int isRow1Locked()
