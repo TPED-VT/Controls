@@ -15,6 +15,7 @@ bool isHomed = false;
 bool ArmTest = false; 
 
 double cyclePercent = 0.5; // dummy value testing
+double c = 0; 
 
 void readCyclePercent() {
     for (int i = 0; i < 1000; i++) {
