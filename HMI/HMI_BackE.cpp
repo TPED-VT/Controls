@@ -60,7 +60,7 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentState(JNIEnv *env, jobject obj)
   
 }
 
-JNIEXPORT void JNICALL Java_HMI_1BackE_setState(JNIEnv *env, jobject obj, jint state) {
+JNIEXPORT jint JNICALL Java_HMI_1BackE_setState(JNIEnv *env, jobject obj, jint state) {
     cout << "JNI setState called with state: " << state << endl;
     setState((int)state);
 }
@@ -83,36 +83,36 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_stop(JNIEnv *env, jobject obj) {
 JNIEXPORT jint JNICALL Java_HMI_1BackE_isRow1Locked(JNIEnv *env, jobject obj) {
     cout << "isRow1Locked called" << endl;
     if (isRow1Locked() == PASS) {
-        return JNI_TRUE; 
+        return PASS; 
     } else {
-        return JNI_FALSE;
+        return ERROR_RESTRAINT;
     }
 }
 
 JNIEXPORT jint JNICALL Java_HMI_1BackE_isRow2Locked(JNIEnv *env, jobject obj) {
     cout << "isRow2Locked called" << endl;
     if (isRow2Locked() == PASS) {
-        return JNI_TRUE; 
+        return PASS; 
     } else {
-        return JNI_FALSE;
+        return ERROR_RESTRAINT;
     }
 }
 
 JNIEXPORT jint JNICALL Java_HMI_1BackE_lockRestraints(JNIEnv *env, jobject obj) {
     cout << "lockRestraints called" << endl;
     if (lockRestraints() == PASS) {
-        return JNI_TRUE; 
+        return PASS; 
     } else {
-        return JNI_FALSE;
+        return ERROR_RESTRAINT;
     }
 }
 
 JNIEXPORT jint JNICALL Java_HMI_1BackE_unlockRestraints(JNIEnv *env, jobject obj) {
     cout << "unlockRestraints called" << endl;
     if (unlockRestraints() == PASS) {
-        return JNI_TRUE; 
+        return PASS; 
     } else {
-        return JNI_FALSE;
+        return ERROR_RESTRAINT;
     }
 }
 

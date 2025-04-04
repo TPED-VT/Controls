@@ -45,6 +45,8 @@ public class HMI_BackE {
     public native String isReadyToRunMessage();
     public native boolean isRideRunning();
 
+    
+
 
 
 }
