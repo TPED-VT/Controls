@@ -78,6 +78,19 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_stop(JNIEnv *env, jobject obj) {
     stop();
 }
 
+JNIEXPORT void JNICALL Java_HMI_1BackE_reset(JNIEnv* env, jobject obj){
+    
+    for(int i = 0; i < 40; i++)
+        serialPutchar(fd, 'r');
+    setState(0);
+}
+
+JNIEXPORT void JNICALL Java_HMI_1BackE_resetManual(JNIEnv* env, jobject obj){
+    cout << "resetManual called" << endl;
+    resetManual();
+}
+
+
 // RESTRAINT CONTROL 
 
 JNIEXPORT jint JNICALL Java_HMI_1BackE_isRow1Locked(JNIEnv *env, jobject obj) {
@@ -153,12 +166,10 @@ JNIEXPORT jstring JNICALL Java_HMI_1BackE_getErrorMessage(JNIEnv *env, jobject o
     return env->NewStringUTF(result.c_str());
 }
 
-JNIEXPORT void JNICALL Java_HMI_1BackE_logErrorMessage(JNIEnv *env, jobject obj, jstring message) {
-    cout << "logErrorMessage called" << endl;
-
-    const char* newMessage = env->GetStringUTFChars(message, nullptr);
-    logErrorMessage(string(newMessage));
-    env->ReleaseStringUTFChars(message, newMessage);
+JNIEXPORT jstring JNICALL Java_HMI_1BackE_getErrorTestMessage(JNIEnv *env, jobject obj) {
+    cout << "getErrorMessage called" << endl;
+    string result = getErrorTestMessage();
+    return env->NewStringUTF(result.c_str());
 }
 
 
@@ -175,6 +186,16 @@ JNIEXPORT jdouble JNICALL Java_HMI_1BackE_getCyclePercent(JNIEnv* env, jobject o
 
 JNIEXPORT void JNICALL Java_HMI_1BackE_setCyclePercent(JNIEnv* env, jobject obj, jint percent) {
     cyclePercent = percent; 
+}
+
+JNIEXPORT void JNICALL Java_HMI_1BackE_disbatch(JNIEnv* env, jobject obj){
+    for(int i = 0; i < 40; i++)
+        serialPutchar(fd, 'd');
+}
+
+JNIEXPORT jint JNICALL Java_HMI_1BackE_MaintenanceSelection(JNIEnv *env, jobject obj, jint access, jint test) {
+    cout << "MaintenanceSelection called" << endl;
+    return MaintenanceSelection((int)access, (int)test);
 }
 
 

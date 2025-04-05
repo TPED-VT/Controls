@@ -23,7 +23,7 @@ public class HMI_BackE {
 // error handling 
 
     public native String getErrorMessage();
-    public native void logErrorMessage();
+    public native String getErrorTestMessage();
 
     // E-STOP function
     public native int setUpGPIO();
@@ -31,8 +31,10 @@ public class HMI_BackE {
 
     // for HMI
     public native int performRestraintCheck();
-    public native boolean unlockRestraints(); // implementation
-    public native boolean lockRestraints(); // implementation
+    public native int unlockRestraints(); // implementation
+    public native int lockRestraints(); // implementation
+    public native int MaintenanceSelection(int access, int test);
+
 
 
 // restraint handling    
@@ -44,8 +46,14 @@ public class HMI_BackE {
     public native boolean isReadyToRun();
     public native String isReadyToRunMessage();
     public native boolean isRideRunning();
+    public native void disbatch();
+    public native boolean reset();
+    public native boolean resetInternal();
+    public native boolean start();
+    public native boolean stop();
 
     
+
 
 
 

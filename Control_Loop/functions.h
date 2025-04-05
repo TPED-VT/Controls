@@ -17,6 +17,7 @@
 #define ERROR_RESTRAINT -1
 #define ERROR_HOME -2
 #define ERROR_ARM -3
+#define ERROR_GONDOLA -4
 
 #define ESTOP_IN 25
 #define ESTOP_SOURCE 27
@@ -41,15 +42,23 @@ enum class State
     kOff = 4
 };
 
+enum class Test {
+    RestraintTest = 0, 
+    ArmMotorTest = 1, 
+    GondolaMotorTest = 2,
+    isHomedTest = 3
+}
+
 // handling functions
 int InitStateHandle();
 int AutoStateHandle();
 int RideOpStateHandle();
-//int MaintenanceStateHandle(State *currentState, int RestraintCheck, int isHomed, int ArmTest, int test4, int test5);
+int MaintenanceStateHandle(int access, int test)
 
 // other functions 
 string getErrorMessage();
 void logErrorMessage(const string& message);
+string getErrorTestMessage();
 
 // E-STOP function
 int setUpGPIO();
@@ -67,10 +76,14 @@ bool unlockRestraints(); // implementation
 bool lockRestraints(); // implementation
 bool start(); 
 bool stop(); 
+bool resetManual();
+
 
 // Back(end)
 int getPosition();
 int performRestraintCheck();
+int MaintenanceSelection(int access, int test);
+
 
 // state transition function
 void getNextState();
