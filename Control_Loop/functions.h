@@ -95,7 +95,7 @@ bool resetManual();
 
 
 // Back(end)
-int getPosition();
+uint16_t getPosition(int encoder);
 int performRestraintCheck();
 int MaintenanceSelection(int access, int test);
 
