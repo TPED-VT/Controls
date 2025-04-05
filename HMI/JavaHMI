@@ -60,6 +60,10 @@ class KeyAsButton extends JFrame implements KeyListener {
     JLabel eStopLabel;
     boolean isEStopped;
     int access;
+    JButton z;
+    JButton x;
+    JButton c;
+    JButton v;
     
     public KeyAsButton() {
         
@@ -121,7 +125,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         restraintStatus = new JButton1("<html> L:<br />RESTRAINTS UNLOCKED</html>");
         cyclePercent = new JButton1("% status");
         rideStatus = new JButton1("STATUS: Running");   
-        degree = new JButton1("angle: 100 degrees");
+        degree = new JButton1("angle: 0 degrees");
         rectangle = new JPanel();
         rectangle2 = new JPanel();
         indicator = new JButton1("<html> NOT READY<br />For Ride Start</html>");
@@ -142,7 +146,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         advanced.setBorderPainted(false);
         advanced.setBackground(new Color(204,204,204));
         direction = new JButton("direction: ");
-        direction.setBounds(30, 165, 600, 85);
+        direction.setBounds(230, 165, 400, 85);
         
         cyclesRun = new JButton("cycles run");
         cyclesRun.setBounds(650,165,600,85);
@@ -156,7 +160,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         classic.setBackground(Color.WHITE);                
         
         restraintStatus.setBounds(30, 50, 600, 200);
-        degree.setBounds(30, 50, 600, 85);
+        degree.setBounds(230, 50, 400, 85);
         
         cyclePercent.setBounds(650,165,600,85); 
         
@@ -215,6 +219,20 @@ class KeyAsButton extends JFrame implements KeyListener {
         progressBarBase.setBounds(100, 270, screenSize.width-200 , 30);
         progressBar = new JPanel();
         progressBar.setBackground(new Color(0,0,0));
+        
+        //Maintenance button indicator
+        z = new JButton("restraint check");
+        z.setBounds(10, 50, 200, 40);
+        z.setBackground(Color.WHITE);
+        x = new JButton("arm motor check");
+        x.setBounds(10, 100, 200, 40);
+        x.setBackground(Color.WHITE);
+        c = new JButton("gondola motor check");
+        c.setBounds(10, 150, 200, 40);
+        c.setBackground(Color.WHITE);
+        v = new JButton("homing check");
+        v.setBounds(10, 200, 200, 40);
+        v.setBackground(Color.WHITE);
                
         
         //Timer to repaint and update various indicators
@@ -231,14 +249,16 @@ class KeyAsButton extends JFrame implements KeyListener {
                     cyclePercent.repaint();
                 
                     //updating status
-                    rideStatus.setBackground(null);
-                    if(backend.isRideRunning()/*TODO: status is running*/)
+                    rideStatus.setBackground(UIManager.getColor("Button.background"));
+                    /*if(backend.isRideRunning()TODO: status is running)
                         rideStatus.setText("STATUS: RUNNING");
-                    else if(true/*TODO:status is loading*/) {
-                        rideStatus.setText("STATUS: LOADING");
+                    else if(trueTODO:status is loading) {
+                        rideStatus.setText("STATUS: STOPPED");
                     }
-                    else rideStatus.setText("STATUS: DOWN");
-                
+                    else rideStatus.setText("STATUS: DOWN");*/
+                    rideStatus.setText("STATUS: " + backend.statusMessage());
+                    
+                    
                     //updating restraints
                     if(backend.isRow1Locked()/*TODO: row1 is locked*/)
                         rectangle2.setBackground(Color.GREEN);
@@ -292,20 +312,29 @@ class KeyAsButton extends JFrame implements KeyListener {
                     progressBar.setBounds(100, 270, 
                         (int)(backend.getCyclePercent()/*TODO: get percent from backend*/*(screenSize.width-200)), 30);
                 
+                    
+                    degree.setText("Position: " + backend.getPosition() +" degrees");
                     if(!backend.isRideRunning()/*TODO: status is not running*/)
                         direction.setText("Direction: N/A");
                     else {
-                        if(backend.isRotationArmClockwise()/*TODO: isClockwise()*/)
-                            direction.setText("Arm: Clockwise");
-                        else direction.setText("Arm: CounterClockwise");
+                        if(backend.isRotationGondolaCounterclockwise()/*TODO: isClockwise()*/)
+                            direction.setText("Arm: N/A");
+                        else direction.setText("Arm: Counterclockwise");
                     
-                        if(backend.isRotationGondolaClockwise())
-                            direction.setText(direction.getText()+", Gondola: Clockwise");
+                        if(backend.isRotationArmCounterclockwise())
+                            direction.setText(direction.getText()+", Gondola: N/A");
                         else direction.setText(direction.getText()+", Gondola: Counterclockwise");
                     }
+                    if(backend.getTestStatusMessage().contains("Passed")||
+                    		backend.getTestStatusMessage().substring(backend.getTestStatusMessage().length()-1).equals(")")) {
+                    			z.setBackground(Color.WHITE);
+                    			x.setBackground(Color.WHITE);
+                    			c.setBackground(Color.WHITE);
+                    			v.setBackground(Color.WHITE);
+                    		}
    
                 
-                    cyclesRun.setText("Cycle Count: " + runs);
+                    cyclesRun.setText("Cycle Count: " + backend.getCycles());
                 }//if !isOff
             }
         };
@@ -313,7 +342,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         //TODO: how often should visuals update? I have it set to 1% of the ride
         //cycle, which is 1.538 seconds, but unsure if it should update more
-        timer.schedule(task, 1, 1538);
+        timer.schedule(task, 1, 100);
         
       //stops all functions if eStop
         Timer eStopTimer = new Timer();
@@ -361,6 +390,11 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.remove(progressBarBase);
         middle.remove(direction);
         middle.remove(cyclesRun);
+        middle.remove(z);
+        middle.remove(x);
+        middle.remove(c);
+        middle.remove(v);
+
         middle.repaint();
         advanced.setBackground(new Color(204,204,204));
         classic.setBackground(Color.WHITE);
@@ -379,6 +413,10 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.add(progressBar);
         middle.add(direction);
         middle.add(cyclesRun);
+        middle.add(z);
+        middle.add(x);
+        middle.add(c);
+        middle.add(v);
 
         middle.repaint();
         
@@ -421,7 +459,16 @@ class KeyAsButton extends JFrame implements KeyListener {
                 paintClassic();
         }
         if (key == KeyEvent.VK_R) {
-            //TODO: reset
+        	if (backend.sendState(0)==0) {
+            	access = 0;
+                isOff = false;
+                init.setBackground(new Color(192, 192, 192));
+                auto.setBackground(Color.WHITE);
+                maint.setBackground(Color.WHITE);
+                off.setBackground(Color.WHITE);
+                paintClassic();
+            }
+        	//TODO: reset
         }
         if (key == KeyEvent.VK_S) {
             //TODO: stop
@@ -509,23 +556,27 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         //Maintenance mode check
         
-        //Z is position check
+        //Z is restraint check
         if(key == KeyEvent.VK_Z) {
         	backend.maintenanceSelection(access, 0);
+        	z.setBackground(new Color(173, 216, 230));
         }
         
         //x is arm motor check
         if(key == KeyEvent.VK_X) {
         	backend.maintenanceSelection(access, 1);
+        	x.setBackground(new Color(173, 216, 230));
         }
         //c is gondola motor check
         if(key == KeyEvent.VK_C) {
         	backend.maintenanceSelection(access, 2);
+        	c.setBackground(new Color(173, 216, 230));
         }
         
         //v is homed check
         if(key == KeyEvent.VK_V) {
         	backend.maintenanceSelection(access, 3);
+        	v.setBackground(new Color(173, 216, 230));
         }
         
     }
