@@ -59,13 +59,16 @@ class KeyAsButton extends JFrame implements KeyListener {
     JPanel eStopPanel;
     JLabel eStopLabel;
     boolean isEStopped;
+    int access;
     
     public KeyAsButton() {
         
         isEStopped = false;
         backend = new HMI_BackE();
+        //backend.setUpGPIO;
         isClassic = true;
         //Frame setup
+        access = 0;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.setBounds(0,0,screenSize.width, screenSize.height);
         this.setVisible(true);
@@ -271,6 +274,7 @@ class KeyAsButton extends JFrame implements KeyListener {
                     //If password is accepted:
                     //note: irl, password would be hashed
                     if(password.getText().equals("tpedhmi")) {
+                    	access = 1;
                         popup.dispatchEvent(new WindowEvent(popup, WindowEvent.WINDOW_CLOSING));
                         requestFocusInWindow();
                         paintAdvanced();
@@ -282,7 +286,7 @@ class KeyAsButton extends JFrame implements KeyListener {
                     }
                 
                     //Animation
-                    circle.paintLine(backend.getPosition()/*TODO: insert function to get angle in radian*/);
+                    circle.paintLine(radians(backend.getPosition())/*TODO: insert function to get angle in radian*/);
                 
                     //ADVANCED DIAGNOSTICS FUNCTIONS
                     progressBar.setBounds(100, 270, 
@@ -396,11 +400,18 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         
     }
+    public double radians(double degrees) {
+    	return degrees*(Math.PI/180);
+    }
     
     @Override
     public void keyPressed(KeyEvent e) {
         
         int key = e.getKeyCode();
+        
+        if(key == KeyEvent.VK_D) {
+        	backend.start();
+        }
         
         //TODO: Get rid of this once maintenance mode is done, it's a backdoor
         if (key == KeyEvent.VK_M) {
@@ -433,7 +444,8 @@ class KeyAsButton extends JFrame implements KeyListener {
 
         if (key == KeyEvent.VK_1) {   
             
-            if (backend.sendState(0)) {
+            if (backend.sendState(0)==0) {
+            	access = 0;
                 isOff = false;
                 init.setBackground(new Color(192, 192, 192));
                 auto.setBackground(Color.WHITE);
@@ -447,7 +459,8 @@ class KeyAsButton extends JFrame implements KeyListener {
         }
         if (key == KeyEvent.VK_2) {
             
-            if(backend.sendState(1)) {
+            if(backend.sendState(1)==1) {
+            	access = 0;
                 isOff = false;
                 init.setBackground(Color.WHITE);
                 auto.setBackground(new Color(192, 192, 192));
@@ -461,7 +474,7 @@ class KeyAsButton extends JFrame implements KeyListener {
 
         if (key == KeyEvent.VK_3) {
             
-            if(backend.sendState(3)) {
+            if(backend.sendState(3)==3) {
                 isOff = false;
                 popup.setVisible(true);
             }
@@ -473,8 +486,9 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         if(key == KeyEvent.VK_4) { 
             
-            if(backend.sendState(4)) {
+            if(backend.sendState(4)==4) {
                 isOff = true;
+                access = 0;
                 init.setBackground(Color.WHITE);
                 auto.setBackground(Color.WHITE);
                 maint.setBackground(Color.WHITE);
@@ -492,6 +506,28 @@ class KeyAsButton extends JFrame implements KeyListener {
                 //turn off
             } //if statement
         } //keyEvent vk4
+        
+        //Maintenance mode check
+        
+        //Z is position check
+        if(key == KeyEvent.VK_Z) {
+        	backend.maintenanceSelection(access, 0);
+        }
+        
+        //x is arm motor check
+        if(key == KeyEvent.VK_X) {
+        	backend.maintenanceSelection(access, 1);
+        }
+        //c is gondola motor check
+        if(key == KeyEvent.VK_C) {
+        	backend.maintenanceSelection(access, 2);
+        }
+        
+        //v is homed check
+        if(key == KeyEvent.VK_V) {
+        	backend.maintenanceSelection(access, 3);
+        }
+        
     }
     
     @Override
