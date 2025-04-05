@@ -117,23 +117,39 @@ void loop() {
   lavaLoop1();    // 1.5 seconds
   lavaLoop2();    // 3.1 seconds
   lavaLoop4();    // 0.5 seconds
+  delay(75);      // 0.075 seconds
   lavaLoop1();    // 1.5 seconds
   lavaLoop2();    // 3.1 seconds
   lavaLoop3();    // 2.8 seconds
-  lavaLoop1();    // 1.5 seconds
   
-  // Permanent Time: 66.2 seconds
   // FOR-loop to gradually turn off dragon eyes:
   for(lit = 255; lit > 0; lit -= 1)
   {
     analogWrite(EYES_PIN, lit);             // Write new decreased brightness to dragon eyes pin
     delay(5);                               // Wait 5ms before next loop iteration
   }
-  
-  // 66.5 seconds
+ 
   jawClose();                               // FOR-loop to close the dragon jaw
   
-  // Total time: 67.775 seconds
+  // Permanent Time (Ride cycle ends): 66.2 seconds
+  lavaLoop2();    // 3.1 seconds
+  lavaLoop3();    // 2.8 seconds
+  lavaLoop1();    // 1.5 seconds
+  delay(225);     // 0.225 seconds
+  lavaLoop2();    // 3.1 seconds
+  lavaLoop3();    // 2.8 seconds
+  lavaLoop2();    // 3.1 seconds
+  lavaLoop3();    // 2.8 seconds
+  lavaLoop2();    // 3.1 seconds
+
+  // FOR-loop to gradually turn off dragon eyes:
+  for(lava = 255; lava > 0; lava -= 1)
+  {
+    analogWrite(RED_PIN, lava);             // Write new decreased brightness to dragon eyes pin
+    delay(5);                               // Wait 5ms before next loop iteration
+  }
+  
+  // Total time: 90 seconds
 }
 
 
