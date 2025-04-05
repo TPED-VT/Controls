@@ -493,7 +493,10 @@ uint16_t getPosition(int encoder)
         // Deselect the encoder
         digitalWrite(CS1_PIN, HIGH);
     }
-    else if(encoder == 2){        
+    else if(encoder == 2){   
+        // digitalWrite(CS2_PIN, LOW);
+        // delayMicroseconds(3);
+             
         wiringPiSPIDataRW(SPI1_CHANNEL, buf, 2); // Send command
 
         // Deselect the encoder
