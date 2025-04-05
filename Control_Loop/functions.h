@@ -3,15 +3,19 @@
 
 #include <iostream>
 #include <limits>
+#include <time.h>
 #include <ctime>
 #include <fstream>
 #include <thread>
 #include <chrono>
-// #include <stdio.h>
-// #include <string.h>
-// #include <errno.h>
-// #include <wiringPi.h>
-// #include <wiringSerial.h>
+#include <stdio.h>
+#include <string.h>
+#include <errno.h>
+#include <wiringPi.h>
+#include <wiringSerial.h>
+#include <wiringPiSPI.h>
+#include <cmath>
+
 
 #define PASS 1
 #define ERROR_RESTRAINT -1
