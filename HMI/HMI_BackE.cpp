@@ -156,6 +156,12 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeGondola(JNIEnv *env, jobject obj)
     return stop();
 }
 
+JNIEXPORT jint JNICALL Java_HMI_1BackE_MaintenanceSelection(JNIEnv *env, jobject obj, jint access, jint test) {
+    int result = MaintenanceSelection((int)access, (int)test);
+    return result; 
+}
+
+
 // RESTRAINT CONTROL 
 
 JNIEXPORT jint JNICALL Java_HMI_1BackE_isRow1Locked(JNIEnv *env, jobject obj) {
@@ -241,9 +247,9 @@ JNIEXPORT jstring JNICALL Java_HMI_1BackE_getErrorMessage(JNIEnv *env, jobject o
 
 }
 
-JNIEXPORT jstring JNICALL Java_HMI_1BackE_getStatusMessage(JNIEnv* env, jobject obj) {
+JNIEXPORT jstring JNICALL Java_HMI_1BackE_getstatusMessage(JNIEnv* env, jobject obj) {
     // cout << "getStatusMessage called" << endl;
-    string result = getStatusMessage();
+    string result = statusMessage();
     return env->NewStringUTF(result.c_str());
 }
 
@@ -252,6 +258,15 @@ JNIEXPORT jstring JNICALL Java_HMI_1BackE_getMaintenanceError(JNIEnv* env, jobje
     string result = getMaintenanceError();
     return env->NewStringUTF(result.c_str());
 }
+
+JNIEXPORT jstring JNICALL Java_HMI_1BackE_getTestStatusMessage(JNIEnv* env, jobject obj) {
+    // cout << "getTestStatusMessage called" << endl;
+    string result = getTestStatusMessage();
+    return env->NewStringUTF(result.c_str());
+}
+
+
+
 
 
 // JNIEXPORT void JNICALL Java_HMI_1BackE_logErrorMessage(JNIEnv *env, jobject obj, jstring message) {
@@ -278,8 +293,8 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_setCyclePercent(JNIEnv* env, jobject obj,
     cyclePercent = percent; 
 }
 
-JNIEXPORT jint JNICALL Java_HMI_1BackE_cycleCount(JNIEnv* env, jobject obj) {
-    return cycleCount(); 
+JNIEXPORT jint JNICALL Java_HMI_1BackE_getCycleCount(JNIEnv* env, jobject obj) {
+    return getCycleCount(); 
 }
 
 JNIEXPORT void JNICALL Java_HMI_1BackE_disbatch(JNIEnv* env, jobject obj){

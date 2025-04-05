@@ -71,7 +71,7 @@ int MaintenanceStateHandle()
 
 // other functions 
 string getErrorMessage();
-string getErrorTestMessage();
+string getMaintenanceError();
 
 // E-STOP function
 int setUpGPIO();
@@ -80,31 +80,46 @@ bool eStopPressed();
 // hmi functions
 string getErrorMessage();
 string isReadyToRunMessage();
-string getStatusMessage();
+
+// status
+string getTestStatusMessage();
+string statusMessage();
+
 string getMaintenanceError();
 bool isReadyToRun();
-// bool isRideRunning();
+
+// other stuff
+
 int performRestraintCheck();
 int isRow1Locked();
 int isRow2Locked();
-bool unlockRestraints(); // implementation
-bool lockRestraints(); // implementation
+bool unlockRestraints(); 
+bool lockRestraints(); 
 bool start(); 
 bool stop(); 
 bool resetManual();
 
+// stuff 
+bool homeArm();
+
+// test stuff 
+int getCurrentTest(); 
+int setCurrentTest(int test);
+int RestraintTest();
+int ArmMotorTest();
+int GondolaMotorTest();
+int isHomedTest();
 
 // Back(end)
 uint16_t getPosition(int encoder);
 int performRestraintCheck();
 int MaintenanceSelection(int access, int test);
 
-
 // state transition function
 void getNextState();
 int getCurrentState(); 
 int setState(int state);
-int cycleCount();
+int getCycleCount();
 
 
 #endif

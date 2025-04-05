@@ -191,7 +191,6 @@ int MaintenanceSelection(int access, int test) {
     return PASS;
 }
 
-
 int MaintenanceStateHandle()
 {
     if (currentState == State::kMaintenance)
@@ -215,6 +214,7 @@ int MaintenanceStateHandle()
 
 int RestraintTest()
 {
+    currentTest = Test::RestraintTest;
     unlockRestraints();
 
     int check1 = isRow1Unlocked();
@@ -245,6 +245,7 @@ int RestraintTest()
         return ERROR_RESTRAINT;
     }
 
+
     return PASS;
 }
 
@@ -253,7 +254,7 @@ int ArmMotorTest()
     // ENCODER VALUE IMPLEMENTATION
 
 
-
+    currentTest = Test::ArmMotorTest;
     return PASS;
 }
 
@@ -261,16 +262,18 @@ int GondolaMotorTest()
 {
 
     // ENCODER VALUE IMPLEMENTATION
+    currentTest = Test::GondolaMotorTest;
     return PASS;
 }
 
 
 int isHomedTest()
 {
+    currentTest = Test::isHomedTest;
     int gp = (int)getPosition();
 
     // setPosition(); add functionaly
-    // Home(); add functionally
+    // Home(); add functionally 
 
     this_thread::sleep_for(chrono::seconds(15)); // wait for it to home
 
@@ -322,6 +325,18 @@ int setState(int state)
 }
 
 
+// TEST FUNCTIONS //
+int getCurrentTest()
+{
+    return (int)currentTest;
+}
+
+int setCurrentTest(int test)
+{
+    currentTest = (Test)test;
+    return (int)currentTest;
+}
+
 // ERROR MESSAGES //
 
 string getErrorMessage()
@@ -344,7 +359,6 @@ string getErrorMessage()
     {
         message += "NO ERRORS";
     }
-    // logErrorMessage(message);
     return message;
 }
 
@@ -371,13 +385,15 @@ string getMaintenanceError()
 }
 
 
-string StatusMessage() {
+string statusMessage() {
     string message = "";
     if (currentState == State::kInit) {
-        message += "INIT"
+        message += "INITIALIZING";
     } 
     if (currentState == State::kAuto) {
         message += "LOADING"
+    } else if (isReadyToRun() == true) {
+        message += "READY TO RUN";
     }
     if (currentState == State::kRideOp) {
         message += "RUNNING";
@@ -390,6 +406,46 @@ string StatusMessage() {
     }
 
     return message; 
+}
+
+
+string getTestStatusMessage() {
+    string message = "";
+
+    if (currentTest == Test::RestraintTest) {
+        message += "Restraint Test";
+    } else if (RestraintTest() == ERROR_RESTRAINT) {
+        message += "ERROR 101 (RESTRAINT)";
+    } else if (RestraintTest() == PASS) {
+        message += "Restraint Test Passed";
+    }
+    
+    if (currentTest == Tests::ArmMotorTest) {
+        message += "Main Motor Test";
+    } else if (ArmMotorTest() == ERROR_ARM) {
+        message += "ERROR 1201 (MAIN MOTOR)";
+    } else if (ArmMotorTest() == PASS) {
+        message += "Main Motor Test Passed";
+    }
+
+    if (currentTest == Test::GondolaMotorTest) {
+        message += "Gondola Motor Test";
+    } else if (GondolaMotorTest() == ERROR_GONDOLA) {
+        message += "ERROR 1202 (GONDOLA MOTOR)";
+    } else if (GondolaMotorTest() == PASS) {
+        message += "Gondola Motor Test Passed";
+    }
+
+    if (currentTest == Test::isHomedTest) {
+        message += "Homing Test";
+    } else if (isHomedTest() == ERROR_HOME) {
+        message += "ERROR 1203 (HOMING FAULT)";
+    } else if (isHomedTest() == PASS) {
+        message += "Homing Test Passed";
+
+    return message;
+}
+
 }
 
 int performRestraintCheck()
@@ -422,6 +478,18 @@ bool isReadyToRun()
     {
         return false;
     }
+}
+
+string isReadyToRunMessage() {
+    string message = "";
+
+    if (isReadyToRun() == true) {
+        message += "READY TO RUN";
+    } else {
+        message += "NOT READY TO RUN";
+    }
+
+    return message; 
 }
 
 // HMI FUNCTIONS  //
@@ -473,7 +541,7 @@ bool stop()
     return true;
 }
 
-int getCycles() {
+int getCycleCount() {
     return cycleCount;
 }
 
@@ -543,6 +611,35 @@ bool lockRestraints()
 
     return PASS;
 }
+
+bool homeArm() {
+
+    uint16_t top = 180; 
+    bool dir = getPosition(1) > top;
+    uint16_t pos = getPosition(1);
+    
+    while (!(pos <= 2 || pos >= 358)) {
+        pos = getPosition(1);
+        if (dir)
+            serialPuts(fd, "<0,0,10,0>");
+        else
+            serialPuts(fd, "<0,0,10,1>");
+    
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        
+    }
+    
+    // Stop motor
+    for (int i = 0; i < SERIAL_ITERATION; i++) {
+        serialPuts(fd, "<0,0,0,0>");
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
+    
+    armHomed = true;
+    return stop();
+
+}
+
 
 // RASPI FUNCTIONS
 

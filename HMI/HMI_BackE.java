@@ -10,12 +10,10 @@ public class HMI_BackE {
 
     public native double getCyclePercent(); // double needs to change: implementation
     public native void startCyclePercent();
-    public native int cycleCount();
+    public native int getCycleCount();
     public native void setCyclePercent(int percent);
 
     public native float[] getPosition();
-
-
 
 // states
 
@@ -28,6 +26,8 @@ public class HMI_BackE {
     public native String getErrorMessage();
     public native String getStatusMessage();
     public native String getMaintenanceError();
+    public native String getMaintenanceMessage();
+    public native String getTestStatusMessage();
 
     // E-STOP function
     public native int setUpGPIO();
@@ -37,7 +37,6 @@ public class HMI_BackE {
     public native int performRestraintCheck();
     public native int unlockRestraints(); // implementation
     public native int lockRestraints(); // implementation
-
 
 // restraint handling    
     public native boolean restraintCheck();
@@ -52,6 +51,10 @@ public class HMI_BackE {
     public native boolean stop();
     public native boolean homeArm();
     public native boolean homeGondola();
+
+// testing 
+    public native int getCurrentTest();
+    public native int setCurrentTest(int test);
     
 
 }
