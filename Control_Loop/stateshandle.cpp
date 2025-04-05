@@ -278,17 +278,14 @@ bool stop()
 
 uint16_t getPosition(int encoder)
 {
-    uint8_t txBuf[1] = {READ_COMMAND};
-    uint8_t rxBuf[2];
+    
+    unsigned char buf[2];
+
 
     // Select the encoder
-    if(encoder == 1){
-        digitalWrite(CS1_PIN, LOW);
-        delayMicroseconds(3);
+    if(encoder == 1){   
+        wiringPiSPIDataRW(SPI0_CHANNEL, buf, 2); // Send command
         
-        
-        wiringPiSPIDataRW(SPI0_CHANNEL, txBuf, 1); // Send command
-        wiringPiSPIDataRW(SPI0_CHANNEL, rxBuf, 2); // Read 2 bytes
 
         // Deselect the encoder
         digitalWrite(CS1_PIN, HIGH);
@@ -298,15 +295,14 @@ uint16_t getPosition(int encoder)
         delayMicroseconds(3);
         
         
-        wiringPiSPIDataRW(SPI1_CHANNEL, txBuf, 1); // Send command
-        wiringPiSPIDataRW(SPI1_CHANNEL, rxBuf, 2); // Read 2 bytes
+        wiringPiSPIDataRW(SPI0_CHANNEL, buf, 2); // Send command
 
         // Deselect the encoder
         digitalWrite(CS2_PIN, HIGH);
     }
 
-    uint16_t position = ((rxBuf[0] << 8) | rxBuf[1]) & 0x3FFF;  // This is the current position
-    return position;
+    uint16_t position = ((buf[0] << 8) | buf[1]) & 0x3FFF;  // This is the current position
+    return position*360/16384;
 }
 
 int isRow1Locked()

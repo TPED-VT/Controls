@@ -11,6 +11,7 @@ using namespace std;
 
 double cyclePercent = 0.5; // dummy value testing
 double c = 0; 
+// Open serial port
 int fd;
 
 void readCyclePercent() {
@@ -40,15 +41,14 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_setUpGPIO(JNIEnv *env, jobject obj) {
     }
 
     // Initialize SPI1
-    if (wiringPiSPISetup(SPI1_CHANNEL, 500000) < 0) {
-        std::cerr << "Error setting up SPI for Arm" << std::endl;
-        return -1;
-    }
-    else 
-        std::cout << "Spi good" << std::endl;
+    // if (wiringPiSPISetup(SPI1_CHANNEL, 500000) < 0) {
+    //     std::cerr << "Error setting up SPI for Arm" << std::endl;
+    //     return -1;
+    // }
+    // else 
+    //     std::cout << "Spi good" << std::endl;
 
 
-    // Open serial port
     fd = serialOpen("/dev/ttyACM0", 9600);
 
     // Set E-Stop paramaters
@@ -56,11 +56,11 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_setUpGPIO(JNIEnv *env, jobject obj) {
     pinMode(ESTOP_SOURCE, OUTPUT);
     digitalWrite(ESTOP_SOURCE, HIGH);
 
-    // Set Encoder paramaters
-    pinMode(CS1_PIN, OUTPUT);
-    pinMode(CS2_PIN, OUTPUT);
-    digitalWrite(CS1_PIN, HIGH);
-    digitalWrite(CS2_PIN, HIGH);
+    // // Set Encoder paramaters
+    // pinMode(CS1_PIN, OUTPUT);
+    // pinMode(CS2_PIN, OUTPUT);
+    // // digitalWrite(CS1_PIN, HIGH);
+    // // digitalWrite(CS2_PIN, HIGH);
     
     return 1;
 }
@@ -98,7 +98,26 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_start(JNIEnv *env, jobject obj) {
 }
 
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_stop(JNIEnv *env, jobject obj) {
-    cout << "stop called" << endl;
+    for(int i = 0; i < SERIAL_ITERATION; i++)
+        serialPutchar(fd, 'r');
+    return stop();
+}
+
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeArm(JNIEnv *env, jobject obj) {
+    // Homing sequence control for the main ride arm
+    uint16_t top = ARM_HOME_POS < 180 ? ARM_HOME_POS + 180 : ARM_HOME_POS - 180; 
+    bool dir = getPosition() > (ARM_HOME_POS);
+
+    while(getPosition() - 2 > ARM_HOME_POS && getPosition() + 2 < ARM_HOME_POS)
+    // If dir is 1, rotate CW
+
+    // else rotate CCW
+
+    // Tell the ride to stop and call this home
+    for(int i = 0; i < SERIAL_ITERATION; i++)
+        serialPutchar(fd, '<0,0,0,0>'); // 0 is CW, 1 is CCW for direction
+        armHomed = true;
+        
     return stop();
 }
 
@@ -149,15 +168,11 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_performRestraintCheck(JNIEnv *env, jobjec
 
 JNIEXPORT jfloatArray JNICALL Java_HMI_1BackE_getPosition(JNIEnv *env, jobject obj) {
     // Read encoder positions
-    uint16_t pos1 = getPosition(CS1_PIN);
-    uint16_t pos2 = getPosition(CS2_PIN);
-
-    // Convert the positions to degrees
-    float degrees1 = (pos1 * 360.0) / 16384.0;
-    float degrees2 = (pos2 * 360.0) / 16384.0;
-
+    uint16_t pos1 = getPosition(1);
+    // uint16_t pos2 = getPosition(CS2_PIN);
+    std::cout << "Position " << pos1 << std::endl;
     // Return an array directly from the JNI function (instead of creating a new array)
-    jfloat result[2] = {degrees1, degrees2};
+    jfloat result[2] = {pos1, 0};
     
     // Create a local reference to the result array and return it
     jfloatArray jResult = env->NewFloatArray(2);
@@ -217,13 +232,13 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_setCyclePercent(JNIEnv* env, jobject obj,
 
 
 JNIEXPORT void JNICALL Java_HMI_1BackE_disbatch(JNIEnv* env, jobject obj){
-    for(int i = 0; i < 40; i++)
+    for(int i = 0; i < SERIAL_ITERATION; i++)
         serialPutchar(fd, 'd');
 }
 
 JNIEXPORT void JNICALL Java_HMI_1BackE_reset(JNIEnv* env, jobject obj){
     
-    for(int i = 0; i < 40; i++)
+    for(int i = 0; i < SERIAL_ITERATION; i++)
         serialPutchar(fd, 'r');
     setState(0);
 }

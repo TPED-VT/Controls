@@ -66,6 +66,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         backend = new HMI_BackE();
         backend.setUpGPIO();
         isClassic = true;
+
         //Frame setup
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.setBounds(0,0,screenSize.width, screenSize.height);
@@ -310,13 +311,14 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         //TODO: how often should visuals update? I have it set to 1% of the ride
         //cycle, which is 1.538 seconds, but unsure if it should update more
-        timer.schedule(task, 1, 1538);
+        timer.schedule(task, 1, 100);   // Step for the running mode
         
       //stops all functions if eStop
         Timer eStopTimer = new Timer();
         TimerTask eStopCheck = new TimerTask(){
             @Override
             public void run() {
+                backend.getPosition();
                 if(backend.eStopPressed()) {
                     isEStopped = true;
                     
@@ -416,6 +418,14 @@ class KeyAsButton extends JFrame implements KeyListener {
         }
         if (key == KeyEvent.VK_R && !isEStopped) {
             //TODO: reset
+            if (backend.setState(0) == 0) {
+                isOff = false;
+                init.setBackground(new Color(192, 192, 192));
+                auto.setBackground(Color.WHITE);
+                maint.setBackground(Color.WHITE);
+                off.setBackground(Color.WHITE);
+                paintClassic();
+            }
             backend.stop();
         }
         if (key == KeyEvent.VK_S) {
@@ -539,7 +549,7 @@ class CirclePanel extends JPanel {
     }
     
     public void paintLine(double angle){
-        angle = angle - (Math.PI/2);
+        angle = angle * (Math.PI/180);
         //this.setColor(Color.BLACK); // Set line color
         this.getGraphics().clearRect(150,150,150, 150);
         super.paintComponent(this.getGraphics()); 
