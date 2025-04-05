@@ -161,10 +161,10 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRideRunning
 
 /*
  * Class:     HMI_BackE
- * Method:    disbatch
+ * Method:    dispatch
  * Signature: ()V
  */
-JNIEXPORT void JNICALL Java_HMI_1BackE_disbatch
+JNIEXPORT void JNICALL Java_HMI_1BackE_dispatch
   (JNIEnv *, jobject);
 
 /*
@@ -173,6 +173,22 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_disbatch
  * Signature: ()Z
  */
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_stop
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    homeArm
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeArm
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    homeGondola
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeGondola
   (JNIEnv *, jobject);
 
 #ifdef __cplusplus

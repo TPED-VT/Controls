@@ -319,7 +319,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             @Override
             public void run() {
                 backend.getPosition();
-                if(backend.eStopPressed()) {
+                if(1 == 0){///backend.eStopPressed()) {
                     isEStopped = true;
                     
                     errorBox.setText("EMERGENCY STOP ACTIVATED");
@@ -413,11 +413,13 @@ class KeyAsButton extends JFrame implements KeyListener {
                 paintClassic();
         }
         if (key == KeyEvent.VK_D && !isEStopped) {
-            // Disbatch
-            backend.disbatch();
+            // Dispatch
+            backend.dispatch();
         }
         if (key == KeyEvent.VK_R && !isEStopped) {
             //TODO: reset
+            // backend.homeArm();
+            backend.homeGondola();
             if (backend.setState(0) == 0) {
                 isOff = false;
                 init.setBackground(new Color(192, 192, 192));
@@ -426,15 +428,16 @@ class KeyAsButton extends JFrame implements KeyListener {
                 off.setBackground(Color.WHITE);
                 paintClassic();
             }
-            backend.stop();
+
         }
         if (key == KeyEvent.VK_S) {
-            //TODO: stop
+            //Stop
+            backend.stop();
         }
         
         if (key == KeyEvent.VK_L) {
             //TODO:
-            //insert code to lock restraints
+            backend.lockRestraints();
             if(restraintStatus.getText().equals("<html> L:<br />RESTRAINTS UNLOCKED</html>") && 
                 backend.lockRestraints() == 1) {
                 restraintStatus.setText("<html> L:<br />RESTRAINT CHECK MODE</html>");
@@ -443,7 +446,10 @@ class KeyAsButton extends JFrame implements KeyListener {
                 restraintStatus.getText().equals("<html> L:<br />RESTRAINT CHECK MODE</html>") 
                 && backend.unlockRestraints() == 1 /*check if ride has been unlocked on backend*/) {
                 restraintStatus.setText("<html> L:<br />RESTRAINTS UNLOCKED</html>");  
-            }
+                rectangle.setBackground(Color.RED);
+                rectangle2.setBackground(Color.RED);
+            }   
+            
             
         }
 
@@ -554,7 +560,7 @@ class CirclePanel extends JPanel {
         this.getGraphics().clearRect(150,150,150, 150);
         super.paintComponent(this.getGraphics()); 
         this.getGraphics().drawOval(x, y, d, d);
-        Line2D.Double line1 = new Line2D.Double(75, 75, (75*Math.cos(angle))+75, (-75*Math.sin(angle))+75);
+        Line2D.Double line1 = new Line2D.Double(75, 75, (75*Math.cos(angle))+75, (75*Math.sin(angle))+75);
         ((Graphics2D)this.getGraphics()).draw(line1);
         
     }

@@ -13,6 +13,8 @@ double cyclePercent = 0.5; // dummy value testing
 double c = 0; 
 // Open serial port
 int fd;
+bool armHomed = false;
+bool gondolaHomed = false;
 
 void readCyclePercent() {
     for (int i = 0; i < 1000; i++) {
@@ -41,12 +43,11 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_setUpGPIO(JNIEnv *env, jobject obj) {
     }
 
     // Initialize SPI1
-    // if (wiringPiSPISetup(SPI1_CHANNEL, 500000) < 0) {
-    //     std::cerr << "Error setting up SPI for Arm" << std::endl;
-    //     return -1;
-    // }
-    // else 
-    //     std::cout << "Spi good" << std::endl;
+    if (wiringPiSPISetup(SPI1_CHANNEL, 500000) < 0) {
+        std::cerr << "Error setting up SPI for Arm" << std::endl;
+        return -1;
+    }
+
 
 
     fd = serialOpen("/dev/ttyACM0", 9600);
@@ -66,7 +67,7 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_setUpGPIO(JNIEnv *env, jobject obj) {
 }
 
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_eStopPressed(JNIEnv *env, jobject obj) {
-    cout << "eStopPressed called: " << !digitalRead(ESTOP_IN) << endl;  
+    // cout << "eStopPressed called: " << !digitalRead(ESTOP_IN) << endl;  
     return !digitalRead(ESTOP_IN);
 }
 
@@ -74,18 +75,18 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_eStopPressed(JNIEnv *env, jobject obj
 // STATE HANDLING 
 
 JNIEXPORT void JNICALL Java_HMI_1BackE_getNextState(JNIEnv *env, jobject obj) {
-    cout << "getNextState is called" << endl; 
+    // cout << "getNextState is called" << endl; 
     getNextState();
 }
 
 JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentState(JNIEnv *env, jobject obj) {
-    cout << "getCurrentState called" << endl;
+    // cout << "getCurrentState called" << endl;
     return static_cast<jint>(getCurrentState());
   
 }
 
 JNIEXPORT jint JNICALL Java_HMI_1BackE_setState(JNIEnv *env, jobject obj, jint state) {
-    cout << "JNI setState called with state: " << state << endl;
+    // cout << "JNI setState called with state: " << state << endl;
     setState((int)state);
 }
 
@@ -93,38 +94,72 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_setState(JNIEnv *env, jobject obj, jint s
 // RIDE CONTROL 
 
 JNIEXPORT jint JNICALL Java_HMI_1BackE_start(JNIEnv *env, jobject obj) {
-    cout << "start called" << endl;
+    // cout << "start called" << endl;
     return start();
 }
 
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_stop(JNIEnv *env, jobject obj) {
     for(int i = 0; i < SERIAL_ITERATION; i++)
-        serialPutchar(fd, 'r');
+        serialPuts(fd, "<0,0,0,0>"); // Stop the ride immediately
     return stop();
 }
 
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeArm(JNIEnv *env, jobject obj) {
-    // Homing sequence control for the main ride arm
-    uint16_t top = ARM_HOME_POS < 180 ? ARM_HOME_POS + 180 : ARM_HOME_POS - 180; 
-    bool dir = getPosition() > (ARM_HOME_POS);
+    uint16_t top = 180; 
+    bool dir = getPosition(1) > top;
+    uint16_t pos = getPosition(1);
 
-    while(getPosition() - 2 > ARM_HOME_POS && getPosition() + 2 < ARM_HOME_POS)
-    // If dir is 1, rotate CW
+    while (!(pos <= 2 || pos >= 358)) {
+        pos = getPosition(1);
+        if (dir)
+            serialPuts(fd, "<0,0,10,0>");
+        else
+            serialPuts(fd, "<0,0,10,1>");
 
-    // else rotate CCW
-
-    // Tell the ride to stop and call this home
-    for(int i = 0; i < SERIAL_ITERATION; i++)
-        serialPutchar(fd, '<0,0,0,0>'); // 0 is CW, 1 is CCW for direction
-        armHomed = true;
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
         
+    }
+
+    // Stop motor
+    for (int i = 0; i < SERIAL_ITERATION; i++) {
+        serialPuts(fd, "<0,0,0,0>");
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
+
+    armHomed = true;
+    return stop();
+}
+
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeGondola(JNIEnv *env, jobject obj) {
+    uint16_t top = 180; 
+    bool dir = getPosition(2) > top;
+    uint16_t pos = getPosition(2);
+    cout << "Current Pos: " << pos << endl;
+    while (!(pos <= 2 || pos >= 358)) {
+        pos = getPosition(2);
+        if (dir)
+            serialPuts(fd, "<0,0,10,0>");
+        else
+            serialPuts(fd, "<0,0,10,1>");
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+        cout << "Current Pos: " << pos << endl;
+    }
+
+    // Stop motor
+    for (int i = 0; i < SERIAL_ITERATION; i++) {
+        serialPuts(fd, "<0,0,0,0>");
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    }
+
+    gondolaHomed = true;
     return stop();
 }
 
 // RESTRAINT CONTROL 
 
 JNIEXPORT jint JNICALL Java_HMI_1BackE_isRow1Locked(JNIEnv *env, jobject obj) {
-    cout << "isRow1Locked called" << endl;
+    // cout << "isRow1Locked called" << endl;
     if (isRow1Locked() == PASS) {
         return PASS; 
     } else {
@@ -133,7 +168,7 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_isRow1Locked(JNIEnv *env, jobject obj) {
 }
 
 JNIEXPORT jint JNICALL Java_HMI_1BackE_isRow2Locked(JNIEnv *env, jobject obj) {
-    cout << "isRow2Locked called" << endl;
+    // cout << "isRow2Locked called" << endl;
     if (isRow2Locked() == PASS) {
         return PASS; 
     } else {
@@ -142,7 +177,7 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_isRow2Locked(JNIEnv *env, jobject obj) {
 }
 
 JNIEXPORT jint JNICALL Java_HMI_1BackE_lockRestraints(JNIEnv *env, jobject obj) {
-    cout << "lockRestraints called" << endl;
+    // cout << "lockRestraints called" << endl;
     if (lockRestraints() == PASS) {
         return PASS; 
     } else {
@@ -151,7 +186,7 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_lockRestraints(JNIEnv *env, jobject obj) 
 }
 
 JNIEXPORT jint JNICALL Java_HMI_1BackE_unlockRestraints(JNIEnv *env, jobject obj) {
-    cout << "unlockRestraints called" << endl;
+    // cout << "unlockRestraints called" << endl;
     if (unlockRestraints() == PASS) {
         return PASS; 
     } else {
@@ -160,7 +195,7 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_unlockRestraints(JNIEnv *env, jobject obj
 }
 
 JNIEXPORT jint JNICALL Java_HMI_1BackE_performRestraintCheck(JNIEnv *env, jobject obj) {
-    cout << "performRestraintCheck called" << endl;
+    // cout << "performRestraintCheck called" << endl;
     return performRestraintCheck();
 }
 
@@ -170,7 +205,6 @@ JNIEXPORT jfloatArray JNICALL Java_HMI_1BackE_getPosition(JNIEnv *env, jobject o
     // Read encoder positions
     uint16_t pos1 = getPosition(1);
     // uint16_t pos2 = getPosition(CS2_PIN);
-    std::cout << "Position " << pos1 << std::endl;
     // Return an array directly from the JNI function (instead of creating a new array)
     jfloat result[2] = {pos1, 0};
     
@@ -182,18 +216,18 @@ JNIEXPORT jfloatArray JNICALL Java_HMI_1BackE_getPosition(JNIEnv *env, jobject o
 }
 
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isReadyToRun(JNIEnv *env, jobject obj) {
-    cout << "isReadyToRun called" << endl;
+    // cout << "isReadyToRun called" << endl;
     return isReadyToRun();
 }
 
 JNIEXPORT jstring JNICALL Java_HMI_1BackE_isReadyToRunMessage(JNIEnv *env, jobject obj) {
-    cout << "isReadyToRunMessage called" << endl;
+    // cout << "isReadyToRunMessage called" << endl;
     string result = isReadyToRunMessage();
     return env->NewStringUTF(result.c_str());
 }
 
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRideRunning(JNIEnv *env, jobject obj) {
-    cout << "isRideRunning called" << endl; 
+    // cout << "isRideRunning called" << endl; 
     return JNI_TRUE; 
 }
 
@@ -201,7 +235,7 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRideRunning(JNIEnv *env, jobject ob
 // ERROR HANDLING 
 
 JNIEXPORT jstring JNICALL Java_HMI_1BackE_getErrorMessage(JNIEnv *env, jobject obj) {
-    cout << "getErrorMessage called" << endl;
+    // cout << "getErrorMessage called" << endl;
     string result = getErrorMessage();
     return env->NewStringUTF(result.c_str());
 }

@@ -14,6 +14,7 @@
 #include <wiringPi.h>
 #include <wiringSerial.h>
 #include <wiringPiSPI.h>
+#include <cmath>
 
 #define PASS 1
 #define ERROR_RESTRAINT -1
@@ -33,9 +34,9 @@
 #define READ_COMMAND 0x3F
 
 #define SERIAL_ITERATION 40
-#define ARM_HOME_POS 270 // 270 degrees is the reative home position
+#define ARM_HOME_POS 0 // 0 degrees is the reative home position
 
-bool armHomed = false;
+
 
 
 // int serialPort = serialOpen("/dev/ttyACM", 9600);
