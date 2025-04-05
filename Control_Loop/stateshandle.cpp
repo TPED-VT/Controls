@@ -7,15 +7,24 @@ using namespace std;
 // GLOBAL VARIABLES //
 
 State currentState = State::kInit;
+Test currentTest = Tests::RestraintTest;
+
 int RestraintCheck = 0;
 int isHomed = 0;
 int ArmTest = 0;
+int GondolaTest = 0;
+
+bool armHomed = false; 
+bool gondolaHomed = false;  
+
+int access = 0; 
+int test = 0; 
+int cycleCount = 0; 
 
 bool restraint1 = PASS;
 bool restraint2 = PASS;
 
-
-// STATE HANDLE FUNCTIONS // 
+// STATE HANDLE FUNCTIONS //
 
 int InitStateHandle()
 {
@@ -64,9 +73,10 @@ int AutoStateHandle()
 
 int RideOpStateHandle()
 {
-    for(int i = 0; i < 40; i++)
+    for (int i = 0; i < 40; i++)
+    {
         putchar('d');
-
+    }
     int targetArmMotorFrequency = 100;
     int targetGondolaMotorFrequency = 999;
     int currentArmMotorFrequency = 748;
@@ -81,10 +91,11 @@ int RideOpStateHandle()
         else
         {
             RestraintCheck = ERROR_RESTRAINT;
+            currentState = State::kInit;
             return RestraintCheck;
         }
 
-        // check if gondola/arm is not "abnormal"
+        // check if gondola/arm is not "abnormal" fix this
 
         if (currentArmMotorFrequency <= targetArmMotorFrequency)
         {
@@ -95,6 +106,7 @@ int RideOpStateHandle()
             ArmTest = ERROR_ARM;
             return ArmTest;
         }
+
     }
 
     // logic to see when the ride ends
@@ -111,7 +123,166 @@ int RideOpStateHandle()
         return isHomed;
     }
 
+    cycleCount++;
     currentState = State::kAuto;
+    return PASS;
+}
+
+
+int MaintenanceSelection(int access, int test) {
+    if (access == 1)
+    {
+        currentState = State::kMaintenance;
+        return PASS;
+    }
+
+    if (test == 0)
+    {
+        int result = RestraintTest();
+        if (result > 0)
+        {
+            RestraintCheck = result;
+        }
+        else
+        {
+            RestraintCheck = ERROR_RESTRAINT;
+            return ERROR_RESTRAINT;
+        }
+        return result;
+    }
+    else if (test == 1)
+    {
+        int result = ArmMotorTest();
+        if (result > 0)
+        {
+           ArmTest = result;
+        }
+        else 
+        {
+            ArmTest = ERROR_ARM;
+            return ERROR_ARM;
+        }
+        return result;
+    }
+    else if (test == 2)
+    {
+        int result = GondolaMotorTest();
+        if (result > 0)
+        {
+            GondolaTest = result;
+        } else {
+            GondolaTest = ERROR_GONDOLA;
+            return ERROR_GONDOLA;
+        }
+
+        return result;
+    }
+    else if (test == 3)
+    {
+        int result = isHomedTest();
+        if (result > 0) {
+            isHomed = result; 
+        } else {
+            isHomed = ERROR_HOME;
+            return ERROR_HOME;
+        }
+        return result;
+    }
+    return PASS;
+}
+
+
+int MaintenanceStateHandle()
+{
+    if (currentState == State::kMaintenance)
+    {
+        int result = MaintenanceSelection();
+        if (result != PASS)
+        {
+            return result;
+        }
+        else
+        {
+            currentState = State::kAuto;
+            return PASS;
+        }
+    }
+    return -1;
+}
+
+
+// TESTING FUNCTIONS //
+
+int RestraintTest()
+{
+    unlockRestraints();
+
+    int check1 = isRow1Unlocked();
+    int check2 = isRow2Unlocked();
+
+    if (check1 == ERROR_RESTRAINT && check2 == ERROR_RESTRAINT)
+    {
+        return PASS;
+    }
+    else
+    {
+        return ERROR_RESTRAINT;
+    }
+
+    this_thread::sleep_for(chrono::seconds(15)); // sleep for 15 seconds;
+
+    lockRestraints();
+
+    int check3 = isRow1Locked();
+    int check4 = isRow2Locked();
+
+    if (check3 == PASS && check4 == PASS)
+    {
+        return PASS;
+    }
+    else
+    {
+        return ERROR_RESTRAINT;
+    }
+
+    return PASS;
+}
+
+int ArmMotorTest()
+{
+    // ENCODER VALUE IMPLEMENTATION
+
+
+
+    return PASS;
+}
+
+int GondolaMotorTest()
+{
+
+    // ENCODER VALUE IMPLEMENTATION
+    return PASS;
+}
+
+
+int isHomedTest()
+{
+    int gp = (int)getPosition();
+
+    // setPosition(); add functionaly
+    // Home(); add functionally
+
+    this_thread::sleep_for(chrono::seconds(15)); // wait for it to home
+
+    if (isHomed())
+    {
+        return PASS;
+    }
+    else
+    {
+        return ERROR_HOME;
+    }
+
     return PASS;
 }
 
@@ -134,7 +305,7 @@ void getNextState()
         break;
 
     case State::kMaintenance:
-        // MaintenanceStateHandle();
+        MaintenanceStateHandle();
         break;
     }
 }
@@ -150,7 +321,8 @@ int setState(int state)
    return (int)currentState;
 }
 
-// ERROR MESSAGES // 
+
+// ERROR MESSAGES //
 
 string getErrorMessage()
 {
@@ -162,11 +334,11 @@ string getErrorMessage()
     }
     if (isHomed < 0)
     {
-        message += "ERROR 102 (NOT HOMED)";
+        message += "ERROR 1203 (HOMING FAULT)";
     }
     if (ArmTest < 0)
     {
-        message += "ERROR 103 (ARMS)";
+        message += "ERROR 1201 (MAIN MOTOR)";
     }
     if (message.empty())
     {
@@ -176,32 +348,55 @@ string getErrorMessage()
     return message;
 }
 
+string getMaintenanceError()
+{
+    string message = "";
 
-// void logErrorMessage(const string &message)
-// {
-//     ofstream file("error_log.text", ios::app);
-//     if (!file.is_open())
-//     {
-//         return;
-//     }
+    if (RestraintCheck < 0) {
+        message += "ERROR 101 (RESTRAINT)";
+    }
+    if (isHomed < 0) {
+        message += "ERROR 1203 (HOMING FAULT)";
+    }
+    if (ArmTest < 0) {
+        message += "ERROR 1201 (MAIN MOTOR)";
+    }
+    if (GondolaTest < 0) {
+        message += "ERROR 1202 (GONDOLA MOTOR)";
+    }
+    if (message.empty()) {
+        message += "NO ERRORS";
+    }
+    return message;
+}
 
-//     // get time
 
-//     time_t now = time(0);
-//     tm localtm;
-//     localtime_s(&localtm, &now);
-//     char timestamp[64];
-//     strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", &localtm);
+string StatusMessage() {
+    string message = "";
+    if (currentState == State::kInit) {
+        message += "INIT"
+    } 
+    if (currentState == State::kAuto) {
+        message += "LOADING"
+    }
+    if (currentState == State::kRideOp) {
+        message += "RUNNING";
+    }
+    if (currentState == State::kMaintenance) {
+        message += "MAINTENANCE";
+    }
+    if (currentState == State::kOff) {
+        message += "OFF";
+    }
 
-//     file << "[" << timestamp << "]" << message << endl;
-//     file.close();
-// }
+    return message; 
+}
 
 int performRestraintCheck()
 {
 
-    int check1 = isRow1Locked();
-    int check2 = isRow2Locked();
+    int check1 = isRow1Locked(restraint1);
+    int check2 = isRow2Locked(restraint2);
 
     if (check1 == PASS && check2 == PASS)
     {
@@ -263,24 +458,32 @@ bool start()
     return true;
 }
 
-bool stop()
+
+void resetManual()
 {
-    State currentState = State::kInit;
+    State currentState = State::kOff;
     RestraintCheck = 0;
     isHomed = 0;
     ArmTest = 0;
+}
 
+bool stop()
+{
+    State currentState = State::kOff;
     return true;
 }
 
+int getCycles() {
+    return cycleCount;
+}
 
-// BACKEND FUNCTIONS // 
+
+// BACKEND FUNCTIONS //
 
 uint16_t getPosition(int encoder)
 {
     
     unsigned char buf[2];
-
 
     // Select the encoder
     if(encoder == 1){   
@@ -300,6 +503,7 @@ uint16_t getPosition(int encoder)
     uint16_t position = ((buf[0] << 8) | buf[1]) & 0x3FFF;  // This is the current position
     return fmod((position*360/16384),360);
 }
+
 
 int isRow1Locked()
 {
@@ -325,19 +529,19 @@ int isRow2Locked()
     }
 }
 
-int unlockRestraints()
+bool unlockRestraints()
 {
     // some method to unlock the restraint???
     return PASS;
 }
-int lockRestraints()
+bool lockRestraints()
 {
     // some method to lock the restraint???
 
     return PASS;
 }
 
-// RASPI FUNCTIONS 
+// RASPI FUNCTIONS
 
 // UNCOMMENT!!!!!!! WHEN PULLING TO PI!!!!!!!
 
