@@ -32,7 +32,7 @@ int InitStateHandle()
         return RestraintCheck;
     }
 
-    if (getPosition() == 0)
+    if (getPosition(SPI0_CHANNEL) == 0)
     {
         isHomed = PASS;
     }
@@ -101,7 +101,7 @@ int RideOpStateHandle()
 
     this_thread::sleep_for(chrono::seconds(25));
 
-    if (getPosition() == 0)
+    if (getPosition(SPI0_CHANNEL) == 0)
     {
         isHomed = PASS;
     }
@@ -146,8 +146,8 @@ int getCurrentState()
 
 int setState(int state)
 {
-   currentState = state;
-   return currentState;
+   currentState = (State)state;
+   return (int)currentState;
 }
 
 // ERROR MESSAGES // 
@@ -242,7 +242,7 @@ bool start()
     {
         RestraintCheck = ERROR_RESTRAINT;
     }
-    if (getPosition() == 0)
+    if (getPosition(SPI0_CHANNEL) == 0)
     {
         isHomed = PASS;
     }
@@ -278,7 +278,7 @@ bool stop()
 
 uint16_t getPosition(int encoder)
 {
-    uint8_t txBuf[1] = {READ_POSITION};
+    uint8_t txBuf[1] = {READ_COMMAND};
     uint8_t rxBuf[2];
 
     // Select the encoder
@@ -287,8 +287,8 @@ uint16_t getPosition(int encoder)
         delayMicroseconds(3);
         
         
-        wiringPiSPIDataRW(SPI0_CHANNEL, txBuffer, 1); // Send command
-        wiringPiSPIDataRW(SPI0_CHANNEL, rxBuffer, 2); // Read 2 bytes
+        wiringPiSPIDataRW(SPI0_CHANNEL, txBuf, 1); // Send command
+        wiringPiSPIDataRW(SPI0_CHANNEL, rxBuf, 2); // Read 2 bytes
 
         // Deselect the encoder
         digitalWrite(CS1_PIN, HIGH);
@@ -298,14 +298,14 @@ uint16_t getPosition(int encoder)
         delayMicroseconds(3);
         
         
-        wiringPiSPIDataRW(SPI1_CHANNEL, txBuffer, 1); // Send command
-        wiringPiSPIDataRW(SPI1_CHANNEL, rxBuffer, 2); // Read 2 bytes
+        wiringPiSPIDataRW(SPI1_CHANNEL, txBuf, 1); // Send command
+        wiringPiSPIDataRW(SPI1_CHANNEL, rxBuf, 2); // Read 2 bytes
 
         // Deselect the encoder
         digitalWrite(CS2_PIN, HIGH);
     }
 
-    uint16_t position = ((rxBuffer[0] << 8) | rxBuffer[1]) & 0x3FFF;  // This is the current position
+    uint16_t position = ((rxBuf[0] << 8) | rxBuf[1]) & 0x3FFF;  // This is the current position
     return position;
 }
 

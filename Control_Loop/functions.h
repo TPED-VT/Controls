@@ -13,6 +13,7 @@
 #include <errno.h>
 #include <wiringPi.h>
 #include <wiringSerial.h>
+#include <wiringPiSPI.h>
 
 #define PASS 1
 #define ERROR_RESTRAINT -1

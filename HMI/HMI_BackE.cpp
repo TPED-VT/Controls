@@ -44,6 +44,8 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_setUpGPIO(JNIEnv *env, jobject obj) {
         std::cerr << "Error setting up SPI for Arm" << std::endl;
         return -1;
     }
+    else 
+        std::cout << "Spi good" << std::endl;
 
 
     // Open serial port
@@ -223,7 +225,7 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_reset(JNIEnv* env, jobject obj){
     
     for(int i = 0; i < 40; i++)
         serialPutchar(fd, 'r');
-    setState(0)
+    setState(0);
 }
 
 // JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRotationGondolaClockwise(JNIEnv *env, jobject obj) {
