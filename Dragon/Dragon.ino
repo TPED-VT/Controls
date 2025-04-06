@@ -29,7 +29,7 @@ void loop() {
   if(Serial.available() > 0)                  // Check for serial start from Raspberry Pi
   {
     char send = Serial.read();
-    if(send == 'D')
+    if(send == 'd')
     {
       // FOR-loop to gradually turn lava LED strip on to full brightness
       for(lava = 0; lava < 255; lava += 1)
