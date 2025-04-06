@@ -138,17 +138,17 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_performRestraintCheck
 /*
  * Class:     HMI_BackE
  * Method:    unlockRestraints
- * Signature: ()I
+ * Signature: ()Z
  */
-JNIEXPORT jint JNICALL Java_HMI_1BackE_unlockRestraints
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_unlockRestraints
   (JNIEnv *, jobject);
 
 /*
  * Class:     HMI_BackE
  * Method:    lockRestraints
- * Signature: ()I
+ * Signature: ()Z
  */
-JNIEXPORT jint JNICALL Java_HMI_1BackE_lockRestraints
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_lockRestraints
   (JNIEnv *, jobject);
 
 /*
@@ -225,6 +225,14 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeArm
 
 /*
  * Class:     HMI_BackE
+ * Method:    maintArmCheck
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_maintArmCheck
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
  * Method:    homeGondola
  * Signature: ()Z
  */
@@ -246,14 +254,6 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentTest
  */
 JNIEXPORT jint JNICALL Java_HMI_1BackE_setCurrentTest
   (JNIEnv *, jobject, jint);
-
-/*
- * Class:     HMI_BackE
- * Method:    statusMessage
- * Signature: ()Ljava/lang/String;
- */
-JNIEXPORT jstring JNICALL Java_HMI_1BackE_statusMessage
-  (JNIEnv *, jobject);
 
 /*
  * Class:     HMI_BackE

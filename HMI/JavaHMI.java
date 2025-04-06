@@ -255,7 +255,7 @@ class KeyAsButton extends JFrame implements KeyListener {
                         rideStatus.setText("STATUS: STOPPED");
                     }
                     else rideStatus.setText("STATUS: DOWN");*/
-                    rideStatus.setText("STATUS: " + backend.statusMessage());
+                    rideStatus.setText("STATUS: ");
                     
                     
                     //updating restraints
@@ -324,8 +324,7 @@ class KeyAsButton extends JFrame implements KeyListener {
                     //         direction.setText(direction.getText()+", Gondola: N/A");
                     //     else direction.setText(direction.getText()+", Gondola: Counterclockwise");
                     // }
-                    if(backend.getTestStatusMessage().contains("Passed")||
-                    		backend.getTestStatusMessage().substring(backend.getTestStatusMessage().length()-1).equals(")")) {
+                    if(1 == 1) {
                     			z.setBackground(Color.WHITE);
                     			x.setBackground(Color.WHITE);
                     			c.setBackground(Color.WHITE);

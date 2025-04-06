@@ -7,15 +7,15 @@ using namespace std;
 // GLOBAL VARIABLES //
 
 State currentState = State::kInit;
-Test currentTest = Tests::RestraintTest;
+Test currentTest = Test::RestraintTest;
 
 int RestraintCheck = 0;
 int isHomed = 0;
 int ArmTest = 0;
 int GondolaTest = 0;
 
-bool armHomed = false; 
-bool gondolaHomed = false;  
+// bool armHomed = false; 
+// bool gondolaHomed = false;  
 
 int access = 0; 
 int test = 0; 
@@ -195,7 +195,7 @@ int MaintenanceStateHandle()
 {
     if (currentState == State::kMaintenance)
     {
-        int result = MaintenanceSelection();
+        int result = MaintenanceSelection(access, 3);
         if (result != PASS)
         {
             return result;
@@ -270,14 +270,14 @@ int GondolaMotorTest()
 int isHomedTest()
 {
     currentTest = Test::isHomedTest;
-    int gp = (int)getPosition();
+    int gp = (int)getPosition(1);
 
     // setPosition(); add functionaly
     // Home(); add functionally 
 
     this_thread::sleep_for(chrono::seconds(15)); // wait for it to home
 
-    if (isHomed())
+    if (isHomed == 1)
     {
         return PASS;
     }
@@ -318,11 +318,6 @@ int getCurrentState()
     return (int)currentState;
 }
 
-int setState(int state)
-{
-   currentState = (State)state;
-   return (int)currentState;
-}
 
 
 // TEST FUNCTIONS //
@@ -391,7 +386,7 @@ string statusMessage() {
         message += "INITIALIZING";
     } 
     if (currentState == State::kAuto) {
-        message += "LOADING"
+        message += "LOADING";
     } else if (isReadyToRun() == true) {
         message += "READY TO RUN";
     }
@@ -420,7 +415,7 @@ string getTestStatusMessage() {
         message += "Restraint Test Passed";
     }
     
-    if (currentTest == Tests::ArmMotorTest) {
+    if (currentTest == Test::ArmMotorTest) {
         message += "Main Motor Test";
     } else if (ArmMotorTest() == ERROR_ARM) {
         message += "ERROR 1201 (MAIN MOTOR)";
@@ -451,8 +446,8 @@ string getTestStatusMessage() {
 int performRestraintCheck()
 {
 
-    int check1 = isRow1Locked(restraint1);
-    int check2 = isRow2Locked(restraint2);
+    int check1 = isRow1Locked();
+    int check2 = isRow2Locked();
 
     if (check1 == PASS && check2 == PASS)
     {
@@ -546,8 +541,8 @@ int getCycleCount() {
 }
 
 int setState(int state){
-    currentState = state;
-    return currentState;
+    currentState = (State)state;
+    return (int)currentState;
 }
 
 // BACKEND FUNCTIONS //
@@ -613,24 +608,24 @@ bool homeArm() {
     bool dir = getPosition(1) > top;
     uint16_t pos = getPosition(1);
     
-    while (!(pos <= 2 || pos >= 358)) {
-        pos = getPosition(1);
-        if (dir)
-            serialPuts(fd, "<0,0,10,0>");
-        else
-            serialPuts(fd, "<0,0,10,1>");
+    // while (!(pos <= 2 || pos >= 358)) {
+    //     pos = getPosition(1);
+    //     if (dir)
+    //         serialPuts(fd, "<0,0,10,0>");
+    //     else
+    //         serialPuts(fd, "<0,0,10,1>");
     
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    //     std::this_thread::sleep_for(std::chrono::milliseconds(50));
         
-    }
+    // }
     
     // Stop motor
-    for (int i = 0; i < SERIAL_ITERATION; i++) {
-        serialPuts(fd, "<0,0,0,0>");
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
-    }
+    // for (int i = 0; i < SERIAL_ITERATION; i++) {
+    //     serialPuts(fd, "<0,0,0,0>");
+    //     std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    // }
     
-    armHomed = true;
+    // armHomed = true;
     return stop();
 
 }

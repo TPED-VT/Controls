@@ -53,13 +53,13 @@ enum class Test {
     ArmMotorTest = 1, 
     GondolaMotorTest = 2,
     isHomedTest = 3
-}
+};
 
 // handling functions
 int InitStateHandle();
 int AutoStateHandle();
 int RideOpStateHandle();
-int MaintenanceStateHandle()
+int MaintenanceStateHandle();
 
 // other functions 
 string getErrorMessage();
@@ -84,12 +84,14 @@ bool isReadyToRun();
 
 int performRestraintCheck();
 int isRow1Locked();
+int isRow1Unlocked();
 int isRow2Locked();
+int isRow2Unlocked();
 bool unlockRestraints(); 
 bool lockRestraints(); 
 bool start(); 
 bool stop(); 
-bool resetManual();
+void resetManual();
 
 // stuff 
 bool homeArm();

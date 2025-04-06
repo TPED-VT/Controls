@@ -78,11 +78,6 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentState(JNIEnv *env, jobject obj)
   
 }
 
-JNIEXPORT jint JNICALL Java_HMI_1BackE_setState(JNIEnv *env, jobject obj, jint state) {
-    // cout << "JNI setState called with state: " << state << endl;
-    setState((int)state);
-}
-
 
 // RIDE CONTROL 
 
@@ -94,7 +89,7 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_start(JNIEnv *env, jobject obj) {
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_stop(JNIEnv *env, jobject obj) {
     for(int i = 0; i < SERIAL_ITERATION; i++){
         serialPuts(fd, "<0,0,0,0>"); // Stop the ride immediately
-        serialPutChar(dragonSerial, "s");
+        serialPutchar(dragonSerial, 's');
     }
     return stop();
 }
@@ -113,8 +108,9 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeArm(JNIEnv *env, jobject obj) {
         while (!(pos <= 2 || pos >= 358)) {
             std::this_thread::sleep_for(std::chrono::milliseconds(50)); 
         }
+    }
 
-    JNIEXPORT jboolean JNICALL Java_HMI_1BackE_maintArmCheck(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_maintArmCheck(JNIEnv *env, jobject obj) {
         uint16_t top = 180; 
         bool dir = getPosition(1) > top;
         uint16_t pos = getPosition(1);
@@ -261,7 +257,7 @@ JNIEXPORT jstring JNICALL Java_HMI_1BackE_getErrorMessage(JNIEnv *env, jobject o
 
 JNIEXPORT jstring JNICALL Java_HMI_1BackE_getstatusMessage(JNIEnv* env, jobject obj) {
     // cout << "getStatusMessage called" << endl;
-    string result = statusMessage();
+    string result = "sTRING";
     return env->NewStringUTF(result.c_str());
 }
 

@@ -35,8 +35,8 @@ public class HMI_BackE {
 
     // for HMI
     public native int performRestraintCheck();
-    public native int unlockRestraints(); // implementation
-    public native int lockRestraints(); // implementation
+    public native boolean unlockRestraints(); // implementation
+    public native boolean lockRestraints(); // implementation
 
 // restraint handling    
     public native boolean restraintCheck();
@@ -56,7 +56,7 @@ public class HMI_BackE {
 // testing 
     public native int getCurrentTest();
     public native int setCurrentTest(int test);
-    public native String statusMessage();
+    // public native String statusMessage();
     public native int maintenanceSelection(int access, int test);
 
 }
