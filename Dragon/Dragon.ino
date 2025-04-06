@@ -10,7 +10,7 @@ boolean active = false;                          // Make sure the dragon can run
 #define EYES_PIN 11                           // Define the arduino PWM pin for the eye LEDs
 #define JAW_PIN 9                             // Define the arduino pin for the servo
 #define HOME 90
-#define OPEN HOME+60
+#define OPEN HOME+70
 
 // Hardware setup
 void setup() {
