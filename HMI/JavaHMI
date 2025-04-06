@@ -162,7 +162,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         restraintStatus.setBounds(30, 50, 600, 200);
         degree.setBounds(230, 50, 400, 85);
         
-        cyclePercent.setBounds(650,165,600,85); 
+        cyclePercent.setBounds(1280/2-450,180,900,85); 
         
         rideStatus.setBounds(650,50,600,85);
 
@@ -382,8 +382,10 @@ class KeyAsButton extends JFrame implements KeyListener {
     public void paintClassic() {
         
         isClassic = true;
+        middle.remove(rideStatus);
+        rideStatus.setBounds(1280/2-450,70,900,85);
         middle.add(rideStatus);
-        middle.add(restraintStatus);
+        //middle.add(restraintStatus);
         middle.add(cyclePercent);
         middle.remove(degree);
         middle.remove(progressBar);
@@ -408,12 +410,16 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.remove(restraintStatus);
         middle.remove(cyclePercent);
         
+        middle.remove(rideStatus);
+        rideStatus.setBounds(650,50,600,85);
+        middle.add(rideStatus);
+        
         middle.add(degree);
         middle.add(progressBarBase);
         middle.add(progressBar);
         middle.add(direction);
         middle.add(cyclesRun);
-        middle.add(z);
+        //middle.add(z);
         middle.add(x);
         middle.add(c);
         middle.add(v);
@@ -556,11 +562,11 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         //Maintenance mode check
         
-        //Z is restraint check
+        /*//Z is restraint check
         if(key == KeyEvent.VK_Z) {
         	backend.maintenanceSelection(access, 0);
         	z.setBackground(new Color(173, 216, 230));
-        }
+        }*/
         
         //x is arm motor check
         if(key == KeyEvent.VK_X) {
