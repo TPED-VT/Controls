@@ -58,6 +58,7 @@ class KeyAsButton extends JFrame implements KeyListener {
     JPanel eStopPanel;
     JLabel eStopLabel;
     boolean isEStopped;
+    boolean justUnE;
     int access;
     JButton z;
     JButton x;
@@ -67,6 +68,7 @@ class KeyAsButton extends JFrame implements KeyListener {
     public KeyAsButton() {
         
         isEStopped = false;
+        justUnE = false;
         backend = new HMI_BackE();
         backend.setUpGPIO();
         isClassic = true;
@@ -349,6 +351,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             public void run() {
                 if(backend.eStopPressed()) {
                     isEStopped = true;
+                    justUnE = true;
                     backend.stop();
                     // backend.setState(4);
                     errorBox.setText("EMERGENCY STOP ACTIVATED");
@@ -365,9 +368,16 @@ class KeyAsButton extends JFrame implements KeyListener {
                     //eStop.setVisible(true);
                 }
                 else {
+                    
                     isEStopped = false;
                     eStop.setVisible(false);
                     
+                }
+                if(justUnE && !isEStopped){
+                    
+                    backend.homeGondola();
+                    backend.homeArm();
+                    justUnE = false;
                 }
                 
             }
@@ -452,7 +462,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         int key = e.getKeyCode();
     
-        if (key == KeyEvent.VK_D && backend.getCurrentState() == 1) {
+        if (key == KeyEvent.VK_D && backend.getCurrentState() == 1 && !justUnE) {
             // Disbatch command
         	backend.dispatch();
             // backend.stop();
@@ -461,7 +471,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             backend.homeArm();
             backend.homeGondola();
         }
-        if (key == KeyEvent.VK_R) {
+        if (key == KeyEvent.VK_R && backend.getCurrentState() != 4) {
             // Reset Command
             backend.stop();
             backend.homeArm();
