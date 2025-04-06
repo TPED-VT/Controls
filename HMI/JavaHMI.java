@@ -68,7 +68,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         isEStopped = false;
         backend = new HMI_BackE();
-        //backend.setUpGPIO;
+        backend.setUpGPIO();
         isClassic = true;
         //Frame setup
         access = 0;
@@ -451,19 +451,27 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         int key = e.getKeyCode();
     
-        if (key == KeyEvent.VK_D && backend.getCurrentState() == 2) {
+        if (key == KeyEvent.VK_D && backend.getCurrentState() == 1) {
             // Disbatch command
         	backend.dispatch();
+            try {
+                Thread.sleep(68000);
+            } catch (InterruptedException error) {
+                error.printStackTrace();
+            }
+            backend.homeArm();
+            backend.homeGondola();
+            backend.stop();
         }
-        // if (key == KeyEvent.VK_M) {
-        //     if(isClassic)
-        //         paintAdvanced();
-        //     else if(!isClassic)
-        //         paintClassic();
-        // }
+        if (key == KeyEvent.VK_M) {
+            backend.homeArm();
+            backend.homeGondola();
+        }
         if (key == KeyEvent.VK_R) {
             // Reset Command
             backend.stop();
+            backend.homeArm();
+            backend.homeGondola();
         	if (backend.setState(0)==0) {
             	access = 0;
                 isOff = false;
@@ -479,6 +487,8 @@ class KeyAsButton extends JFrame implements KeyListener {
             // Stop command
             backend.stop();
             backend.setState(4);
+            backend.homeArm();
+            backend.homeGondola();
 
             // HMI control
             isOff = true;
@@ -497,7 +507,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             cyclePercent.setText("0% through cycle");
             errorBox.setText("OFF");
         }  
-        if (key == KeyEvent.VK_X && backend.getCurrentState() == 4) { // Must be Maint.
+        if (key == KeyEvent.VK_X && backend.getCurrentState() == 3) { // Must be Maint.
             // Arm Motor Maintenance Check Test
             backend.maintArmCheck();
         }

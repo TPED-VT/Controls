@@ -225,18 +225,18 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeArm
 
 /*
  * Class:     HMI_BackE
- * Method:    maintArmCheck
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_HMI_1BackE_maintArmCheck
-  (JNIEnv *, jobject);
-
-/*
- * Class:     HMI_BackE
  * Method:    homeGondola
  * Signature: ()Z
  */
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeGondola
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    maintArmCheck
+ * Signature: ()Z
+ */
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_maintArmCheck
   (JNIEnv *, jobject);
 
 /*

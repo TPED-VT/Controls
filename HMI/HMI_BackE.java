@@ -50,8 +50,9 @@ public class HMI_BackE {
     public native void dispatch();
     public native boolean stop();
     public native boolean homeArm();
-    public native boolean maintArmCheck();
     public native boolean homeGondola();
+    public native boolean maintArmCheck();
+    // public native boolean homeGondola();
 
 // testing 
     public native int getCurrentTest();

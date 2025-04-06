@@ -17,7 +17,7 @@ int GondolaTest = 0;
 // bool armHomed = false; 
 // bool gondolaHomed = false;  
 
-int access = 0; 
+// int access = 0; 
 int test = 0; 
 int cycleCount = 0; 
 
@@ -191,23 +191,23 @@ int MaintenanceSelection(int access, int test) {
     return PASS;
 }
 
-int MaintenanceStateHandle()
-{
-    if (currentState == State::kMaintenance)
-    {
-        int result = MaintenanceSelection(access, 3);
-        if (result != PASS)
-        {
-            return result;
-        }
-        else
-        {
-            currentState = State::kAuto;
-            return PASS;
-        }
-    }
-    return -1;
-}
+// int MaintenanceStateHandle()
+// {
+//     if (currentState == State::kMaintenance)
+//     {
+//         int result = MaintenanceSelection(access, 3);
+//         if (result != PASS)
+//         {
+//             return result;
+//         }
+//         else
+//         {
+//             currentState = State::kAuto;
+//             return PASS;
+//         }
+//     }
+//     return -1;
+// }
 
 
 // TESTING FUNCTIONS //
@@ -443,6 +443,66 @@ string getTestStatusMessage() {
 
 }
 
+int setupSPI(const char* device) {
+    uint32_t speed = 1000000;
+    int fdSPI = open(device, O_RDWR);
+    if (fdSPI < 0) {
+        std::cerr << "Error opening " << device << std::endl;
+        return -1;
+    }
+
+    uint8_t mode = SPI_MODE_0;
+    uint8_t bits = 8;
+
+    ioctl(fdSPI, SPI_IOC_WR_MODE, &mode);
+    ioctl(fdSPI, SPI_IOC_WR_BITS_PER_WORD, &bits);
+    ioctl(fdSPI, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
+
+    return fdSPI;
+}
+
+// Read position from AMT22 encoder
+uint16_t readAMT22Position(int dd) {
+    uint8_t tx_cmd[1] = { 0x10 };
+    uint8_t rx_cmd[1] = { 0 };
+
+    spi_ioc_transfer cmd = {
+        .tx_buf = (unsigned long)tx_cmd,
+        .rx_buf = (unsigned long)rx_cmd,
+        .len = 1,
+        .speed_hz = 500000,
+        .bits_per_word = 8,
+        // .delay_usecs = 0,
+  //      .cs_change = true,
+//        .word_delay_usecs = 0
+    };
+
+    ioctl(dd, SPI_IOC_MESSAGE(1), &cmd);
+
+    std::this_thread::sleep_for(std::chrono::microseconds(10));  // Wait
+
+    uint8_t tx_data[2] = { 0x00, 0x00 };
+    uint8_t rx_data[2] = { 0x00, 0x00 };
+
+    spi_ioc_transfer data = {
+        .tx_buf = (unsigned long)tx_data,
+        .rx_buf = (unsigned long)rx_data,
+        .len = 2,
+        .speed_hz = 500000,
+        .bits_per_word = 8,
+        // .delay_usecs = 0
+  //  	.cs_change = true,
+//        .word_delay_usecs = 0
+    };
+
+
+
+    ioctl(dd, SPI_IOC_MESSAGE(1), &data);
+
+    uint16_t raw = ((rx_data[0] << 8) | rx_data[1]) & 0x3FFF;  // 14-bit
+    return raw*360/16384;
+}
+
 int performRestraintCheck()
 {
 
@@ -551,17 +611,16 @@ uint16_t getPosition(int encoder)
 {
     
     unsigned char buf[2];
-
+    uint16_t position;
     // Select the encoder
     if(encoder == 1){   
-        wiringPiSPIDataRW(encoder-1, buf, 2); // Send command
-        
+        position = readAMT22Position(encoder); 
 
         // Deselect the encoder
-        digitalWrite(CS1_PIN, HIGH);
+        // digitalWrite(CS1_PIN, HIGH);
     }
 
-    uint16_t position = ((buf[0] << 8) | buf[1]) & 0x3FFF;  // This is the current position
+    // uint16_t position = readAMT22Position(encoder);  // This is the current position
     return fmod((position*360/16384),360);
 }
 

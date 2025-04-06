@@ -15,7 +15,13 @@
 #include <wiringSerial.h>
 #include <wiringPiSPI.h>
 #include <cmath>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <linux/spi/spidev.h>
+#include <cstring>
 
+#define AMT22_CMD_POSITION 0x10
 
 #define PASS 1
 #define ERROR_RESTRAINT -1
@@ -54,6 +60,9 @@ enum class Test {
     GondolaMotorTest = 2,
     isHomedTest = 3
 };
+
+int setupSPI(const char* device);
+uint16_t readAMT22Position(int dd);
 
 // handling functions
 int InitStateHandle();
