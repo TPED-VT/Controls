@@ -13,6 +13,7 @@ double cyclePercent = 0.5; // dummy value testing
 double c = 0; 
 // Open serial port
 int fd;
+int dragonSerial;
 bool armHomed = false;
 bool gondolaHomed = false;
 
@@ -24,10 +25,9 @@ void readCyclePercent() {
     this_thread::sleep_for(chrono::seconds(5));
 }
 
-// RASPI STUFF 
-
-// UNCOMMENT!!! IF YOU ARE PULLING TO RASPI 
-
+/*
+ *  Sets all paramaters needed for the GPIO at runtime
+ */
 JNIEXPORT jint JNICALL Java_HMI_1BackE_setUpGPIO(JNIEnv *env, jobject obj) {
     
     // Serial
@@ -48,21 +48,14 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_setUpGPIO(JNIEnv *env, jobject obj) {
         return -1;
     }
 
-
-
     fd = serialOpen("/dev/ttyACM0", 9600);
+    dragonSerial = serialOpen("/dev/ttyACM1", 9600);
 
     // Set E-Stop paramaters
     pinMode(ESTOP_IN, INPUT);
     pinMode(ESTOP_SOURCE, OUTPUT);
     digitalWrite(ESTOP_SOURCE, HIGH);
 
-    // // Set Encoder paramaters
-    // pinMode(CS1_PIN, OUTPUT);
-    // pinMode(CS2_PIN, OUTPUT);
-    // // digitalWrite(CS1_PIN, HIGH);
-    // // digitalWrite(CS2_PIN, HIGH);
-    
     return 1;
 }
 
@@ -99,8 +92,10 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_start(JNIEnv *env, jobject obj) {
 }
 
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_stop(JNIEnv *env, jobject obj) {
-    for(int i = 0; i < SERIAL_ITERATION; i++)
+    for(int i = 0; i < SERIAL_ITERATION; i++){
         serialPuts(fd, "<0,0,0,0>"); // Stop the ride immediately
+        serialPutChar(dragonSerial, "s");
+    }
     return stop();
 }
 
