@@ -454,13 +454,6 @@ class KeyAsButton extends JFrame implements KeyListener {
         if (key == KeyEvent.VK_D && backend.getCurrentState() == 1) {
             // Disbatch command
         	backend.dispatch();
-            try {
-                Thread.sleep(68000);
-            } catch (InterruptedException error) {
-                error.printStackTrace();
-            }
-            backend.homeArm();
-            backend.homeGondola();
             backend.stop();
         }
         if (key == KeyEvent.VK_M) {
@@ -470,8 +463,6 @@ class KeyAsButton extends JFrame implements KeyListener {
         if (key == KeyEvent.VK_R) {
             // Reset Command
             backend.stop();
-            backend.homeArm();
-            backend.homeGondola();
         	if (backend.setState(0)==0) {
             	access = 0;
                 isOff = false;
@@ -487,8 +478,6 @@ class KeyAsButton extends JFrame implements KeyListener {
             // Stop command
             backend.stop();
             backend.setState(4);
-            backend.homeArm();
-            backend.homeGondola();
 
             // HMI control
             isOff = true;

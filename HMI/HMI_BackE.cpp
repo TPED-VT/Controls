@@ -358,6 +358,8 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_dispatch(JNIEnv* env, jobject obj){
         serialPutchar(fd, 'd');
         serialPutchar(dragonSerial, 'd');
     }
+     
+
 }
 
 JNIEXPORT void JNICALL Java_HMI_1BackE_reset(JNIEnv* env, jobject obj){
