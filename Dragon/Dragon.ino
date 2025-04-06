@@ -4,6 +4,7 @@ Servo dragonServo;                            // Initialize dragon servo object
 int pos = 0;                                  // Initialize servo position
 int lit = 0;                                  // Initialize eye LEDs brightness
 int lava = 0;                                 // Initialize lava LED strip brightness
+bool active = false;                          // Make sure the dragon can run
 #define RED_PIN 5                             // Define the arduino PWM pin for the lava LED strip
 #define EYES_PIN 11                           // Define the arduino PWM pin for the eye LEDs
 #define JAW_PIN 9                             // Define the arduino pin for the servo
@@ -12,7 +13,7 @@ int lava = 0;                                 // Initialize lava LED strip brigh
 void setup() {
   // Serial port setup code
   Serial.begin(9600);
-  
+  active = false;
   // LED strip RGB setup code
   pinMode(RED_PIN, OUTPUT);                   // digital PWM pin 5
 
@@ -29,7 +30,11 @@ void loop() {
   if(Serial.available() > 0)                  // Check for serial start from Raspberry Pi
   {
     char send = Serial.read();
-    if(send == 'd')
+    if(send == 's')
+      active = false;
+    if(send == 'd' && !active)
+      active = true;
+    if(active)
     {
       // FOR-loop to gradually turn lava LED strip on to full brightness
       for(lava = 0; lava < 255; lava += 1)
@@ -41,22 +46,26 @@ void loop() {
       // 1.275 seconds
       lavaLoop1();
       lavaLoop2();
-    
+      if(Serial.read() == 's') return;  // Check for a stop signal
       // Permanent Time: 5.875 seconds
       // FOR-loop to gradually turn on dragon eyes to full brightness:
       for(lit = 0; lit < 255; lit += 1)
       {
         analogWrite(EYES_PIN, lit);             // Write new increased brightness to dragon eyes pin
         delay(5);                               // Wait 5ms before next loop iteration
+        if(lit % 100 == 0)
+          if(Serial.read() == 's') return;  // Check for a stop signal
       }
   
       // Permanent Time: 7.15 seconds
       jawOpen();                                 // FOR-loop to open the dragon jaw
-  
+      if(Serial.read() == 's') return;  // Check for a stop signal
+      
       // 7.45 seconds
       lavaLoop1();  // 1.5 seconds
       delay(50);    // 0.05 seconds
       lavaLoop4();  // 0.5 seconds
+      if(Serial.read() == 's') return;  // Check for a stop signal
   
       // Permanent Time: 9.5 seconds
       jawClose();                                // FOR-loop to close the dragon jaw
@@ -66,31 +75,38 @@ void loop() {
   
       // Permanent Time: 12.6 seconds
       jawOpen();                                 // FOR-loop to open the dragon jaw
-  
+      if(Serial.read() == 's') return;  // Check for a stop signal
+      
       // 12.9 seconds
       lavaLoop4();  // 0.5 seconds
       delay(100);   // 0.1 seconds
       lavaLoop2();  // 1.5 seconds
       lavaLoop4();  // 0.5 seconds
+      if(Serial.read() == 's') return;  // Check for a stop signal
   
       // Permanent Time: 15.5 seconds
       jawClose();                                // FOR-loop to close the dragon jaw
+      if(Serial.read() == 's') return;  // Check for a stop signal
   
       // 15.8 seconds
       lavaLoop1();  // 3.1 seconds
       lavaLoop2();  // 1.5 seconds
       lavaLoop1();  // 3.1 seconds
       lavaLoop4();  // 0.5 seconds
+      if(Serial.read() == 's') return;  // Check for a stop signal
   
       // 24 seconds
       jawOpen();                                 // FOR-loop to open the dragon jaw
+      if(Serial.read() == 's') return;  // Check for a stop signal
   
       // 24.3 seconds
       lavaLoop3(); // 2.8 seconds
       lavaLoop5(); // 0.45 seconds
+      if(Serial.read() == 's') return;  // Check for a stop signal
   
       // 27.55 seconds
       jawClose();                                // FOR-loop to close the dragon jaw
+      if(Serial.read() == 's') return;  // Check for a stop signal
   
       // 27.85 seconds
       lavaLoop3();
@@ -99,16 +115,20 @@ void loop() {
       lavaLoop1();
       lavaLoop3();
       lavaLoop1();
+      if(Serial.read() == 's') return;  // Check for a stop signal
   
       // 41.05 seconds
       jawOpen();                                 // FOR-loop to open the dragon jaw
+      if(Serial.read() == 's') return;  // Check for a stop signal
   
       // 41.35 seconds
       lavaLoop1();  // 1.5 seconds
       lavaLoop1();  // 1.5 seconds
+      if(Serial.read() == 's') return;  // Check for a stop signal
   
       // 44.35 seconds
       jawClose();                                // FOR-loop to close the dragon jaw
+      if(Serial.read() == 's') return;  // Check for a stop signal
   
       // 44.65 seconds
       lavaLoop4();
@@ -116,10 +136,12 @@ void loop() {
       delay(50);
       lavaLoop3();
       lavaLoop4();
+      if(Serial.read() == 's') return;  // Check for a stop signal
   
       // 53.85 seconds
       jawOpen();                                 // FOR-loop to open the dragon jaw
-  
+      if(Serial.read() == 's') return;  // Check for a stop signal
+      
       // 54.15 seconds
       lavaLoop1();    // 1.5 seconds
       lavaLoop2();    // 3.1 seconds
@@ -128,6 +150,7 @@ void loop() {
       lavaLoop1();    // 1.5 seconds
       lavaLoop2();    // 3.1 seconds
       lavaLoop3();    // 2.8 seconds
+      if(Serial.read() == 's') return;  // Check for a stop signal
   
       // FOR-loop to gradually turn off dragon eyes:
       for(lit = 255; lit > 0; lit -= 1)
@@ -148,6 +171,7 @@ void loop() {
       lavaLoop2();    // 3.1 seconds
       lavaLoop3();    // 2.8 seconds
       lavaLoop2();    // 3.1 seconds
+      if(Serial.read() == 's') return;  // Check for a stop signal
 
       // FOR-loop to gradually turn off dragon eyes:
       for(lava = 255; lava > 0; lava -= 1)
