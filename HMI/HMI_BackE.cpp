@@ -278,7 +278,6 @@ JNIEXPORT jfloatArray JNICALL Java_HMI_1BackE_getPosition(JNIEnv *env, jobject o
 }
 
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isReadyToRun(JNIEnv *env, jobject obj) {
-    // cout << "isReadyToRun called" << endl;
     return isReadyToRun();
 }
 
@@ -288,51 +287,27 @@ JNIEXPORT jstring JNICALL Java_HMI_1BackE_isReadyToRunMessage(JNIEnv *env, jobje
     return env->NewStringUTF(result.c_str());
 }
 
-JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRideRunning(JNIEnv *env, jobject obj) {
-    // cout << "isRideRunning called" << endl; 
-    return JNI_TRUE; 
-}
-
-
 // ERROR HANDLING 
 
-JNIEXPORT jstring JNICALL Java_HMI_1BackE_getErrorMessage(JNIEnv *env, jobject obj) {
-    // cout << "getErrorMessage called" << endl;
-    string result = getErrorMessage();
-    return env->NewStringUTF(result.c_str());
-
+JNIEXPORT jstring JNICALL Java_HMI_1BackE_getErrorMessage(JNIEnv* env, jobject obj) {
+    std::string msg = getErrorMessage();
+    return env->NewStringUTF(msg.c_str());
 }
 
-JNIEXPORT jstring JNICALL Java_HMI_1BackE_getstatusMessage(JNIEnv* env, jobject obj) {
-    // cout << "getStatusMessage called" << endl;
-    string result = "sTRING";
+JNIEXPORT jstring JNICALL Java_HMI_1BackE_getStatusMessage(JNIEnv* env, jobject obj) {
+    std::string result = statusMessage();
     return env->NewStringUTF(result.c_str());
 }
 
 JNIEXPORT jstring JNICALL Java_HMI_1BackE_getMaintenanceError(JNIEnv* env, jobject obj) {
-    // cout << "getMaintenanceError called" << endl;
-    string result = getMaintenanceError();
+    std::string result = getMaintenanceError();
     return env->NewStringUTF(result.c_str());
 }
 
 JNIEXPORT jstring JNICALL Java_HMI_1BackE_getTestStatusMessage(JNIEnv* env, jobject obj) {
-    // cout << "getTestStatusMessage called" << endl;
-    string result = getTestStatusMessage();
+    std::string result = getTestStatusMessage();
     return env->NewStringUTF(result.c_str());
 }
-
-
-
-
-
-// JNIEXPORT void JNICALL Java_HMI_1BackE_logErrorMessage(JNIEnv *env, jobject obj, jstring message) {
-//     cout << "logErrorMessage called" << endl;
-
-//     const char* newMessage = env->GetStringUTFChars(message, nullptr);
-//     logErrorMessage(string(newMessage));
-//     env->ReleaseStringUTFChars(message, newMessage);
-// }
-
 
 // RIDE CYCLE OTHER STUFF
 
@@ -365,7 +340,7 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_reset(JNIEnv* env, jobject obj){
     for(int i = 0; i < SERIAL_ITERATION; i++)
         serialPutchar(fd, 'r');
     setState(0);
-}
+} 
 
 
 // JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRotationGondolaClockwise(JNIEnv *env, jobject obj) {

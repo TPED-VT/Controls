@@ -124,5 +124,4 @@ int getCurrentState();
 int setState(int state);
 int getCycleCount();
 
-
 #endif

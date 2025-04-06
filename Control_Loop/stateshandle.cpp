@@ -337,6 +337,10 @@ int setCurrentTest(int test)
 string getErrorMessage()
 {
     string message = "";
+    
+    if (eStopPressed() == true) {
+        message += "EMERGENCY STOP ACTIVATED";
+    }
 
     if (RestraintCheck < 0)
     {
@@ -360,7 +364,6 @@ string getErrorMessage()
 string getMaintenanceError()
 {
     string message = "";
-
     if (RestraintCheck < 0) {
         message += "ERROR 101 (RESTRAINT)";
     }
@@ -387,8 +390,6 @@ string statusMessage() {
     } 
     if (currentState == State::kAuto) {
         message += "LOADING";
-    } else if (isReadyToRun() == true) {
-        message += "READY TO RUN";
     }
     if (currentState == State::kRideOp) {
         message += "RUNNING";
@@ -533,6 +534,8 @@ bool isReadyToRun()
     {
         return false;
     }
+
+    return true; 
 }
 
 string isReadyToRunMessage() {
@@ -706,7 +709,7 @@ bool homeArm() {
 //     return 1;
 // }
 
-// bool eStopPressed(){
+bool eStopPressed(){
 
-//     return digitalRead(ESTOP_IN);
-// }
+    return digitalRead(ESTOP_IN);
+}
