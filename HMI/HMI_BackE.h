@@ -209,6 +209,14 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_dispatch
 
 /*
  * Class:     HMI_BackE
+ * Method:    dispatch6
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_HMI_1BackE_dispatch6
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
  * Method:    stop
  * Signature: ()Z
  */

@@ -131,8 +131,9 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeArm(JNIEnv *env, jobject obj) {
     pos = readAMT22Position(spi_fd_1);
         std::cout << std::endl << "Position: " << pos;
 
-    while ((pos != 225)) {
+    while ((pos != 95)) {
         pos = readAMT22Position(spi_fd_1);
+        std::cout << std::endl << "Position1: " << pos;
         // uint16_t pos1 = readAMT22Position(spi_fd_1);
             if (1)
                 serialPuts(fd, "<30,0,0,0>");
@@ -140,11 +141,14 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeArm(JNIEnv *env, jobject obj) {
                 serialPuts(fd, "<30,0,0,1>");
     
         
-            std::this_thread::sleep_for(std::chrono::milliseconds(50)); 
+            std::this_thread::sleep_for(std::chrono::milliseconds(5)); 
         }
         std::cout << std::endl << "Position: " << pos;
 
-        serialPutchar(fd, 'p');
+        for (int i = 0; i < SERIAL_ITERATION; i++) {
+            serialPuts(fd, "<0,0,0,0>");
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        }
         close(spi_fd_1);
         // close(spi_fd_1);
     }
@@ -166,7 +170,8 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_maintArmCheck(JNIEnv *env, jobject ob
 
     // Stop motor
     for (int i = 0; i < SERIAL_ITERATION; i++) {
-        serialPutchar(fd, 'p');
+        serialPuts(fd, "<0,0,0,0>");
+        serialPutchar(fd, 's');
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
 
@@ -193,7 +198,8 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeGondola(JNIEnv *env, jobject obj)
     pos = readAMT22Position(spi_fd_0);
         // std::cout << std::endl << "Position: " << pos;
 
-    while ((pos >= 2 && pos <= 358)) {
+    while ((pos != 0)) {
+        std::cout << std::endl << "Position2: " << pos;
         pos = readAMT22Position(spi_fd_0);
         // uint16_t pos1 = readAMT22Position(spi_fd_1);
         // std::cout << std::endl << "Position: " << pos;
@@ -205,7 +211,11 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeGondola(JNIEnv *env, jobject obj)
         
             std::this_thread::sleep_for(std::chrono::milliseconds(50)); 
         }
-        serialPutchar(fd, 'p');
+        
+        for (int i = 0; i < SERIAL_ITERATION; i++) {
+            serialPutchar(fd, 'p');
+            std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        }
         close(spi_fd_0);
         // close(spi_fd_1);
     }
@@ -357,6 +367,17 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_getCycleCount(JNIEnv* env, jobject obj) {
 JNIEXPORT void JNICALL Java_HMI_1BackE_dispatch(JNIEnv* env, jobject obj){
     for(int i = 0; i < SERIAL_ITERATION; i++){
         serialPutchar(fd, 'd');
+        serialPutchar(dragonSerial, 'd');
+        std::this_thread::sleep_for(std::chrono::milliseconds(50)); 
+
+    }
+     
+
+}
+
+JNIEXPORT void JNICALL Java_HMI_1BackE_dispatch6(JNIEnv* env, jobject obj){
+    for(int i = 0; i < SERIAL_ITERATION; i++){
+        serialPutchar(fd, '6');
         serialPutchar(dragonSerial, 'd');
         std::this_thread::sleep_for(std::chrono::milliseconds(50)); 
 

@@ -349,7 +349,8 @@ class KeyAsButton extends JFrame implements KeyListener {
             public void run() {
                 if(backend.eStopPressed()) {
                     isEStopped = true;
-                    
+                    backend.stop();
+                    // backend.setState(4);
                     errorBox.setText("EMERGENCY STOP ACTIVATED");
                     
                     //Gray out all other buttons
@@ -463,6 +464,8 @@ class KeyAsButton extends JFrame implements KeyListener {
         if (key == KeyEvent.VK_R) {
             // Reset Command
             backend.stop();
+            backend.homeArm();
+            backend.homeGondola();
         	if (backend.setState(0)==0) {
             	access = 0;
                 isOff = false;
@@ -599,16 +602,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         }
         //6 is 6 long ride cycle
         if(key == KeyEvent.VK_6 && backend.getCurrentState() == 1){
-            for(int i = 0; i < 333; i++){   // Runs for 6 hours
-                backend.dispatch();
-                try {
-                    Thread.sleep(65000); // Sleep for 65 seconds
-                } catch (InterruptedException error) {
-                    error.printStackTrace();
-                    break; // If the sleep is interrupted, break out of the loop
-                    
-                }
-            }
+            backend.dispatch6();
         }
         
     }

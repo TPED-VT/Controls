@@ -48,6 +48,7 @@ public class HMI_BackE {
     public native String isReadyToRunMessage();
     public native boolean isRideRunning();
     public native void dispatch();
+    public native void dispatch6();
     public native boolean stop();
     public native boolean homeArm();
     public native boolean homeGondola();
