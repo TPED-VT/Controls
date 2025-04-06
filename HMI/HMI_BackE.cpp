@@ -371,8 +371,7 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_dispatch(JNIEnv* env, jobject obj){
         std::this_thread::sleep_for(std::chrono::milliseconds(50)); 
 
     }
-     
-
+    
 }
 
 JNIEXPORT void JNICALL Java_HMI_1BackE_dispatch6(JNIEnv* env, jobject obj){
