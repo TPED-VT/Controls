@@ -452,7 +452,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         int key = e.getKeyCode();
     
-        if (key == KeyEvent.VK_D) {
+        if (key == KeyEvent.VK_D && backend.getCurrentState() == 2) {
             // Disbatch command
         	backend.dispatch();
         }
@@ -498,9 +498,9 @@ class KeyAsButton extends JFrame implements KeyListener {
             cyclePercent.setText("0% through cycle");
             errorBox.setText("OFF");
         }  
-        if (key == KeyEvent.VK_X) {
+        if (key == KeyEvent.VK_X && backend.getCurrentState() == 4) { // Must be Maint.
             // Arm Motor Maintenance Check Test
-
+            backend.maintArmCheck();
         }
         if (key == KeyEvent.VK_C) {
             // Gondola Motor Maintenance Check Test
@@ -540,8 +540,7 @@ class KeyAsButton extends JFrame implements KeyListener {
                 off.setBackground(Color.WHITE);
                 paintClassic();
             }
-            //TODO: 
-            //activate auto
+
         }
         if (key == KeyEvent.VK_3) {
             
@@ -601,7 +600,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         	v.setBackground(new Color(173, 216, 230));
         }
         //6 is 6 long ride cycle
-        if(key == KeyEvent.VK_6){
+        if(key == KeyEvent.VK_6 && backend.getCurrentState() == 1){
             for(int i = 0; i < 333; i++){   // Runs for 6 hours
                 backend.dispatch();
                 try {

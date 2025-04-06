@@ -104,16 +104,30 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeArm(JNIEnv *env, jobject obj) {
     bool dir = getPosition(1) > top;
     uint16_t pos = getPosition(1);
 
-    while (!(pos <= 2 || pos >= 358)) {
-        pos = getPosition(1);
-        if (dir)
-            serialPuts(fd, "<0,0,10,0>");
-        else
-            serialPuts(fd, "<0,0,10,1>");
+    pos = getPosition(1);
+            if (dir)
+                serialPuts(fd, "<0,0,10,0>");
+            else
+                serialPuts(fd, "<0,0,10,1>");
+    
+        while (!(pos <= 2 || pos >= 358)) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(50)); 
+        }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
-        
-    }
+    JNIEXPORT jboolean JNICALL Java_HMI_1BackE_maintArmCheck(JNIEnv *env, jobject obj) {
+        uint16_t top = 180; 
+        bool dir = getPosition(1) > top;
+        uint16_t pos = getPosition(1);
+
+        pos = getPosition(1);
+            if (dir)
+                serialPuts(fd, "<0,0,10,0>");
+            else
+                serialPuts(fd, "<0,0,10,1>");
+    
+        while (!(pos <= 2 || pos >= 358)) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(50)); 
+        }
 
     // Stop motor
     for (int i = 0; i < SERIAL_ITERATION; i++) {
