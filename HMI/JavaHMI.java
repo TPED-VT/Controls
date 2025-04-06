@@ -456,14 +456,15 @@ class KeyAsButton extends JFrame implements KeyListener {
             // Disbatch command
         	backend.dispatch();
         }
-        /* TODO: Remove */if (key == KeyEvent.VK_M) {
-            if(isClassic)
-                paintAdvanced();
-            else if(!isClassic)
-                paintClassic();
-        }
+        // if (key == KeyEvent.VK_M) {
+        //     if(isClassic)
+        //         paintAdvanced();
+        //     else if(!isClassic)
+        //         paintClassic();
+        // }
         if (key == KeyEvent.VK_R) {
             // Reset Command
+            backend.stop();
         	if (backend.setState(0)==0) {
             	access = 0;
                 isOff = false;
@@ -473,7 +474,7 @@ class KeyAsButton extends JFrame implements KeyListener {
                 off.setBackground(Color.WHITE);
                 paintClassic();
             }
-        	//TODO: reset
+            //TODO: Homing
         }
         if (key == KeyEvent.VK_S) {
             // Stop command
