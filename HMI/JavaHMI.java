@@ -1,4 +1,3 @@
-
 import java.awt.*;   
 import java.awt.event.*;
 import java.awt.geom.Line2D;
@@ -59,15 +58,20 @@ class KeyAsButton extends JFrame implements KeyListener {
     JPanel eStopPanel;
     JLabel eStopLabel;
     boolean isEStopped;
+    int access;
+    JButton z;
+    JButton x;
+    JButton c;
+    JButton v;
     
     public KeyAsButton() {
         
         isEStopped = false;
         backend = new HMI_BackE();
-        backend.setUpGPIO();
+        //backend.setUpGPIO;
         isClassic = true;
-
         //Frame setup
+        access = 0;
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         this.setBounds(0,0,screenSize.width, screenSize.height);
         this.setVisible(true);
@@ -120,7 +124,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         restraintStatus = new JButton1("<html> L:<br />RESTRAINTS UNLOCKED</html>");
         cyclePercent = new JButton1("% status");
         rideStatus = new JButton1("STATUS: Running");   
-        degree = new JButton1("angle: 100 degrees");
+        degree = new JButton1("angle: 0 degrees");
         rectangle = new JPanel();
         rectangle2 = new JPanel();
         indicator = new JButton1("<html> NOT READY<br />For Ride Start</html>");
@@ -141,7 +145,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         advanced.setBorderPainted(false);
         advanced.setBackground(new Color(204,204,204));
         direction = new JButton("direction: ");
-        direction.setBounds(30, 165, 600, 85);
+        direction.setBounds(230, 165, 400, 85);
         
         cyclesRun = new JButton("cycles run");
         cyclesRun.setBounds(650,165,600,85);
@@ -155,9 +159,9 @@ class KeyAsButton extends JFrame implements KeyListener {
         classic.setBackground(Color.WHITE);                
         
         restraintStatus.setBounds(30, 50, 600, 200);
-        degree.setBounds(30, 50, 600, 85);
+        degree.setBounds(230, 50, 400, 85);
         
-        cyclePercent.setBounds(650,165,600,85); 
+        cyclePercent.setBounds(1280/2-450,180,900,85); 
         
         rideStatus.setBounds(650,50,600,85);
 
@@ -214,6 +218,20 @@ class KeyAsButton extends JFrame implements KeyListener {
         progressBarBase.setBounds(100, 270, screenSize.width-200 , 30);
         progressBar = new JPanel();
         progressBar.setBackground(new Color(0,0,0));
+        
+        //Maintenance button indicator
+        z = new JButton("restraint check");
+        z.setBounds(10, 50, 200, 40);
+        z.setBackground(Color.WHITE);
+        x = new JButton("arm motor check");
+        x.setBounds(10, 100, 200, 40);
+        x.setBackground(Color.WHITE);
+        c = new JButton("gondola motor check");
+        c.setBounds(10, 150, 200, 40);
+        c.setBackground(Color.WHITE);
+        v = new JButton("homing check");
+        v.setBounds(10, 200, 200, 40);
+        v.setBackground(Color.WHITE);
                
         
         //Timer to repaint and update various indicators
@@ -230,20 +248,22 @@ class KeyAsButton extends JFrame implements KeyListener {
                     cyclePercent.repaint();
                 
                     //updating status
-                    rideStatus.setBackground(null);
-                    if(backend.isRideRunning()/*TODO: status is running*/)
+                    rideStatus.setBackground(UIManager.getColor("Button.background"));
+                    /*if(backend.isRideRunning()TODO: status is running)
                         rideStatus.setText("STATUS: RUNNING");
-                    else if(true/*TODO:status is loading*/) {
-                        rideStatus.setText("STATUS: LOADING");
+                    else if(trueTODO:status is loading) {
+                        rideStatus.setText("STATUS: STOPPED");
                     }
-                    else rideStatus.setText("STATUS: DOWN");
-                
+                    else rideStatus.setText("STATUS: DOWN");*/
+                    rideStatus.setText("STATUS: " + backend.statusMessage());
+                    
+                    
                     //updating restraints
-                    if(backend.isRow1Locked() == 1/*TODO: row1 is locked*/)
+                    if(backend.isRow1Locked()/*TODO: row1 is locked*/)
                         rectangle2.setBackground(Color.GREEN);
                     else rectangle2.setBackground(Color.RED);
                 
-                    if(backend.isRow2Locked() == 1/*TODO: row2 is locked*/)
+                    if(backend.isRow2Locked()/*TODO: row2 is locked*/)
                         rectangle.setBackground(Color.GREEN);
                     else rectangle.setBackground(Color.RED);
                 
@@ -262,7 +282,7 @@ class KeyAsButton extends JFrame implements KeyListener {
                 
                     //From restraint check mode to locked
                     if(restraintStatus.getText().equals("<html> L:<br />RESTRAINT CHECK MODE</html>") &&
-                        (backend.isRow1Locked() == 1) && (backend.isRow2Locked() == 1))
+                        backend.isRow1Locked() && backend.isRow2Locked())
                         restraintStatus.setText("<html> L:<br />RESTRAINTS LOCKED</html>");
                 
                     //TODO: 
@@ -273,6 +293,7 @@ class KeyAsButton extends JFrame implements KeyListener {
                     //If password is accepted:
                     //note: irl, password would be hashed
                     if(password.getText().equals("tpedhmi")) {
+                    	access = 1;
                         popup.dispatchEvent(new WindowEvent(popup, WindowEvent.WINDOW_CLOSING));
                         requestFocusInWindow();
                         paintAdvanced();
@@ -290,20 +311,29 @@ class KeyAsButton extends JFrame implements KeyListener {
                     progressBar.setBounds(100, 270, 
                         (int)(backend.getCyclePercent()/*TODO: get percent from backend*/*(screenSize.width-200)), 30);
                 
+                    
+                    degree.setText("Position: " + backend.getPosition() +" degrees");
                     if(!backend.isRideRunning()/*TODO: status is not running*/)
                         direction.setText("Direction: N/A");
                     // else {
-                    //     if(backend.isRotationArmClockwise()/*TODO: isClockwise()*/)
-                    //         direction.setText("Arm: Clockwise");
-                    //     else direction.setText("Arm: CounterClockwise");
+                    //     if(backend.isRotationGondolaCounterclockwise()/*TODO: isClockwise()*/)
+                    //         direction.setText("Arm: N/A");
+                    //     else direction.setText("Arm: Counterclockwise");
                     
-                    //     if(backend.isRotationGondolaClockwise())
-                    //         direction.setText(direction.getText()+", Gondola: Clockwise");
+                    //     if(backend.isRotationArmCounterclockwise())
+                    //         direction.setText(direction.getText()+", Gondola: N/A");
                     //     else direction.setText(direction.getText()+", Gondola: Counterclockwise");
                     // }
+                    if(backend.getTestStatusMessage().contains("Passed")||
+                    		backend.getTestStatusMessage().substring(backend.getTestStatusMessage().length()-1).equals(")")) {
+                    			z.setBackground(Color.WHITE);
+                    			x.setBackground(Color.WHITE);
+                    			c.setBackground(Color.WHITE);
+                    			v.setBackground(Color.WHITE);
+                    		}
    
                 
-                    cyclesRun.setText("Cycle Count: " + runs);
+                    // cyclesRun.setText("Cycle Count: " + backend.getCycles());
                 }//if !isOff
             }
         };
@@ -311,15 +341,14 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         //TODO: how often should visuals update? I have it set to 1% of the ride
         //cycle, which is 1.538 seconds, but unsure if it should update more
-        timer.schedule(task, 1, 100);   // Step for the running mode
+        timer.schedule(task, 1, 100);
         
       //stops all functions if eStop
         Timer eStopTimer = new Timer();
         TimerTask eStopCheck = new TimerTask(){
             @Override
             public void run() {
-                backend.getPosition();
-                if(1 == 0){///backend.eStopPressed()) {
+                if(backend.eStopPressed()) {
                     isEStopped = true;
                     
                     errorBox.setText("EMERGENCY STOP ACTIVATED");
@@ -352,14 +381,21 @@ class KeyAsButton extends JFrame implements KeyListener {
     public void paintClassic() {
         
         isClassic = true;
+        middle.remove(rideStatus);
+        rideStatus.setBounds(1280/2-450,70,900,85);
         middle.add(rideStatus);
-        middle.add(restraintStatus);
+        //middle.add(restraintStatus);
         middle.add(cyclePercent);
         middle.remove(degree);
         middle.remove(progressBar);
         middle.remove(progressBarBase);
         middle.remove(direction);
         middle.remove(cyclesRun);
+        middle.remove(z);
+        middle.remove(x);
+        middle.remove(c);
+        middle.remove(v);
+
         middle.repaint();
         advanced.setBackground(new Color(204,204,204));
         classic.setBackground(Color.WHITE);
@@ -373,11 +409,19 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.remove(restraintStatus);
         middle.remove(cyclePercent);
         
+        middle.remove(rideStatus);
+        rideStatus.setBounds(650,50,600,85);
+        middle.add(rideStatus);
+        
         middle.add(degree);
         middle.add(progressBarBase);
         middle.add(progressBar);
         middle.add(direction);
         middle.add(cyclesRun);
+        //middle.add(z);
+        middle.add(x);
+        middle.add(c);
+        middle.add(v);
 
         middle.repaint();
         
@@ -399,11 +443,18 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         
     }
+    public double radians(double degrees) {
+    	return degrees*(Math.PI/180);
+    }
     
     @Override
     public void keyPressed(KeyEvent e) {
         
         int key = e.getKeyCode();
+        
+        if(key == KeyEvent.VK_D) {
+        	backend.dispatch();
+        }
         
         //TODO: Get rid of this once maintenance mode is done, it's a backdoor
         if (key == KeyEvent.VK_M) {
@@ -412,15 +463,9 @@ class KeyAsButton extends JFrame implements KeyListener {
             else if(!isClassic)
                 paintClassic();
         }
-        if (key == KeyEvent.VK_D && !isEStopped) {
-            // Dispatch
-            backend.dispatch();
-        }
-        if (key == KeyEvent.VK_R && !isEStopped) {
-            //TODO: reset
-            // backend.homeArm();
-            backend.homeGondola();
-            if (backend.setState(0) == 0) {
+        if (key == KeyEvent.VK_R) {
+        	if (backend.setState(0)==0) {
+            	access = 0;
                 isOff = false;
                 init.setBackground(new Color(192, 192, 192));
                 auto.setBackground(Color.WHITE);
@@ -428,34 +473,31 @@ class KeyAsButton extends JFrame implements KeyListener {
                 off.setBackground(Color.WHITE);
                 paintClassic();
             }
-
+        	//TODO: reset
         }
         if (key == KeyEvent.VK_S) {
-            //Stop
-            backend.stop();
+            //TODO: stop
         }
         
         if (key == KeyEvent.VK_L) {
             //TODO:
-            backend.lockRestraints();
-            if(restraintStatus.getText().equals("<html> L:<br />RESTRAINTS UNLOCKED</html>") && 
-                backend.lockRestraints() == 1) {
-                restraintStatus.setText("<html> L:<br />RESTRAINT CHECK MODE</html>");
-            }
-            else if(restraintStatus.getText().equals("<html> L:<br />RESTRAINTS LOCKED</html>")|| 
-                restraintStatus.getText().equals("<html> L:<br />RESTRAINT CHECK MODE</html>") 
-                && backend.unlockRestraints() == 1 /*check if ride has been unlocked on backend*/) {
-                restraintStatus.setText("<html> L:<br />RESTRAINTS UNLOCKED</html>");  
-                rectangle.setBackground(Color.RED);
-                rectangle2.setBackground(Color.RED);
-            }   
-            
+            //insert code to lock restraints
+            // if(restraintStatus.getText().equals("<html> L:<br />RESTRAINTS UNLOCKED</html>") && 
+            //     backend.lockRestraints()) {
+            //     restraintStatus.setText("<html> L:<br />RESTRAINT CHECK MODE</html>");
+            // }
+            // else if(restraintStatus.getText().equals("<html> L:<br />RESTRAINTS LOCKED</html>")|| 
+            //     restraintStatus.getText().equals("<html> L:<br />RESTRAINT CHECK MODE</html>") 
+            //     && backend.unlockRestraints() /*check if ride has been unlocked on backend*/) {
+            //     restraintStatus.setText("<html> L:<br />RESTRAINTS UNLOCKED</html>");  
+            // }
             
         }
 
         if (key == KeyEvent.VK_1) {   
             
-            if (backend.setState(0) == 0) {
+            if (backend.setState(0)==0) {
+            	access = 0;
                 isOff = false;
                 init.setBackground(new Color(192, 192, 192));
                 auto.setBackground(Color.WHITE);
@@ -469,7 +511,8 @@ class KeyAsButton extends JFrame implements KeyListener {
         }
         if (key == KeyEvent.VK_2) {
             
-            if(backend.setState(1) == 1) {
+            if(backend.setState(1)==1) {
+            	access = 0;
                 isOff = false;
                 init.setBackground(Color.WHITE);
                 auto.setBackground(new Color(192, 192, 192));
@@ -483,7 +526,7 @@ class KeyAsButton extends JFrame implements KeyListener {
 
         if (key == KeyEvent.VK_3) {
             
-            if(backend.setState(3) == 3) {
+            if(backend.setState(3)==3) {
                 isOff = false;
                 popup.setVisible(true);
             }
@@ -495,8 +538,9 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         if(key == KeyEvent.VK_4) { 
             
-            if(backend.setState(4) == 4) {
+            if(backend.setState(4)==4) {
                 isOff = true;
+                access = 0;
                 init.setBackground(Color.WHITE);
                 auto.setBackground(Color.WHITE);
                 maint.setBackground(Color.WHITE);
@@ -514,6 +558,32 @@ class KeyAsButton extends JFrame implements KeyListener {
                 //turn off
             } //if statement
         } //keyEvent vk4
+        
+        //Maintenance mode check
+        
+        /*//Z is restraint check
+        if(key == KeyEvent.VK_Z) {
+        	backend.maintenanceSelection(access, 0);
+        	z.setBackground(new Color(173, 216, 230));
+        }*/
+        
+        //x is arm motor check
+        if(key == KeyEvent.VK_X) {
+        	backend.maintenanceSelection(access, 1);
+        	x.setBackground(new Color(173, 216, 230));
+        }
+        //c is gondola motor check
+        if(key == KeyEvent.VK_C) {
+        	backend.maintenanceSelection(access, 2);
+        	c.setBackground(new Color(173, 216, 230));
+        }
+        
+        //v is homed check
+        if(key == KeyEvent.VK_V) {
+        	backend.maintenanceSelection(access, 3);
+        	v.setBackground(new Color(173, 216, 230));
+        }
+        
     }
     
     @Override
@@ -555,7 +625,7 @@ class CirclePanel extends JPanel {
     }
     
     public void paintLine(double angle){
-        angle = angle * (Math.PI/180);
+        angle = angle - (Math.PI/2);
         //this.setColor(Color.BLACK); // Set line color
         this.getGraphics().clearRect(150,150,150, 150);
         super.paintComponent(this.getGraphics()); 

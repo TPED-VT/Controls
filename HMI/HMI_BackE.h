@@ -25,6 +25,14 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_startCyclePercent
 
 /*
  * Class:     HMI_BackE
+ * Method:    getCycleCount
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_HMI_1BackE_getCycleCount
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
  * Method:    setCyclePercent
  * Signature: (I)V
  */
@@ -69,6 +77,38 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentState
  * Signature: ()Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_HMI_1BackE_getErrorMessage
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    getStatusMessage
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_HMI_1BackE_getStatusMessage
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    getMaintenanceError
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_HMI_1BackE_getMaintenanceError
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    getMaintenanceMessage
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_HMI_1BackE_getMaintenanceMessage
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    getTestStatusMessage
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_HMI_1BackE_getTestStatusMessage
   (JNIEnv *, jobject);
 
 /*
@@ -122,17 +162,17 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_restraintCheck
 /*
  * Class:     HMI_BackE
  * Method:    isRow1Locked
- * Signature: ()I
+ * Signature: ()Z
  */
-JNIEXPORT jint JNICALL Java_HMI_1BackE_isRow1Locked
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRow1Locked
   (JNIEnv *, jobject);
 
 /*
  * Class:     HMI_BackE
  * Method:    isRow2Locked
- * Signature: ()I
+ * Signature: ()Z
  */
-JNIEXPORT jint JNICALL Java_HMI_1BackE_isRow2Locked
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRow2Locked
   (JNIEnv *, jobject);
 
 /*
@@ -190,6 +230,38 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeArm
  */
 JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeGondola
   (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    getCurrentTest
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_HMI_1BackE_getCurrentTest
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    setCurrentTest
+ * Signature: (I)I
+ */
+JNIEXPORT jint JNICALL Java_HMI_1BackE_setCurrentTest
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    statusMessage
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_HMI_1BackE_statusMessage
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     HMI_BackE
+ * Method:    maintenanceSelection
+ * Signature: (II)I
+ */
+JNIEXPORT jint JNICALL Java_HMI_1BackE_maintenanceSelection
+  (JNIEnv *, jobject, jint, jint);
 
 #ifdef __cplusplus
 }

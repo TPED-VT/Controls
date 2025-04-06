@@ -40,8 +40,8 @@ public class HMI_BackE {
 
 // restraint handling    
     public native boolean restraintCheck();
-    public native int isRow1Locked();
-    public native int isRow2Locked();
+    public native boolean isRow1Locked();
+    public native boolean isRow2Locked();
     
 // ride operation 
     public native boolean isReadyToRun();
@@ -55,6 +55,7 @@ public class HMI_BackE {
 // testing 
     public native int getCurrentTest();
     public native int setCurrentTest(int test);
-    
+    public native String statusMessage();
+    public native int maintenanceSelection(int access, int test);
 
 }

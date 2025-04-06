@@ -156,47 +156,50 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeGondola(JNIEnv *env, jobject obj)
     return stop();
 }
 
-JNIEXPORT jint JNICALL Java_HMI_1BackE_MaintenanceSelection(JNIEnv *env, jobject obj, jint access, jint test) {
+JNIEXPORT jint JNICALL Java_HMI_1BackE_maintenanceSelection(JNIEnv *env, jobject obj, jint access, jint test) {
     int result = MaintenanceSelection((int)access, (int)test);
     return result; 
 }
 
+JNIEXPORT jint JNICALL Java_HMI_1BackE_setState(JNIEnv *env, jobject obj, jint state) {
+    return setState(state);
+}
 
 // RESTRAINT CONTROL 
 
-JNIEXPORT jint JNICALL Java_HMI_1BackE_isRow1Locked(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRow1Locked(JNIEnv *env, jobject obj) {
     // cout << "isRow1Locked called" << endl;
     if (isRow1Locked() == PASS) {
-        return PASS; 
+        return true; 
     } else {
-        return ERROR_RESTRAINT;
+        return false;
     }
 }
 
-JNIEXPORT jint JNICALL Java_HMI_1BackE_isRow2Locked(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_isRow2Locked(JNIEnv *env, jobject obj) {
     // cout << "isRow2Locked called" << endl;
     if (isRow2Locked() == PASS) {
-        return PASS; 
+        return true; 
     } else {
-        return ERROR_RESTRAINT;
+        return false;
     }
 }
 
-JNIEXPORT jint JNICALL Java_HMI_1BackE_lockRestraints(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_lockRestraints(JNIEnv *env, jobject obj) {
     // cout << "lockRestraints called" << endl;
     if (lockRestraints() == PASS) {
-        return PASS; 
+        return true; 
     } else {
-        return ERROR_RESTRAINT;
+        return false;
     }
 }
 
-JNIEXPORT jint JNICALL Java_HMI_1BackE_unlockRestraints(JNIEnv *env, jobject obj) {
+JNIEXPORT jboolean JNICALL Java_HMI_1BackE_unlockRestraints(JNIEnv *env, jobject obj) {
     // cout << "unlockRestraints called" << endl;
     if (unlockRestraints() == PASS) {
-        return PASS; 
+        return true; 
     } else {
-        return ERROR_RESTRAINT;
+        return false;
     }
 }
 

@@ -545,6 +545,10 @@ int getCycleCount() {
     return cycleCount;
 }
 
+int setState(int state){
+    currentState = state;
+    return currentState;
+}
 
 // BACKEND FUNCTIONS //
 
@@ -555,20 +559,11 @@ uint16_t getPosition(int encoder)
 
     // Select the encoder
     if(encoder == 1){   
-        wiringPiSPIDataRW(SPI0_CHANNEL, buf, 2); // Send command
+        wiringPiSPIDataRW(encoder-1, buf, 2); // Send command
         
 
         // Deselect the encoder
         digitalWrite(CS1_PIN, HIGH);
-    }
-    else if(encoder == 2){   
-        // digitalWrite(CS2_PIN, LOW);
-        // delayMicroseconds(3);
-             
-        wiringPiSPIDataRW(SPI1_CHANNEL, buf, 2); // Send command
-
-        // Deselect the encoder
-        digitalWrite(CS2_PIN, HIGH);
     }
 
     uint16_t position = ((buf[0] << 8) | buf[1]) & 0x3FFF;  // This is the current position
