@@ -52,7 +52,7 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_setUpGPIO(JNIEnv *env, jobject obj) {
         std:cerr << "Wring Pi Fail" << std::endl;
         return -1;
     }
-    fd = serialOpen("/dev/ttyACM1", 9600);
+    fd = serialOpen("/dev/ttyACM0", 9600);
     dragonSerial = serialOpen("/dev/ttyUSB0", 9600);
     // Initialize SPI0
     if (wiringPiSPISetup(SPI0_CHANNEL, 500000) < 0) {
@@ -107,6 +107,7 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_stop(JNIEnv *env, jobject obj) {
     for(int i = 0; i < SERIAL_ITERATION; i++){
         serialPutchar(fd, 'p'); // Stop the ride immediately
         serialPutchar(dragonSerial, 's');
+        
     }
     return true;
 }
@@ -357,6 +358,8 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_dispatch(JNIEnv* env, jobject obj){
     for(int i = 0; i < SERIAL_ITERATION; i++){
         serialPutchar(fd, 'd');
         serialPutchar(dragonSerial, 'd');
+        std::this_thread::sleep_for(std::chrono::milliseconds(50)); 
+
     }
      
 

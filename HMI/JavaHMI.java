@@ -454,7 +454,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         if (key == KeyEvent.VK_D && backend.getCurrentState() == 1) {
             // Disbatch command
         	backend.dispatch();
-            backend.stop();
+            // backend.stop();
         }
         if (key == KeyEvent.VK_M) {
             backend.homeArm();
