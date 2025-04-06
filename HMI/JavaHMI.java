@@ -452,18 +452,18 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         int key = e.getKeyCode();
         
-        if(key == KeyEvent.VK_D) {
+        if (key == KeyEvent.VK_D) {
+            // Disbatch command
         	backend.dispatch();
         }
-        
-        //TODO: Get rid of this once maintenance mode is done, it's a backdoor
-        if (key == KeyEvent.VK_M) {
+        /* TODO: Remove */if (key == KeyEvent.VK_M) {
             if(isClassic)
                 paintAdvanced();
             else if(!isClassic)
                 paintClassic();
         }
         if (key == KeyEvent.VK_R) {
+            // Reset Command
         	if (backend.setState(0)==0) {
             	access = 0;
                 isOff = false;
@@ -476,24 +476,39 @@ class KeyAsButton extends JFrame implements KeyListener {
         	//TODO: reset
         }
         if (key == KeyEvent.VK_S) {
-            //TODO: stop
-        }
-        
-        if (key == KeyEvent.VK_L) {
-            //TODO:
-            //insert code to lock restraints
-            // if(restraintStatus.getText().equals("<html> L:<br />RESTRAINTS UNLOCKED</html>") && 
-            //     backend.lockRestraints()) {
-            //     restraintStatus.setText("<html> L:<br />RESTRAINT CHECK MODE</html>");
-            // }
-            // else if(restraintStatus.getText().equals("<html> L:<br />RESTRAINTS LOCKED</html>")|| 
-            //     restraintStatus.getText().equals("<html> L:<br />RESTRAINT CHECK MODE</html>") 
-            //     && backend.unlockRestraints() /*check if ride has been unlocked on backend*/) {
-            //     restraintStatus.setText("<html> L:<br />RESTRAINTS UNLOCKED</html>");  
-            // }
-            
-        }
+            // Stop command
+            backend.stop();
+            backend.setState(4);
 
+            // HMI control
+            isOff = true;
+            access = 0;
+            init.setBackground(Color.WHITE);
+            auto.setBackground(Color.WHITE);
+            maint.setBackground(Color.WHITE);
+            off.setBackground(new Color(192, 192, 192));
+            paintClassic();
+            rectangle.setBackground(Color.GRAY);
+            rectangle2.setBackground(Color.GRAY);
+            indicator.setBackground(Color.GRAY);
+            indicator.setText("OFF");
+            restraintStatus.setText("OFF");
+            rideStatus.setText("STATUS: OFF");
+            cyclePercent.setText("0% through cycle");
+            errorBox.setText("OFF");
+        }  
+        if (key == KeyEvent.VK_X) {
+            // Arm Motor Maintenance Check Test
+
+        }
+        if (key == KeyEvent.VK_C) {
+            // Gondola Motor Maintenance Check Test
+
+        }
+        if (key == KeyEvent.VK_V) {
+            // Homing Maintenance Test
+
+        }
         if (key == KeyEvent.VK_1) {   
             
             if (backend.setState(0)==0) {
@@ -523,7 +538,6 @@ class KeyAsButton extends JFrame implements KeyListener {
             //TODO: 
             //activate auto
         }
-
         if (key == KeyEvent.VK_3) {
             
             if(backend.setState(3)==3) {
@@ -534,9 +548,8 @@ class KeyAsButton extends JFrame implements KeyListener {
             //TODO:
             //activate maintenance
             
-        } //KeyEvent 3
-        
-        if(key == KeyEvent.VK_4) { 
+        } //KeyEvent 3    
+        if (key == KeyEvent.VK_4) { 
             
             if(backend.setState(4)==4) {
                 isOff = true;
@@ -577,7 +590,6 @@ class KeyAsButton extends JFrame implements KeyListener {
         	backend.maintenanceSelection(access, 2);
         	c.setBackground(new Color(173, 216, 230));
         }
-        
         //v is homed check
         if(key == KeyEvent.VK_V) {
         	backend.maintenanceSelection(access, 3);

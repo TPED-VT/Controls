@@ -37,14 +37,6 @@
 #define SERIAL_ITERATION 40
 #define ARM_HOME_POS 0 // 0 degrees is the reative home position
 
-// int fd;
-// int serialPort = serialOpen("/dev/ttyACM", 9600);
-
-// if (serialPort < 0) {
-//     fprintf(stderr,"Unable to open serial device: %s\n",strerror(errno));
-//     return -1; 
-// }
-
 using namespace std;
 
 enum class State
