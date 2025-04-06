@@ -521,9 +521,13 @@ class KeyAsButton extends JFrame implements KeyListener {
                 off.setBackground(Color.WHITE);
                 paintClassic();
             }
-            //TODO:
-            //activate init
-            
+            // Give it 1 second to run any tests
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException error) {
+                error.printStackTrace();
+            }
+            backend.setState(1);
         }
         if (key == KeyEvent.VK_2) {
             
@@ -595,6 +599,19 @@ class KeyAsButton extends JFrame implements KeyListener {
         if(key == KeyEvent.VK_V) {
         	backend.maintenanceSelection(access, 3);
         	v.setBackground(new Color(173, 216, 230));
+        }
+        //6 is 6 long ride cycle
+        if(key == KeyEvent.VK_6){
+            for(int i = 0; i < 333; i++){   // Runs for 6 hours
+                backend.dispatch();
+                try {
+                    Thread.sleep(65000); // Sleep for 65 seconds
+                } catch (InterruptedException error) {
+                    error.printStackTrace();
+                    break; // If the sleep is interrupted, break out of the loop
+                    
+                }
+            }
         }
         
     }
