@@ -13,7 +13,7 @@ import java.util.TimerTask;
  *  HMI for Ride Engineering Competition Topspin
  *  all visuals for the ride. Visuals update every 1.538 seconds, which is
  *  1% of the ride cycle. 
- * 
+ *  
  *  @author hjl44 
  *  @version Mar 4, 2025
  */
@@ -422,7 +422,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         //middle.add(z);
         middle.add(x);
         middle.add(c);
-        middle.add(v);
+        //middle.add(v);
 
         middle.repaint();
         
@@ -452,18 +452,13 @@ class KeyAsButton extends JFrame implements KeyListener {
     public void keyPressed(KeyEvent e) {
         
         int key = e.getKeyCode();
-        
+        if(key == KeyEvent.VK_6) {
+        	//TODO: 6 hour cycle
+        }
         if(key == KeyEvent.VK_D) {
         	backend.start();
         }
         
-        //TODO: Get rid of this once maintenance mode is done, it's a backdoor
-        if (key == KeyEvent.VK_M) {
-            if(isClassic)
-                paintAdvanced();
-            else if(!isClassic)
-                paintClassic();
-        }
         if (key == KeyEvent.VK_R) {
         	if (backend.sendState(0)==0) {
             	access = 0;
@@ -580,10 +575,10 @@ class KeyAsButton extends JFrame implements KeyListener {
         }
         
         //v is homed check
-        if(key == KeyEvent.VK_V) {
+        /*if(key == KeyEvent.VK_V) {
         	backend.maintenanceSelection(access, 3);
         	v.setBackground(new Color(173, 216, 230));
-        }
+        }*/
         
     }
     
