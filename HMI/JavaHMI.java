@@ -451,7 +451,7 @@ class KeyAsButton extends JFrame implements KeyListener {
     public void keyPressed(KeyEvent e) {
         
         int key = e.getKeyCode();
-        
+    
         if (key == KeyEvent.VK_D) {
             // Disbatch command
         	backend.dispatch();
