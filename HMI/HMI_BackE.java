@@ -5,25 +5,29 @@ public class HMI_BackE {
 
     public static void main(String[] agrs) {
         new HMI_BackE().setUpGPIO();
-        new HMI_BackE().getPosition();
+        // new HMI_BackE().getPosition(); // Does this remove two screens?
     }
 
     public native double getCyclePercent(); // double needs to change: implementation
     public native void startCyclePercent();
+    public native int getCycleCount();
     public native void setCyclePercent(int percent);
 
-    public native int getPosition();
+    public native float[] getPosition();
 
 // states
 
     public native void getNextState();  
-    public native int setState();
+    public native int setState(int state);
     public native int getCurrentState();
 
 // error handling 
 
     public native String getErrorMessage();
-    public native String getErrorTestMessage();
+    public native String getStatusMessage();
+    public native String getMaintenanceError();
+    public native String getMaintenanceMessage();
+    public native String getTestStatusMessage();
 
     // E-STOP function
     public native int setUpGPIO();
@@ -31,30 +35,29 @@ public class HMI_BackE {
 
     // for HMI
     public native int performRestraintCheck();
-    public native int unlockRestraints(); // implementation
-    public native int lockRestraints(); // implementation
-    public native int MaintenanceSelection(int access, int test);
-
-
+    public native boolean unlockRestraints(); // implementation
+    public native boolean lockRestraints(); // implementation
 
 // restraint handling    
     public native boolean restraintCheck();
-    public native int isRow1Locked();
-    public native int isRow2Locked();
+    public native boolean isRow1Locked();
+    public native boolean isRow2Locked();
     
 // ride operation 
     public native boolean isReadyToRun();
     public native String isReadyToRunMessage();
     public native boolean isRideRunning();
-    public native void disbatch();
-    public native boolean reset();
-    public native boolean resetInternal();
-    public native boolean start();
+    public native void dispatch();
     public native boolean stop();
+    public native boolean homeArm();
+    public native boolean homeGondola();
+    public native boolean maintArmCheck();
+    // public native boolean homeGondola();
 
-    
-
-
-
+// testing 
+    public native int getCurrentTest();
+    public native int setCurrentTest(int test);
+    // public native String statusMessage();
+    public native int maintenanceSelection(int access, int test);
 
 }
