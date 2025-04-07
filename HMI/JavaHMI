@@ -419,7 +419,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         //middle.add(z);
         middle.add(x);
         middle.add(c);
-        //middle.add(v);
+        middle.add(v);
 
         middle.repaint();
         
