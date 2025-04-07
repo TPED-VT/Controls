@@ -353,6 +353,7 @@ class KeyAsButton extends JFrame implements KeyListener {
                     isEStopped = true;
                     justUnE = true;
                     backend.stop();
+                    backend.setState(4);
                     // backend.setState(4);
                     errorBox.setText("EMERGENCY STOP ACTIVATED");
                     
@@ -374,9 +375,9 @@ class KeyAsButton extends JFrame implements KeyListener {
                     
                 }
                 if(justUnE && !isEStopped){
+                    backend.stop();
+                    backend.setState(4);
                     
-                    backend.homeGondola();
-                    backend.homeArm();
                     justUnE = false;
                 }
                 
