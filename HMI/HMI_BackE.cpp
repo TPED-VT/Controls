@@ -276,7 +276,7 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_performRestraintCheck(JNIEnv *env, jobjec
 
 JNIEXPORT jfloatArray JNICALL Java_HMI_1BackE_getPosition(JNIEnv *env, jobject obj) {
     // Read encoder positions
-    uint16_t pos1 = getPosition(1);
+    uint16_t pos1 = readAMT22Position(spi_fd_1);
     // uint16_t pos2 = getPosition(CS2_PIN);
     // Return an array directly from the JNI function (instead of creating a new array)
     jfloat result[2] = {pos1, 0};
