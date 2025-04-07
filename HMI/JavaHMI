@@ -1,4 +1,3 @@
-package javaHMI;
 import java.awt.*;   
 import java.awt.event.*;
 import java.awt.geom.Line2D;
@@ -13,7 +12,7 @@ import java.util.TimerTask;
  *  HMI for Ride Engineering Competition Topspin
  *  all visuals for the ride. Visuals update every 1.538 seconds, which is
  *  1% of the ride cycle. 
- *  
+ * 
  *  @author hjl44 
  *  @version Mar 4, 2025
  */
@@ -28,6 +27,7 @@ class KeyAsButton extends JFrame implements KeyListener {
     JButton1 advanced;
     JPanel panel;
     JPanel upper;
+    double percent;
     JButton1 restraintStatus;
     JButton1 cyclePercent;
     JButton1 rideStatus;
@@ -59,6 +59,7 @@ class KeyAsButton extends JFrame implements KeyListener {
     JPanel eStopPanel;
     JLabel eStopLabel;
     boolean isEStopped;
+    boolean justUnE;
     int access;
     JButton z;
     JButton x;
@@ -68,8 +69,9 @@ class KeyAsButton extends JFrame implements KeyListener {
     public KeyAsButton() {
         
         isEStopped = false;
+        justUnE = false;
         backend = new HMI_BackE();
-        //backend.setUpGPIO;
+        backend.setUpGPIO();
         isClassic = true;
         //Frame setup
         access = 0;
@@ -98,8 +100,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         maint = new JButton1("<html> 3<br />MAINT</html>");
         off = new JButton1("<html> 4<br />OFF</html>");
         
-        errorBox.setBounds(0, (int)(screenSize.height * (480.0 / 800)), 
-            875, 100);
+        errorBox.setBounds(0, 480, 875, 100);
         middle.add(errorBox);
         init.setBounds(875, 480, 100, 100);
         middle.add(init);
@@ -124,7 +125,7 @@ class KeyAsButton extends JFrame implements KeyListener {
       //Button setups
         restraintStatus = new JButton1("<html> L:<br />RESTRAINTS UNLOCKED</html>");
         cyclePercent = new JButton1("% status");
-        rideStatus = new JButton1("STATUS: n/a");   
+        rideStatus = new JButton1("STATUS: Running");   
         degree = new JButton1("angle: 0 degrees");
         rectangle = new JPanel();
         rectangle2 = new JPanel();
@@ -244,16 +245,27 @@ class KeyAsButton extends JFrame implements KeyListener {
                 if(!isOff&&!isEStopped) {
                     
                     //TODO: fill in values for visual updates:
-                    int percent = (int)(backend.getCyclePercent()*100); /*TODO: get percent from backend*/;
-                    cyclePercent.setText(percent + "% through cycle");
+                	if(backend.getStatusMessage().equals("RUNNING")) {
+                    	percent += (100/66200);
+                    }
+                    else if(!backend.getStatusMessage().equals("STOPPED")){
+                    		percent = 0;
+                    }
+                    cyclePercent.setText(percent*100 + "% through cycle");
                     cyclePercent.repaint();
                 
                     //updating status
                     rideStatus.setBackground(UIManager.getColor("Button.background"));
-                    rideStatus.setText("STATUS: " + backend.statusMessage());
-                    if(rideStatus.getText().equals("RUNNING")) {
+                    if(rideStatus.getText().equals("RUNNING")){
                     	rideStatus.setBackground(Color.GREEN);
                     }
+                    /*if(backend.isRideRunning()TODO: status is running)
+                        rideStatus.setText("STATUS: RUNNING");
+                    else if(trueTODO:status is loading) {
+                        rideStatus.setText("STATUS: STOPPED");
+                    }
+                    else rideStatus.setText("STATUS: DOWN");*/
+                    rideStatus.setText("STATUS: ");
                     
                     
                     //updating restraints
@@ -303,27 +315,26 @@ class KeyAsButton extends JFrame implements KeyListener {
                     }
                 
                     //Animation
-                    circle.paintLine(radians(backend.getPosition())/*TODO: insert function to get angle in radian*/);
+                    circle.paintLine(backend.getPosition()[0]/*TODO: insert function to get angle in radian*/);
                 
                     //ADVANCED DIAGNOSTICS FUNCTIONS
                     progressBar.setBounds(100, 270, 
                         (int)(backend.getCyclePercent()/*TODO: get percent from backend*/*(screenSize.width-200)), 30);
                 
                     
-                    degree.setText("Position: " + backend.getPosition() +" degrees");
+                    degree.setText("Position: " + backend.getPosition()[0] +" degrees");
                     if(!backend.isRideRunning()/*TODO: status is not running*/)
                         direction.setText("Direction: N/A");
-                    else {
-                        if(backend.isRotationGondolaCounterclockwise()/*TODO: isClockwise()*/)
-                            direction.setText("Arm: N/A");
-                        else direction.setText("Arm: Counterclockwise");
+                    // else {
+                    //     if(backend.isRotationGondolaCounterclockwise()/*TODO: isClockwise()*/)
+                    //         direction.setText("Arm: N/A");
+                    //     else direction.setText("Arm: Counterclockwise");
                     
-                        if(backend.isRotationArmCounterclockwise())
-                            direction.setText(direction.getText()+", Gondola: N/A");
-                        else direction.setText(direction.getText()+", Gondola: Counterclockwise");
-                    }
-                    if(backend.getTestStatusMessage().contains("Passed")||
-                    		backend.getTestStatusMessage().substring(backend.getTestStatusMessage().length()-1).equals(")")) {
+                    //     if(backend.isRotationArmCounterclockwise())
+                    //         direction.setText(direction.getText()+", Gondola: N/A");
+                    //     else direction.setText(direction.getText()+", Gondola: Counterclockwise");
+                    // }
+                    if(1 == 1) {
                     			z.setBackground(Color.WHITE);
                     			x.setBackground(Color.WHITE);
                     			c.setBackground(Color.WHITE);
@@ -331,7 +342,7 @@ class KeyAsButton extends JFrame implements KeyListener {
                     		}
    
                 
-                    cyclesRun.setText("Cycle Count: " + backend.getCycles());
+                    // cyclesRun.setText("Cycle Count: " + backend.getCycles());
                 }//if !isOff
             }
         };
@@ -348,7 +359,9 @@ class KeyAsButton extends JFrame implements KeyListener {
             public void run() {
                 if(backend.eStopPressed()) {
                     isEStopped = true;
-                    
+                    justUnE = true;
+                    backend.stop();
+                    // backend.setState(4);
                     errorBox.setText("EMERGENCY STOP ACTIVATED");
                     
                     //Gray out all other buttons
@@ -363,9 +376,16 @@ class KeyAsButton extends JFrame implements KeyListener {
                     //eStop.setVisible(true);
                 }
                 else {
+                    
                     isEStopped = false;
                     eStop.setVisible(false);
                     
+                }
+                if(justUnE && !isEStopped){
+                    
+                    backend.homeGondola();
+                    backend.homeArm();
+                    justUnE = false;
                 }
                 
             }
@@ -449,15 +469,22 @@ class KeyAsButton extends JFrame implements KeyListener {
     public void keyPressed(KeyEvent e) {
         
         int key = e.getKeyCode();
-        if(key == KeyEvent.VK_6) {
-        	//TODO: 6 hour cycle
+    
+        if (key == KeyEvent.VK_D && backend.getCurrentState() == 1 && !justUnE) {
+            // Disbatch command
+        	backend.dispatch();
+            // backend.stop();
         }
-        if(key == KeyEvent.VK_D) {
-        	backend.start();
+        if (key == KeyEvent.VK_M) {
+            backend.homeArm();
+            backend.homeGondola();
         }
-        
-        if (key == KeyEvent.VK_R) {
-        	if (backend.sendState(0)==0) {
+        if (key == KeyEvent.VK_R && backend.getCurrentState() != 4) {
+            // Reset Command
+            backend.stop();
+            backend.homeArm();
+            backend.homeGondola();
+        	if (backend.setState(0)==0) {
             	access = 0;
                 isOff = false;
                 init.setBackground(new Color(192, 192, 192));
@@ -466,30 +493,45 @@ class KeyAsButton extends JFrame implements KeyListener {
                 off.setBackground(Color.WHITE);
                 paintClassic();
             }
-        	//TODO: reset
+            //TODO: Homing
         }
         if (key == KeyEvent.VK_S) {
-            //TODO: stop
-        }
-        
-        if (key == KeyEvent.VK_L) {
-            //TODO:
-            //insert code to lock restraints
-            if(restraintStatus.getText().equals("<html> L:<br />RESTRAINTS UNLOCKED</html>") && 
-                backend.lockRestraints()) {
-                restraintStatus.setText("<html> L:<br />RESTRAINT CHECK MODE</html>");
-            }
-            else if(restraintStatus.getText().equals("<html> L:<br />RESTRAINTS LOCKED</html>")|| 
-                restraintStatus.getText().equals("<html> L:<br />RESTRAINT CHECK MODE</html>") 
-                && backend.unlockRestraints() /*check if ride has been unlocked on backend*/) {
-                restraintStatus.setText("<html> L:<br />RESTRAINTS UNLOCKED</html>");  
-            }
-            
-        }
+            // Stop command
+            backend.stop();
+            backend.setState(4);
 
+            // HMI control
+            isOff = true;
+            access = 0;
+            init.setBackground(Color.WHITE);
+            auto.setBackground(Color.WHITE);
+            maint.setBackground(Color.WHITE);
+            off.setBackground(new Color(192, 192, 192));
+            paintClassic();
+            rectangle.setBackground(Color.GRAY);
+            rectangle2.setBackground(Color.GRAY);
+            indicator.setBackground(Color.GRAY);
+            indicator.setText("OFF");
+            restraintStatus.setText("OFF");
+            rideStatus.setText("STATUS: OFF");
+            cyclePercent.setText("0% through cycle");
+            errorBox.setText("OFF");
+        }  
+        if (key == KeyEvent.VK_X && backend.getCurrentState() == 3) { // Must be Maint.
+            // Arm Motor Maintenance Check Test
+            backend.maintArmCheck();
+        }
+        if (key == KeyEvent.VK_C) {
+            // Gondola Motor Maintenance Check Test
+
+        }
+        if (key == KeyEvent.VK_V) {
+            // Homing Maintenance Test
+
+        }
         if (key == KeyEvent.VK_1) {   
             
-            if (backend.sendState(0)==0) {
+            if (backend.setState(0)==0) {
             	access = 0;
                 isOff = false;
                 init.setBackground(new Color(192, 192, 192));
@@ -498,13 +540,17 @@ class KeyAsButton extends JFrame implements KeyListener {
                 off.setBackground(Color.WHITE);
                 paintClassic();
             }
-            //TODO:
-            //activate init
-            
+            // Give it 1 second to run any tests
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException error) {
+                error.printStackTrace();
+            }
+            backend.setState(1);
         }
         if (key == KeyEvent.VK_2) {
             
-            if(backend.sendState(1)==1) {
+            if(backend.setState(1)==1) {
             	access = 0;
                 isOff = false;
                 init.setBackground(Color.WHITE);
@@ -513,13 +559,11 @@ class KeyAsButton extends JFrame implements KeyListener {
                 off.setBackground(Color.WHITE);
                 paintClassic();
             }
-            //TODO: 
-            //activate auto
-        }
 
+        }
         if (key == KeyEvent.VK_3) {
             
-            if(backend.sendState(3)==3) {
+            if(backend.setState(3)==3) {
                 isOff = false;
                 popup.setVisible(true);
             }
@@ -527,11 +571,10 @@ class KeyAsButton extends JFrame implements KeyListener {
             //TODO:
             //activate maintenance
             
-        } //KeyEvent 3
-        
-        if(key == KeyEvent.VK_4) { 
+        } //KeyEvent 3    
+        if (key == KeyEvent.VK_4) { 
             
-            if(backend.sendState(4)==4) {
+            if(backend.setState(4)==4) {
                 isOff = true;
                 access = 0;
                 init.setBackground(Color.WHITE);
@@ -570,11 +613,14 @@ class KeyAsButton extends JFrame implements KeyListener {
         	backend.maintenanceSelection(access, 2);
         	c.setBackground(new Color(173, 216, 230));
         }
-        
         //v is homed check
         if(key == KeyEvent.VK_V) {
         	backend.maintenanceSelection(access, 3);
         	v.setBackground(new Color(173, 216, 230));
+        }
+        //6 is 6 long ride cycle
+        if(key == KeyEvent.VK_6 && backend.getCurrentState() == 1){
+            backend.dispatch6();
         }
         
     }
@@ -623,7 +669,7 @@ class CirclePanel extends JPanel {
         this.getGraphics().clearRect(150,150,150, 150);
         super.paintComponent(this.getGraphics()); 
         this.getGraphics().drawOval(x, y, d, d);
-        Line2D.Double line1 = new Line2D.Double(75, 75, (75*Math.cos(angle))+75, (-75*Math.sin(angle))+75);
+        Line2D.Double line1 = new Line2D.Double(75, 75, (75*Math.cos(angle))+75, (75*Math.sin(angle))+75);
         ((Graphics2D)this.getGraphics()).draw(line1);
         
     }
