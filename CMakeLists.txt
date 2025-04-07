@@ -18,6 +18,10 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SUBSYSTEM:CONSOLE")
 
 # Project name
 project(TPED_Controls)
+<<<<<<< HEAD
+=======
+
+>>>>>>> ricardo2
 # Check OS
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(FATAL_ERROR "Emily, stop using Linux")
@@ -34,7 +38,10 @@ else()
     message(FATAL_ERROR "OS Not supported")
 endif()
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> ricardo2
 # Include directories
 set(CL_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Control_Loop)
 set(DR_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Dragon)
@@ -52,7 +59,11 @@ set(MC_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/Motor_Control)
 ###################################
 
 # Create the library for Control Loop functionality
+<<<<<<< HEAD
 add_library(ControlLoopLib Control_Loop/ControlLoop.cpp)
+=======
+add_library(ControlLoopLib Control_Loop/ControlLoop.cpp Control_Loop/stateshandle.cpp)
+>>>>>>> ricardo2
 target_include_directories(ControlLoopLib PRIVATE ${INCLUDE_DIR})
 
 # Create the library for HID functionality
@@ -60,11 +71,19 @@ add_library(HIDLib HIDs/HID.cpp)
 target_include_directories(HIDLib PRIVATE ${INCLUDE_DIR})
 
 # Create the library for HMI functionality
+<<<<<<< HEAD
 add_library(HMILib HMI/HMI.cpp)
 target_include_directories(HMILib PRIVATE ${INCLUDE_DIR})
 
 # Create the library for Motor Control functionality
 add_library(MotorControlLib Motor_Control/MotorControl.cpp)
+=======
+add_library(HMILib HMI/HMI_BackE.cpp)
+target_include_directories(HMILib PRIVATE ${INCLUDE_DIR})
+
+# Create the library for Motor Control functionality
+add_library(MotorControlLib Motor_Control/Motor.cpp)
+>>>>>>> ricardo2
 target_include_directories(MotorControlLib PRIVATE ${INCLUDE_DIR})
 
 ######################################################################
@@ -78,8 +97,13 @@ target_include_directories(MotorControlLib PRIVATE ${INCLUDE_DIR})
 ###################################
 
 # Create the main executable
+<<<<<<< HEAD
 add_executable(TPED_Controls main.cpp)  # This is where we will put the main file if needed
 target_link_libraries(TPED_Controls PRIVATE MotorControlLib)# The other libraries can be added on here
+=======
+add_executable(TPED_Controls main.cpp)
+target_link_libraries(TPED_Controls PRIVATE MotorControlLib)
+>>>>>>> ricardo2
 target_include_directories(TPED_Controls PRIVATE ${INCLUDE_DIR})
 
 if(PLATFORM_LINUX)
@@ -87,6 +111,7 @@ if(PLATFORM_LINUX)
     target_include_directories(TPED_Controls PRIVATE ${INCLUDE_DIR})
 endif()
 
+<<<<<<< HEAD
 # # Create the Control Loop executable
 # add_executable(Control_Loop Control_Loop/src/ControlLoop.cpp)
 # target_link_libraries(Control_Loop PRIVATE ControlLoopLib)
@@ -97,6 +122,10 @@ endif()
 # target_link_libraries(Motor_Control PRIVATE MotorControlLib)
 # target_include_directories(Motor_Control PRIVATE ${INCLUDE_DIR})
 
+=======
+######################################################################
+# Testing
+>>>>>>> ricardo2
 ######################################################################
 
 # Enable testing
@@ -104,9 +133,20 @@ enable_testing()
 
 # Create the test executable
 add_executable(OverallTests WIN32 test/test.cpp)
+<<<<<<< HEAD
 target_link_libraries(OverallTests PRIVATE ControlLoopLib)
+=======
+
+# Link test with necessary libraries
+target_link_libraries(OverallTests PRIVATE ControlLoopLib MotorControlLib)
+
+# Make sure test has include access
+>>>>>>> ricardo2
 target_include_directories(OverallTests PRIVATE ${CMAKE_SOURCE_DIR})
 
 # Register the test
 add_test(NAME OverallTests COMMAND OverallTests)
+<<<<<<< HEAD
 
+=======
+>>>>>>> ricardo2

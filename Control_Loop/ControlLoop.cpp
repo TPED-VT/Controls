@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include "ControlLoop.h"
 
 ControlLoop::ControlLoop(int dir, int step, int ms1, int ms2, int sleep, int endstop){
@@ -26,3 +27,6 @@ void ControlLoop::handleAuto() {
 }
 void ControlLoop::handleMaint() {
 }
+=======
+// hi
+>>>>>>> ricardo2

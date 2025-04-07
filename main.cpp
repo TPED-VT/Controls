@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // #include "include/wiringPi.h"
 // Put the wiringPi I2C library for use in here
 #include <iostream>
@@ -23,5 +24,11 @@ int main(){
                 motor.rotate(COUNTER_CLOCKWISE);
         }
     }
+=======
+#include <iostream>
+
+int main() {
+    std::cout << "TPED Controls Application Running" << std::endl;
+>>>>>>> ricardo2
     return 0;
 }
