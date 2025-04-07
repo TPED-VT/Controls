@@ -124,7 +124,7 @@ class KeyAsButton extends JFrame implements KeyListener {
       //Button setups
         restraintStatus = new JButton1("<html> L:<br />RESTRAINTS UNLOCKED</html>");
         cyclePercent = new JButton1("% status");
-        rideStatus = new JButton1("STATUS: Running");   
+        rideStatus = new JButton1("STATUS: n/a");   
         degree = new JButton1("angle: 0 degrees");
         rectangle = new JPanel();
         rectangle2 = new JPanel();
@@ -250,13 +250,10 @@ class KeyAsButton extends JFrame implements KeyListener {
                 
                     //updating status
                     rideStatus.setBackground(UIManager.getColor("Button.background"));
-                    /*if(backend.isRideRunning()TODO: status is running)
-                        rideStatus.setText("STATUS: RUNNING");
-                    else if(trueTODO:status is loading) {
-                        rideStatus.setText("STATUS: STOPPED");
-                    }
-                    else rideStatus.setText("STATUS: DOWN");*/
                     rideStatus.setText("STATUS: " + backend.statusMessage());
+                    if(rideStatus.getText().equals("RUNNING")) {
+                    	rideStatus.setBackground(Color.GREEN);
+                    }
                     
                     
                     //updating restraints
@@ -575,10 +572,10 @@ class KeyAsButton extends JFrame implements KeyListener {
         }
         
         //v is homed check
-        /*if(key == KeyEvent.VK_V) {
+        if(key == KeyEvent.VK_V) {
         	backend.maintenanceSelection(access, 3);
         	v.setBackground(new Color(173, 216, 230));
-        }*/
+        }
         
     }
     
