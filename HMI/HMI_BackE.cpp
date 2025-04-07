@@ -143,7 +143,7 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeArm(JNIEnv *env, jobject obj) {
         }
         std::cout << std::endl << "Position: " << pos;
 
-        serialPuts(fd, "<0,0,0,0>");
+        serialPutchar(fd, 'p');
         close(spi_fd_1);
         // close(spi_fd_1);
     }
@@ -165,7 +165,7 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_maintArmCheck(JNIEnv *env, jobject ob
 
     // Stop motor
     for (int i = 0; i < SERIAL_ITERATION; i++) {
-        serialPuts(fd, "<0,0,0,0>");
+        serialPutchar(fd, 'p');
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
     }
 
@@ -204,7 +204,7 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeGondola(JNIEnv *env, jobject obj)
         
             std::this_thread::sleep_for(std::chrono::milliseconds(50)); 
         }
-        serialPuts(fd, "<0,0,0,0>");
+        serialPutchar(fd, 'p');
         close(spi_fd_0);
         // close(spi_fd_1);
     }
