@@ -49,7 +49,7 @@ JNIEXPORT jint JNICALL Java_HMI_1BackE_setUpGPIO(JNIEnv *env, jobject obj) {
     
     // Serial
     if(wiringPiSetup() == -1){
-        std:cerr << "Wring Pi Fail" << std::endl;
+        std:cerr << "Wiring Pi Fail" << std::endl;
         return -1;
     }
     fd = serialOpen("/dev/ttyACM1", 9600);
