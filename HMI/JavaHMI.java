@@ -27,6 +27,7 @@ class KeyAsButton extends JFrame implements KeyListener {
     JButton1 advanced;
     JPanel panel;
     JPanel upper;
+    double percent;
     JButton1 restraintStatus;
     JButton1 cyclePercent;
     JButton1 rideStatus;
@@ -58,6 +59,7 @@ class KeyAsButton extends JFrame implements KeyListener {
     JPanel eStopPanel;
     JLabel eStopLabel;
     boolean isEStopped;
+    boolean isRunning;
     boolean justUnE;
     int access;
     JButton z;
@@ -68,7 +70,9 @@ class KeyAsButton extends JFrame implements KeyListener {
     public KeyAsButton() {
         
         isEStopped = false;
+        isRunning = false;
         justUnE = false;
+        percent = 0;
         backend = new HMI_BackE();
         backend.setUpGPIO();
         isClassic = true;
@@ -99,8 +103,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         maint = new JButton1("<html> 3<br />MAINT</html>");
         off = new JButton1("<html> 4<br />OFF</html>");
         
-        errorBox.setBounds(0, (int)(screenSize.height * (480.0 / 800)), 
-            875, 100);
+        errorBox.setBounds(0, 480, 875, 100);
         middle.add(errorBox);
         init.setBounds(875, 480, 100, 100);
         middle.add(init);
@@ -243,14 +246,22 @@ class KeyAsButton extends JFrame implements KeyListener {
             public void run() {
                 
                 if(!isOff&&!isEStopped) {
-                    
+                    percent = percent == 100 ? 0 : percent + (100/662);
                     //TODO: fill in values for visual updates:
-                    int percent = (int)(backend.getCyclePercent()*100); /*TODO: get percent from backend*/;
+                	if(isRunning) {
+                    	percent = percent + (100/662);
+                    }
+                    // else{
+                    // 		percent = 0;
+                    // }
                     cyclePercent.setText(percent + "% through cycle");
                     cyclePercent.repaint();
                 
                     //updating status
                     rideStatus.setBackground(UIManager.getColor("Button.background"));
+                    if(isRunning){
+                    	rideStatus.setBackground(Color.GREEN);
+                    }
                     /*if(backend.isRideRunning()TODO: status is running)
                         rideStatus.setText("STATUS: RUNNING");
                     else if(trueTODO:status is loading) {
@@ -269,7 +280,7 @@ class KeyAsButton extends JFrame implements KeyListener {
                         rectangle.setBackground(Color.GREEN);
                     else rectangle.setBackground(Color.RED);
                 
-                    if(backend.isRideRunning()/*ride is running*/) {
+                    if(isRunning/*ride is running*/) {
                         indicator.setBackground(Color.GRAY);
                         indicator.setText("RUNNING");
                     }
@@ -307,14 +318,14 @@ class KeyAsButton extends JFrame implements KeyListener {
                     }
                 
                     //Animation
-                    circle.paintLine(backend.getPosition()[0]/*TODO: insert function to get angle in radian*/);
+                    circle.paintLine(radians(backend.getPosition()[0])/*TODO: insert function to get angle in radian*/);
                 
                     //ADVANCED DIAGNOSTICS FUNCTIONS
                     progressBar.setBounds(100, 270, 
                         (int)(backend.getCyclePercent()/*TODO: get percent from backend*/*(screenSize.width-200)), 30);
                 
                     
-                    degree.setText("Position: " + backend.getPosition() +" degrees");
+                    degree.setText("Position: " + backend.getPosition()[0] +" degrees");
                     if(!backend.isRideRunning()/*TODO: status is not running*/)
                         direction.setText("Direction: N/A");
                     // else {
@@ -350,10 +361,10 @@ class KeyAsButton extends JFrame implements KeyListener {
             @Override
             public void run() {
                 if(backend.eStopPressed()) {
+                    isRunning = false;
                     isEStopped = true;
                     justUnE = true;
                     backend.stop();
-                    backend.setState(4);
                     // backend.setState(4);
                     errorBox.setText("EMERGENCY STOP ACTIVATED");
                     
@@ -363,10 +374,22 @@ class KeyAsButton extends JFrame implements KeyListener {
                     indicator.setBackground(Color.GRAY);
                     indicator.setText("E-STOP");
                     restraintStatus.setText("E-STOP");
-                    rideStatus.setText("STATUS: E-STOP");
+                    rideStatus.setText("STATUS: EMERGENCY STOP ACTIVATED");
                     rideStatus.setBackground(Color.RED);
                     cyclePercent.setText("E-STOP");
                     //eStop.setVisible(true);
+                    
+                    access = 0;
+                    init.setBackground(Color.WHITE);
+                    auto.setBackground(Color.WHITE);
+                    maint.setBackground(Color.WHITE);
+                    off.setBackground(new Color(192, 192, 192));
+                    paintClassic();
+                    rectangle.setBackground(Color.GRAY);
+                    rectangle2.setBackground(Color.GRAY);
+                    indicator.setBackground(Color.GRAY);
+                    
+                    
                 }
                 else {
                     
@@ -375,9 +398,9 @@ class KeyAsButton extends JFrame implements KeyListener {
                     
                 }
                 if(justUnE && !isEStopped){
-                    backend.stop();
-                    backend.setState(4);
                     
+                    backend.homeGondola();
+                    backend.homeArm();
                     justUnE = false;
                 }
                 
@@ -401,7 +424,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.remove(progressBar);
         middle.remove(progressBarBase);
         middle.remove(direction);
-        middle.remove(cyclesRun);
+        //middle.remove(cyclesRun);
         middle.remove(z);
         middle.remove(x);
         middle.remove(c);
@@ -428,7 +451,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.add(progressBarBase);
         middle.add(progressBar);
         middle.add(direction);
-        middle.add(cyclesRun);
+        //middle.add(cyclesRun);
         //middle.add(z);
         middle.add(x);
         middle.add(c);
@@ -465,6 +488,7 @@ class KeyAsButton extends JFrame implements KeyListener {
     
         if (key == KeyEvent.VK_D && backend.getCurrentState() == 1 && !justUnE) {
             // Disbatch command
+            isRunning = true;
         	backend.dispatch();
             // backend.stop();
         }
@@ -523,7 +547,7 @@ class KeyAsButton extends JFrame implements KeyListener {
 
         }
         if (key == KeyEvent.VK_1) {   
-            
+            isRunning = false;
             if (backend.setState(0)==0) {
             	access = 0;
                 isOff = false;
@@ -558,6 +582,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             
             if(backend.setState(3)==3) {
                 isOff = false;
+                isRunning =false;
                 popup.setVisible(true);
             }
             
@@ -569,6 +594,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             
             if(backend.setState(4)==4) {
                 isOff = true;
+                isRunning = false;
                 access = 0;
                 init.setBackground(Color.WHITE);
                 auto.setBackground(Color.WHITE);
@@ -657,12 +683,12 @@ class CirclePanel extends JPanel {
     }
     
     public void paintLine(double angle){
-        angle = angle - (Math.PI/2);
+        // angle = angle - (Math.PI);
         //this.setColor(Color.BLACK); // Set line color
         this.getGraphics().clearRect(150,150,150, 150);
         super.paintComponent(this.getGraphics()); 
         this.getGraphics().drawOval(x, y, d, d);
-        Line2D.Double line1 = new Line2D.Double(75, 75, (75*Math.cos(angle))+75, (75*Math.sin(angle))+75);
+        Line2D.Double line1 = new Line2D.Double(75, 75, (-75*Math.cos(angle))+75, (75*Math.sin(angle))+75);
         ((Graphics2D)this.getGraphics()).draw(line1);
         
     }
