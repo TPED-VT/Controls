@@ -370,10 +370,22 @@ class KeyAsButton extends JFrame implements KeyListener {
                     indicator.setBackground(Color.GRAY);
                     indicator.setText("E-STOP");
                     restraintStatus.setText("E-STOP");
-                    rideStatus.setText("STATUS: E-STOP");
+                    rideStatus.setText("STATUS: EMERGENCY STOP ACTIVATED");
                     rideStatus.setBackground(Color.RED);
                     cyclePercent.setText("E-STOP");
                     //eStop.setVisible(true);
+                    
+                    access = 0;
+                    init.setBackground(Color.WHITE);
+                    auto.setBackground(Color.WHITE);
+                    maint.setBackground(Color.WHITE);
+                    off.setBackground(new Color(192, 192, 192));
+                    paintClassic();
+                    rectangle.setBackground(Color.GRAY);
+                    rectangle2.setBackground(Color.GRAY);
+                    indicator.setBackground(Color.GRAY);
+                    
+                    
                 }
                 else {
                     
@@ -408,7 +420,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.remove(progressBar);
         middle.remove(progressBarBase);
         middle.remove(direction);
-        middle.remove(cyclesRun);
+        //middle.remove(cyclesRun);
         middle.remove(z);
         middle.remove(x);
         middle.remove(c);
@@ -435,7 +447,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.add(progressBarBase);
         middle.add(progressBar);
         middle.add(direction);
-        middle.add(cyclesRun);
+        //middle.add(cyclesRun);
         //middle.add(z);
         middle.add(x);
         middle.add(c);
