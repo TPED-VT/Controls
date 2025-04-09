@@ -173,14 +173,14 @@ class KeyAsButton extends JFrame implements KeyListener {
 
         JLabel row2 = new JLabel("Row 2: Back");
         row2.setBounds(30, 350, 780, 20);
-        rectangle.setBounds(110, 350, 650, 20);
+        rectangle.setBounds(145, 350, 615, 20);
         rectangle.setBackground(Color.GREEN);
         middle.add(rectangle);
         middle.add(row2);
         
         JLabel row1 = new JLabel("Row 1: Front");
         row1.setBounds(30, 400, 780, 20);
-        rectangle2.setBounds(110, 400, 650, 20);
+        rectangle2.setBounds(145, 400, 615, 20);
         rectangle2.setBackground(Color.GREEN);
         middle.add(rectangle2);
         middle.add(row1);
