@@ -1,3 +1,4 @@
+package javaHMI;
 import java.awt.*;   
 import java.awt.event.*;
 import java.awt.geom.Line2D;
@@ -74,7 +75,7 @@ class KeyAsButton extends JFrame implements KeyListener {
         justUnE = false;
         percent = 0;
         backend = new HMI_BackE();
-        backend.setUpGPIO();
+        //backend.setUpGPIO();
         isClassic = true;
         //Frame setup
         access = 0;
@@ -270,7 +271,16 @@ class KeyAsButton extends JFrame implements KeyListener {
                     else rideStatus.setText("STATUS: DOWN");*/
                     rideStatus.setText("STATUS: ");
                     
-                    
+                    //emergency stop, stopped, and off status already built in
+                    if(backend.getCurrentState() == 0) 
+                    	rideStatus.setText("STATUS: INIT");
+                    if(backend.isRideRunning())
+                    	rideStatus.setText("STATUS: RUNNING");
+                    else if(backend.getCurrentState() == 1)
+                    	rideStatus.setText("STATUS: LOADING/UNLOADING");
+                    else if(backend.getCurrentState() == 3)
+                    	rideStatus.setText("STATUS: MAINTENANCE");
+                     			                    
                     //updating restraints
                     if(backend.isRow1Locked()/*TODO: row1 is locked*/)
                         rectangle2.setBackground(Color.GREEN);
@@ -530,7 +540,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             indicator.setBackground(Color.GRAY);
             indicator.setText("OFF");
             restraintStatus.setText("OFF");
-            rideStatus.setText("STATUS: OFF");
+            rideStatus.setText("STATUS: STOPPED");
             cyclePercent.setText("0% through cycle");
             errorBox.setText("OFF");
         }  
