@@ -379,7 +379,7 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_dispatch(JNIEnv* env, jobject obj){
 JNIEXPORT void JNICALL Java_HMI_1BackE_dispatch6(JNIEnv* env, jobject obj){
     for(int i = 0; i < SERIAL_ITERATION; i++){
         serialPutchar(fd, '6');
-        serialPutchar(dragonSerial, 'd');
+        serialPutchar(dragonSerial, '6');
         std::this_thread::sleep_for(std::chrono::milliseconds(50)); 
 
     }

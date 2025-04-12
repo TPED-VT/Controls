@@ -66,9 +66,11 @@ class KeyAsButton extends JFrame implements KeyListener {
     JButton x;
     JButton c;
     JButton v;
+    boolean isAuto;
     
     public KeyAsButton() {
         
+        isAuto = false;
         isEStopped = false;
         isRunning = false;
         justUnE = false;
@@ -361,6 +363,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             @Override
             public void run() {
                 if(backend.eStopPressed()) {
+                    isAuto = false;
                     isRunning = false;
                     isEStopped = true;
                     justUnE = true;
@@ -377,6 +380,10 @@ class KeyAsButton extends JFrame implements KeyListener {
                     rideStatus.setText("STATUS: EMERGENCY STOP ACTIVATED");
                     rideStatus.setBackground(Color.RED);
                     cyclePercent.setText("E-STOP");
+                    init.setBackground(Color.WHITE);
+                    auto.setBackground(Color.WHITE);
+                    maint.setBackground(Color.WHITE);
+                    off.setBackground(new Color(192, 192, 192));
                     //eStop.setVisible(true);
                     
                     access = 0;
@@ -486,17 +493,19 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         int key = e.getKeyCode();
     
-        if (key == KeyEvent.VK_D && backend.getCurrentState() == 1 && !justUnE) {
+        if (key == KeyEvent.VK_D && backend.getCurrentState() == 1 && !justUnE && isAuto) {
             // Disbatch command
             isRunning = true;
         	backend.dispatch();
             // backend.stop();
         }
-        if (key == KeyEvent.VK_M) {
-            backend.homeArm();
-            backend.homeGondola();
-        }
-        if (key == KeyEvent.VK_R && backend.getCurrentState() != 4) {
+
+        // if (key == KeyEvent.VK_M) {
+        //     backend.homeArm();
+        //     backend.homeGondola();
+        // }
+
+        if (key == KeyEvent.VK_R && backend.getCurrentState() != 4 && isAuto) {
             // Reset Command
             backend.stop();
             backend.homeArm();
@@ -547,7 +556,8 @@ class KeyAsButton extends JFrame implements KeyListener {
 
         }
         if (key == KeyEvent.VK_1) {   
-            isRunning = false;
+            isAuto = false;
+            
             if (backend.setState(0)==0) {
             	access = 0;
                 isOff = false;
@@ -566,7 +576,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             backend.setState(1);
         }
         if (key == KeyEvent.VK_2) {
-            
+            isAuto = true;
             if(backend.setState(1)==1) {
             	access = 0;
                 isOff = false;
@@ -579,6 +589,7 @@ class KeyAsButton extends JFrame implements KeyListener {
 
         }
         if (key == KeyEvent.VK_3) {
+            isAuto = false;
             
             if(backend.setState(3)==3) {
                 isOff = false;
@@ -591,6 +602,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             
         } //KeyEvent 3    
         if (key == KeyEvent.VK_4) { 
+            isAuto = false;
             
             if(backend.setState(4)==4) {
                 isOff = true;
