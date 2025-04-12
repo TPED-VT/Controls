@@ -24,6 +24,8 @@ public class JavaHMI {
 }
 
 class KeyAsButton extends JFrame implements KeyListener {
+	
+	int stopTiming;
     JButton1 classic;
     JButton1 advanced;
     JPanel panel;
@@ -67,9 +69,12 @@ class KeyAsButton extends JFrame implements KeyListener {
     JButton x;
     JButton c;
     JButton v;
+    boolean isAuto;
+    boolean sixHour;
     
     public KeyAsButton() {
         
+        isAuto = false;
         isEStopped = false;
         isRunning = false;
         justUnE = false;
@@ -87,6 +92,8 @@ class KeyAsButton extends JFrame implements KeyListener {
         addKeyListener(this); 
         setFocusable(true);
         requestFocusInWindow();
+        
+        sixHour = false;
         
         panel = new JPanel(new BorderLayout());
         upper = new JPanel(new GridLayout());
@@ -245,42 +252,88 @@ class KeyAsButton extends JFrame implements KeyListener {
         task = new TimerTask() {
             @Override
             public void run() {
-                
+               
+            
                 if(!isOff&&!isEStopped) {
-                    percent = percent == 100 ? 0 : percent + (100/662);
-                    //TODO: fill in values for visual updates:
-                	if(isRunning) {
-                    	percent = percent + (100/662);
-                    }
-                    // else{
-                    // 		percent = 0;
-                    // }
-                    cyclePercent.setText(percent + "% through cycle");
-                    cyclePercent.repaint();
+                	
+                	if(sixHour)	{
+                  if(stopTiming == 0) {
+                	if(isRunning) { 
+                		rideStatus.setText("STATUS: RUNNING");
+                   		percent = percent + (100.0/662.0);
+                   		System.out.println("stage 0");
+                       	//if(percent >= 100) {
+                       	//	percent = 0;
+                       	//}
+                       	cyclePercent.setText((int)percent + "% through cycle");
+                           cyclePercent.repaint();
+                       }
+                  
+               	}
+               	if(percent >= 100 && stopTiming < 10000) {
+               			System.out.println("adding to stopTiming");
+               		   stopTiming += 100; //in milliseconds
+               		   rideStatus.setText("STATUS: RUNNING");
+               		indicator.setText("RUNNING");
+               		   cyclePercent.setText("100% through cycle");
+               		}
+               		else if(stopTiming <= 10000 && stopTiming > 0) {
+               			System.out.println("got stage 2");
+               			 stopTiming += 100; //in milliseconds
+               			 rideStatus.setText("STATUS: RUNNING");
+               			cyclePercent.setText("100% through cycle");
+               			indicator.setText("RUNNING");
+               		}
+               		else if(stopTiming != 0 && stopTiming > 10000 && stopTiming <= 28000) {
+               			System.out.println("stage 3");
+               			 rideStatus.setText("STATUS: LOADING/UNLOADING");
+               			 indicator.setText("LOADING/UNLOADING");
+               			cyclePercent.setText("0% through cycle");
+               			stopTiming += 100; //in milliseconds
+               		}
+               		else if(stopTiming >= 28000) {
+               			System.out.println("stage 4");
+               			stopTiming = 0;
+               			percent = 0;
+               		}
+                }
+                
+                else {
+                        //percent = percent == 100 ? 0 : percent + (100/662);
+                        //TODO: fill in values for visual updates:
+                    	if(isRunning) {
+                    		percent = percent + (100.0/662.0);
+                        	if(percent >= 100) {
+                        		percent = 0;
+                        	}
+                        	cyclePercent.setText((int)percent + "% through cycle");
+                            cyclePercent.repaint();
+                        }
+
+                }
+                	
+                if(!sixHour) {
+                	//emergency stop, stopped, and off status already built in
+                    if(backend.getCurrentState() == 0)
+                    	rideStatus.setText("STATUS: INIT");
+                    if(isRunning)
+                    	rideStatus.setText("STATUS: RUNNING");
+                    else if(backend.getCurrentState() == 1)
+                    	rideStatus.setText("STATUS: LOADING/UNLOADING");
+                    else if(backend.getCurrentState() == 3)
+                    	rideStatus.setText("STATUS: MAINTENANCE");
+                }
+                	
+                    
                 
                     //updating status
                     rideStatus.setBackground(UIManager.getColor("Button.background"));
                     if(isRunning){
                     	rideStatus.setBackground(Color.GREEN);
                     }
-                    /*if(backend.isRideRunning()TODO: status is running)
-                        rideStatus.setText("STATUS: RUNNING");
-                    else if(trueTODO:status is loading) {
-                        rideStatus.setText("STATUS: STOPPED");
-                    }
-                    else rideStatus.setText("STATUS: DOWN");*/
-                    rideStatus.setText("STATUS: ");
                     
-                    //emergency stop, stopped, and off status already built in
-                    if(backend.getCurrentState() == 0) 
-                    	rideStatus.setText("STATUS: INIT");
-                    if(backend.isRideRunning())
-                    	rideStatus.setText("STATUS: RUNNING");
-                    else if(backend.getCurrentState() == 1)
-                    	rideStatus.setText("STATUS: LOADING/UNLOADING");
-                    else if(backend.getCurrentState() == 3)
-                    	rideStatus.setText("STATUS: MAINTENANCE");
-                     			                    
+                    
+                    
                     //updating restraints
                     if(backend.isRow1Locked()/*TODO: row1 is locked*/)
                         rectangle2.setBackground(Color.GREEN);
@@ -371,6 +424,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             @Override
             public void run() {
                 if(backend.eStopPressed()) {
+                    isAuto = false;
                     isRunning = false;
                     isEStopped = true;
                     justUnE = true;
@@ -387,6 +441,10 @@ class KeyAsButton extends JFrame implements KeyListener {
                     rideStatus.setText("STATUS: EMERGENCY STOP ACTIVATED");
                     rideStatus.setBackground(Color.RED);
                     cyclePercent.setText("E-STOP");
+                    init.setBackground(Color.WHITE);
+                    auto.setBackground(Color.WHITE);
+                    maint.setBackground(Color.WHITE);
+                    off.setBackground(new Color(192, 192, 192));
                     //eStop.setVisible(true);
                     
                     access = 0;
@@ -458,8 +516,8 @@ class KeyAsButton extends JFrame implements KeyListener {
         middle.add(rideStatus);
         
         middle.add(degree);
-        middle.add(progressBarBase);
-        middle.add(progressBar);
+        //middle.add(progressBarBase);
+        //middle.add(progressBar);
         middle.add(direction);
         //middle.add(cyclesRun);
         //middle.add(z);
@@ -496,17 +554,19 @@ class KeyAsButton extends JFrame implements KeyListener {
         
         int key = e.getKeyCode();
     
-        if (key == KeyEvent.VK_D && backend.getCurrentState() == 1 && !justUnE) {
+        if (key == KeyEvent.VK_D && backend.getCurrentState() == 1 && !justUnE && isAuto) {
             // Disbatch command
             isRunning = true;
         	backend.dispatch();
             // backend.stop();
         }
-        if (key == KeyEvent.VK_M) {
-            backend.homeArm();
-            backend.homeGondola();
-        }
-        if (key == KeyEvent.VK_R && backend.getCurrentState() != 4) {
+
+        // if (key == KeyEvent.VK_M) {
+        //     backend.homeArm();
+        //     backend.homeGondola();
+        // }
+
+        if (key == KeyEvent.VK_R && backend.getCurrentState() != 4 && isAuto) {
             // Reset Command
             backend.stop();
             backend.homeArm();
@@ -524,6 +584,8 @@ class KeyAsButton extends JFrame implements KeyListener {
         }
         if (key == KeyEvent.VK_S) {
             // Stop command
+        	
+        	sixHour = false;
             backend.stop();
             backend.setState(4);
 
@@ -540,7 +602,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             indicator.setBackground(Color.GRAY);
             indicator.setText("OFF");
             restraintStatus.setText("OFF");
-            rideStatus.setText("STATUS: STOPPED");
+            rideStatus.setText("STATUS: OFF");
             cyclePercent.setText("0% through cycle");
             errorBox.setText("OFF");
         }  
@@ -557,7 +619,9 @@ class KeyAsButton extends JFrame implements KeyListener {
 
         }
         if (key == KeyEvent.VK_1) {   
-            isRunning = false;
+            isAuto = false;
+            sixHour = false;
+            
             if (backend.setState(0)==0) {
             	access = 0;
                 isOff = false;
@@ -576,7 +640,7 @@ class KeyAsButton extends JFrame implements KeyListener {
             backend.setState(1);
         }
         if (key == KeyEvent.VK_2) {
-            
+            isAuto = true;
             if(backend.setState(1)==1) {
             	access = 0;
                 isOff = false;
@@ -589,6 +653,8 @@ class KeyAsButton extends JFrame implements KeyListener {
 
         }
         if (key == KeyEvent.VK_3) {
+        	sixHour = false;
+            isAuto = false;
             
             if(backend.setState(3)==3) {
                 isOff = false;
@@ -601,7 +667,8 @@ class KeyAsButton extends JFrame implements KeyListener {
             
         } //KeyEvent 3    
         if (key == KeyEvent.VK_4) { 
-            
+            isAuto = false;
+            sixHour = false;
             if(backend.setState(4)==4) {
                 isOff = true;
                 isRunning = false;
@@ -649,6 +716,8 @@ class KeyAsButton extends JFrame implements KeyListener {
         }
         //6 is 6 long ride cycle
         if(key == KeyEvent.VK_6 && backend.getCurrentState() == 1){
+        	isRunning = true;
+        	sixHour = true;
             backend.dispatch6();
         }
         
