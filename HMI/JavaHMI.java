@@ -456,6 +456,7 @@ class KeyAsButton extends JFrame implements KeyListener {
                     rectangle.setBackground(Color.GRAY);
                     rectangle2.setBackground(Color.GRAY);
                     indicator.setBackground(Color.GRAY);
+                    percent = 0;
                     
                     
                 }
