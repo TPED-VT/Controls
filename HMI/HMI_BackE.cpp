@@ -198,7 +198,7 @@ JNIEXPORT jboolean JNICALL Java_HMI_1BackE_homeGondola(JNIEnv *env, jobject obj)
     pos = readAMT22Position(spi_fd_0);
         // std::cout << std::endl << "Position: " << pos;
 
-    while ((pos != 0)) {
+    while ((pos != 33)) {
         std::cout << std::endl << "Position2: " << pos;
         pos = readAMT22Position(spi_fd_0);
         // uint16_t pos1 = readAMT22Position(spi_fd_1);
@@ -379,7 +379,7 @@ JNIEXPORT void JNICALL Java_HMI_1BackE_dispatch(JNIEnv* env, jobject obj){
 JNIEXPORT void JNICALL Java_HMI_1BackE_dispatch6(JNIEnv* env, jobject obj){
     for(int i = 0; i < SERIAL_ITERATION; i++){
         serialPutchar(fd, '6');
-        serialPutchar(dragonSerial, '6');
+        serialPutchar(dragonSerial, 'd');
         std::this_thread::sleep_for(std::chrono::milliseconds(50)); 
 
     }

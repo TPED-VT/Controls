@@ -406,8 +406,7 @@ class KeyAsButton extends JFrame implements KeyListener {
                 }
                 if(justUnE && !isEStopped){
                     
-                    backend.homeGondola();
-                    backend.homeArm();
+                   
                     justUnE = false;
                 }
                 
